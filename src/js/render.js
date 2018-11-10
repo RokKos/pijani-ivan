@@ -3,9 +3,14 @@ const kTagRender = "Render";
 var gl;
 var shaderProgram;
 
+// OBJ data
+var allVertex = [];
+var allVertexNormals = [];
+var allFaces = [];
+var allFacesNormals = [];
+
+
 // Buffers
-var pyramidVertexPositionBuffer;
-var pyramidVertexColorBuffer;
 var cubeVertexPositionBuffer;
 var cubeVertexColorBuffer;
 var cubeVertexIndexBuffer;
@@ -119,10 +124,10 @@ function initShaders() {
   gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
   // store location of aVertexColor variable defined in shader
-  shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+  //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
 
   // turn on vertex color attribute at specified position
-  gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+  //gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
   // store location of uPMatrix variable defined in shader - projection matrix 
   shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
@@ -148,65 +153,7 @@ function setMatrixUniforms() {
 // two objecta -- a simple cube and pyramidß.
 //
 function initBuffers() {
-  // PYRAMID
-  // Create a buffer for the pyramid's vertices.
-  pyramidVertexPositionBuffer = gl.createBuffer();
-
-  // Select the pyramidVertexPositionBuffer as the one to apply vertex
-  // operations to from here out.
-  gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
-  var vertices = [
-    // Front face
-     0.0,  1.0,  0.0,
-    -1.0, -1.0,  1.0,
-     1.0, -1.0,  1.0,
-    // Right face
-     0.0,  1.0,  0.0,
-     1.0, -1.0,  1.0,
-     1.0, -1.0, -1.0,
-    // Back face
-     0.0,  1.0,  0.0,
-     1.0, -1.0, -1.0,
-    -1.0, -1.0, -1.0,
-    // Left face
-     0.0,  1.0,  0.0,
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0,  1.0
-  ];
-
-  // Pass the list of vertices into WebGL to build the shape. We
-  // do this by creating a Float32Array from the JavaScript array,
-  // then use it to fill the current vertex buffer.
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-  pyramidVertexPositionBuffer.itemSize = 3;
-  pyramidVertexPositionBuffer.numItems = 12;
-
-  // Now set up the colors for the vertices
-  pyramidVertexColorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
-  var colors = [
-    // Front face
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-    // Right face
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    // Back face
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-    // Left face
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-    0.0, 1.0, 0.0, 1.0
-  ];
-
-  // Pass the colors into WebGL
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-  pyramidVertexColorBuffer.itemSize = 4;
-  pyramidVertexColorBuffer.numItems = 3;
+    ImportObjectFile("./assets/models/test2.obj");
 
   // CUBE
   // Create a buffer for the cube's vertices.
@@ -216,52 +163,15 @@ function initBuffers() {
   // operations to from here out.
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
   
-  // Now create an array of vertices for the cube.
-  vertices = [
-    // Front face
-    -1.0, -1.0,  1.0,
-     1.0, -1.0,  1.0,
-     1.0,  1.0,  1.0,
-    -1.0,  1.0,  1.0,
 
-    // Back face
-    -1.0, -1.0, -1.0,
-    -1.0,  1.0, -1.0,
-     1.0,  1.0, -1.0,
-     1.0, -1.0, -1.0,
-
-    // Top face
-    -1.0,  1.0, -1.0,
-    -1.0,  1.0,  1.0,
-     1.0,  1.0,  1.0,
-     1.0,  1.0, -1.0,
-
-    // Bottom face
-    -1.0, -1.0, -1.0,
-     1.0, -1.0, -1.0,
-     1.0, -1.0,  1.0,
-    -1.0, -1.0,  1.0,
-
-    // Right face
-     1.0, -1.0, -1.0,
-     1.0,  1.0, -1.0,
-     1.0,  1.0,  1.0,
-     1.0, -1.0,  1.0,
-
-    // Left face
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0,  1.0,
-    -1.0,  1.0,  1.0,
-    -1.0,  1.0, -1.0
-  ];
-  
   // Now pass the list of vertices into WebGL to build the shape. We
   // do this by creating a Float32Array from the JavaScript array,
   // then use it to fill the current vertex buffer.
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allVertex), gl.STATIC_DRAW);
   cubeVertexPositionBuffer.itemSize = 3;
-  cubeVertexPositionBuffer.numItems = 24;
+  cubeVertexPositionBuffer.numItems = allVertex.length;
 
+  /*
   // Now set up the colors for the vertices. We'll use solid colors
   // for each face.
   cubeVertexColorBuffer = gl.createBuffer();
@@ -290,28 +200,18 @@ function initBuffers() {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
   cubeVertexColorBuffer.itemSize = 4;
   cubeVertexColorBuffer.numItems = 24;
+*/
 
   // Build the element array buffer; this specifies the indices
   // into the vertex array for each face's vertices.
   cubeVertexIndexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
 
-  // This array defines each face as two triangles, using the
-  // indices into the vertex array to specify each triangle's
-  // position.
-  var cubeVertexIndices = [
-      0, 1, 2,      0, 2, 3,    // Front face
-      4, 5, 6,      4, 6, 7,    // Back face
-      8, 9, 10,     8, 10, 11,  // Top face
-      12, 13, 14,   12, 14, 15, // Bottom face
-      16, 17, 18,   16, 18, 19, // Right face
-      20, 21, 22,   20, 22, 23  // Left face
-  ];
 
   // Now send the element array to GL
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(allFaces), gl.STATIC_DRAW);
   cubeVertexIndexBuffer.itemSize = 1;
-  cubeVertexIndexBuffer.numItems = 36;
+  cubeVertexIndexBuffer.numItems = allFaces.length;
 }
 
 //
@@ -334,33 +234,13 @@ function drawScene() {
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
   mat4.identity(mvMatrix);
-  
-  // PYRAMID:
-
-  // Now move the drawing position a bit to where we want to start
-  // drawing the pyramid.
-  mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
-
-
-  // Draw the pyramid by binding the array buffer to the cube's vertices
-  // array, setting attributes, and pushing it to GL.
-  gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
-  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, pyramidVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-  // Set the colors attribute for the vertices.
-  gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
-  gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, pyramidVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-  // Draw the pyramid.
-  setMatrixUniforms();
-  gl.drawArrays(gl.TRIANGLES, 0, pyramidVertexPositionBuffer.numItems);
 
 
   // CUBE:
 
   // Now move the drawing position a bit to where we want to start
   // drawing the cube.
-  mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
+  mat4.translate(mvMatrix, [3.0, 0.0, -7.0]);
 
   // Draw the cube by binding the array buffer to the cube's vertices
   // array, setting attributes, and pushing it to GL.
@@ -368,14 +248,69 @@ function drawScene() {
   gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
   
   // Set the colors attribute for the vertices.
+  /*
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
   gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+  */
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
 
   // Draw the cube.
   setMatrixUniforms();
   gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+}
+
+function ImportObjectFile(file)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                var allText = rawFile.responseText;
+                var elements = allText.replace(/\n/g, " ").split(" ");
+                DebugLog(elements, kTagRender, "ImportObjectFile");
+                for (var i = 0; i < elements.length; i+=4) {
+
+                    for (var j = 0; j < 4; ++j) {
+                        DebugLog(elements[i + j], kTagRender, "ImportObjectFile");
+                    }
+                    
+                    DebugLog("-----");
+                    if ("v".localeCompare(elements[i]) == 0){
+                        for (var j = 1; j < 4; ++j) {
+                            allVertex.push(parseFloat(elements[i+j]));
+                        }
+                    } else if ("f".localeCompare(elements[i]) == 0) {
+                        for (var j = 1; j < 4; ++j) {
+                            var face_components = elements[i+j].split("//");
+                            DebugLog(face_components[0] + " " + face_components[1], kTagRender, "ImportObjectFile");
+                            allFaces.push(parseInt(face_components[0]) - 1);
+                            allFacesNormals.push(parseInt(face_components[1]) - 1);
+                        }
+                    
+                    }else if ("vn".localeCompare(elements[i]) == 0) {
+                        for (var j = 1; j < 4; ++j) {
+                            allVertexNormals.push(parseFloat(elements[i+j]));
+                        }
+                    }else {
+                        i -= 3;
+                        DebugLog("$$$$$");
+                    }
+                }
+                //DebugLog("allVertex.length: " + allVertex.length);
+                //for (var i = 0; i < allVertex.length; ++i) {
+                //    DebugLog("vi: " + i + "val:" + allVertex[i], kTagRender, "ImportObjectFile");
+                //}
+
+                //DebugLog(allFaces);
+            }
+        }
+    }
+    rawFile.send(null);
 }
 
 
