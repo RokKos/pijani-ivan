@@ -1,10 +1,16 @@
+const kTagMain = "Main";
+
 
 function Start() {
     // TODO: - Initiale buffers and drawing stuff
     //       - Initialize physics
     //       - Initialize game parameters
     //       - Initiale controls
-    console.log("Start Game");
+    DebugLog("Start Game", kTagMain, "Start");
+    InitRender();
+    InitGame();
+    InitPhysics();
+    InitInput();
 }
 
 function Update() {
@@ -15,7 +21,13 @@ function Update() {
     //          - Move character
     //          - Move camera
     //       - Draw stuff on screen
-    console.log("Update");
+    DebugLog("Update call", kTagMain, "Update");
+    HandleInput();
+    UpdateGameParameters();
+    CalculatePhysics();
+    // Move objects -> Probably done from renderer
+    drawScene();
+    
 }
 
 
