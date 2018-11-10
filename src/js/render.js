@@ -146,6 +146,10 @@ function setMatrixUniforms() {
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
 
+function degToRad(degrees) {
+    return degrees * Math.PI / 180;
+}
+
 //
 // initBuffers
 //
@@ -153,7 +157,7 @@ function setMatrixUniforms() {
 // two objecta -- a simple cube and pyramidß.
 //
 function initBuffers() {
-    ImportObjectFile("./assets/models/test2.obj");
+    ImportObjectFile("./assets/models/jama_import.obj");
 
   // CUBE
   // Create a buffer for the cube's vertices.
@@ -240,7 +244,8 @@ function drawScene() {
 
   // Now move the drawing position a bit to where we want to start
   // drawing the cube.
-  mat4.translate(mvMatrix, [3.0, 0.0, -7.0]);
+  mat4.translate(mvMatrix, [3.0, 0.0, -17.0]);
+  mat4.rotate(mvMatrix, degToRad(30), [1, 1, 1]);
 
   // Draw the cube by binding the array buffer to the cube's vertices
   // array, setting attributes, and pushing it to GL.
@@ -272,14 +277,14 @@ function ImportObjectFile(file)
             {
                 var allText = rawFile.responseText;
                 var elements = allText.replace(/\n/g, " ").split(" ");
-                DebugLog(elements, kTagRender, "ImportObjectFile");
+                //DebugLog(elements, kTagRender, "ImportObjectFile");
                 for (var i = 0; i < elements.length; i+=4) {
 
-                    for (var j = 0; j < 4; ++j) {
-                        DebugLog(elements[i + j], kTagRender, "ImportObjectFile");
-                    }
+                    //for (var j = 0; j < 4; ++j) {
+                    //    DebugLog(elements[i + j], kTagRender, "ImportObjectFile");
+                    //}
                     
-                    DebugLog("-----");
+                    //DebugLog("-----");
                     if ("v".localeCompare(elements[i]) == 0){
                         for (var j = 1; j < 4; ++j) {
                             allVertex.push(parseFloat(elements[i+j]));
@@ -287,7 +292,7 @@ function ImportObjectFile(file)
                     } else if ("f".localeCompare(elements[i]) == 0) {
                         for (var j = 1; j < 4; ++j) {
                             var face_components = elements[i+j].split("//");
-                            DebugLog(face_components[0] + " " + face_components[1], kTagRender, "ImportObjectFile");
+                            //DebugLog(face_components[0] + " " + face_components[1], kTagRender, "ImportObjectFile");
                             allFaces.push(parseInt(face_components[0]) - 1);
                             allFacesNormals.push(parseInt(face_components[1]) - 1);
                         }
@@ -298,7 +303,7 @@ function ImportObjectFile(file)
                         }
                     }else {
                         i -= 3;
-                        DebugLog("$$$$$");
+                        //DebugLog("$$$$$");
                     }
                 }
                 //DebugLog("allVertex.length: " + allVertex.length);
