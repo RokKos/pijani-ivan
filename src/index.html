@@ -18,10 +18,12 @@
 	    <!-- Fragment shader program -->
 	    <script id="shader-fs" type="x-shader/x-fragment">
 		    // set medium percision 
-		    precision mediump float;
+			precision mediump float;
+			varying vec4 vertNormal;
+			
 		    void main(void) {
-	        	// Setting color of fragments to input color
-		        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+	        	// Setting color of fragments to normals
+		        gl_FragColor = vertNormal;
 		    }
 	    </script>
 
@@ -29,13 +31,23 @@
 	    <!-- Vertex shader program -->	    
 	    <script id="shader-vs" type="x-shader/x-vertex">
     		// atributes for setting vertex position and color
-		    attribute vec3 aVertexPosition;
+			attribute vec3 aVertexPosition;
+			attribute vec3 aVertexNormal;
+
 		    uniform mat4 uMVMatrix;	// model-view matrix
-		    uniform mat4 uPMatrix;	// projection matrix
+			uniform mat4 uPMatrix;	// projection matrix
+			uniform mat3 uNMatrix;	// projection matrix
+			
+			varying vec4 vertNormal;
 		    // variable for passing color from vertex shader to fragment shader
 		    void main(void) {
 		    	// calculate the vertex position
-		        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+				gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+
+				vec3 transformedNormal = uNMatrix * aVertexNormal;
+				
+				// vertNormal = vec4(transformedNormal, 1.0);
+				vertNormal = vec4(aVertexNormal, 1.0);
 		    }
 	    </script>
 	</head>

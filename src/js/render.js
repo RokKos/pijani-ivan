@@ -7,11 +7,11 @@ var shaderProgram;
 var allVertex = [];
 var allVertexNormals = [];
 var allFaces = [];
-var allFacesNormals = [];
 
 
 // Buffers
 var cubeVertexPositionBuffer;
+var cubeVertexNormalBuffer;
 var cubeVertexColorBuffer;
 var cubeVertexIndexBuffer;
 
@@ -117,11 +117,13 @@ function initShaders() {
   // start using shading program for rendering
   gl.useProgram(shaderProgram);
   
-  // store location of aVertexPosition variable defined in shader
+  // store location of aVertexPosition and aVertexNormal variable defined in shader
   shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-
-  // turn on vertex position attribute at specified position
+  shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
+  
+  // turn on vertex position and normals attribute at specified position
   gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+  gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
 
   // store location of aVertexColor variable defined in shader
   //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
@@ -134,6 +136,9 @@ function initShaders() {
 
   // store location of uMVMatrix variable defined in shader - model-view matrix 
   shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+
+  // normal matrix
+  shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
 }
 
 //
@@ -144,6 +149,11 @@ function initShaders() {
 function setMatrixUniforms() {
   gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+
+  var normalMatrix = mat3.create();
+  mat4.toInverseMat3(mvMatrix, normalMatrix);
+  mat3.transpose(normalMatrix);
+  gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
 }
 
 function degToRad(degrees) {
@@ -167,13 +177,23 @@ function initBuffers() {
   // operations to from here out.
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
   
-
+  
   // Now pass the list of vertices into WebGL to build the shape. We
   // do this by creating a Float32Array from the JavaScript array,
   // then use it to fill the current vertex buffer.
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allVertex), gl.STATIC_DRAW);
   cubeVertexPositionBuffer.itemSize = 3;
   cubeVertexPositionBuffer.numItems = allVertex.length;
+
+
+  // Normals
+  cubeVertexNormalBuffer = gl.createBuffer();
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexNormalBuffer);
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allVertexNormals), gl.STATIC_DRAW);
+  cubeVertexNormalBuffer.itemSize = 3;
+  cubeVertexNormalBuffer.numItems = allVertexNormals.length;
 
   /*
   // Now set up the colors for the vertices. We'll use solid colors
@@ -252,6 +272,9 @@ function drawScene() {
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
   gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
   
+  // Normals
+  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexNormalBuffer);
+  gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, cubeVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
   // Set the colors attribute for the vertices.
   /*
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
@@ -275,6 +298,8 @@ function ImportObjectFile(file)
         {
             if(rawFile.status === 200 || rawFile.status == 0)
             {
+                let tempNormals = [];
+                let vert2normal = {};
                 var allText = rawFile.responseText;
                 var elements = allText.replace(/\n/g, " ").split(" ");
                 //DebugLog(elements, kTagRender, "ImportObjectFile");
@@ -293,18 +318,35 @@ function ImportObjectFile(file)
                         for (var j = 1; j < 4; ++j) {
                             var face_components = elements[i+j].split("//");
                             //DebugLog(face_components[0] + " " + face_components[1], kTagRender, "ImportObjectFile");
-                            allFaces.push(parseInt(face_components[0]) - 1);
-                            allFacesNormals.push(parseInt(face_components[1]) - 1);
+                            let vertex = parseInt(face_components[0]) - 1;
+                            let normal = parseInt(face_components[1]) - 1;
+                            vert2normal[vertex] = normal;
+
+                            allFaces.push(vertex);
                         }
                     
                     }else if ("vn".localeCompare(elements[i]) == 0) {
                         for (var j = 1; j < 4; ++j) {
-                            allVertexNormals.push(parseFloat(elements[i+j]));
+                            tempNormals.push(parseFloat(elements[i+j]));
                         }
                     }else {
                         i -= 3;
                         //DebugLog("$$$$$");
                     }
+                }
+
+                console.log(vert2normal);
+
+                for (let k=0; k< allVertex.length/3; k++) {
+                  let ix = vert2normal[k];
+                  for (let j=0; j<3; j++){
+                    if(ix !== undefined){
+                      allVertexNormals[3*k+j] = tempNormals[3*ix+j];
+                    } else {
+                      allVertexNormals[3*k+j] = 0.0;
+                    }
+                  }
+                  
                 }
                 //DebugLog("allVertex.length: " + allVertex.length);
                 //for (var i = 0; i < allVertex.length; ++i) {
