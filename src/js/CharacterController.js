@@ -1,12 +1,41 @@
 const kTagInput = "CharacterController";
 
-function InitInput() {
-    //TODO: Init user input
-    DebugLog("Init User Input", kTagInput, "InitInput");
-}
-
+var canvas;
+var gl;
 var currentlyPressedKeys = {};
 
+//spremenljivke za hranjnenje trenutne pozicije, hitrosti in smeri kamere
+var pitch = 0;
+var pitchRate = 0;
+var koraki = 0;
+var yaw  = 0;
+var yawRate = 0;
+var speed = 0;
+var positionX = 0;
+var positionY = 0.4;
+var positionZ = 0;
+
+// Simulacija hoje -> premikamo se po sinusoidi - spremenljivka pove kot
+var joggingAngle = 0;
+
+// Spremenljivka casa za funkcijo animate
+var lastTime = 0;
+
+//Koliko casa je preteklo za funkcijo animate
+var elapsed=0;
+
+
+// Stopinje v radiane + normalizacija
+function degToRad(degrees) {
+	
+	degrees=degrees % 360; // NORMALIZACIJA
+	if (degrees < 0)
+		degrees += 360; //NORMALIZACIJA
+	
+	var radiani= degrees * Math.PI / 180;
+	return radiani;
+	
+}
 
 function initGL(canvas){
     var gl = null;
@@ -22,8 +51,7 @@ function initGL(canvas){
     return gl;
 }
 
-
-
+//tipkovnica
 function handleKeyDown(event) {
     currentlyPressedKeys[event.keyCode] = true;
 }
@@ -42,7 +70,20 @@ function HandleInput() {
     if(currentlyPressedKeys[39]) //right
         rotationVelocityY += 1;
     if(currentlyPressedKeys[38]) //up
-        rotationVelocityX -= 1;
-    if(currentlyPressedKeys[40]) //down
-        rotationVelocityX += 1;
+        speed = 0.003;
+    else if(currentlyPressedKeys[40]) //down
+        speed = -0.003;
+    else
+        speed = 0;
+}
+
+function animate() {
+    var timenow = new Date().getTime();
+    if(lastTime != 0) {
+        elapsed = timenow - lastTime;
+        
+        if(speed != 0) {
+            
+        }
+    }
 }
