@@ -3,22 +3,33 @@ const kTagRender = "Render";
 var gl;
 var shaderProgram;
 
-// OBJ data
-var allVertex = [];
-var allVertexNormals = [];
-var allFaces = [];
+var cameraPosition = [0,0,-15];
+var cameraRotation = [0,0,0];
+var cameraScale = [1,1,1];
 
+// Models
+var models = {};
 
-// Buffers
-var cubeVertexPositionBuffer;
-var cubeVertexNormalBuffer;
-var cubeVertexColorBuffer;
-var cubeVertexIndexBuffer;
+// Var objects
+var objects = [];
 
-// Model-view and projection matrix and model-view matrix stack
+// Model-view and projection matrix
 var mvMatrixStack = [];
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
+
+function mvPushMatrix() {
+  var copy = mat4.create();
+  mat4.set(mvMatrix, copy);
+  mvMatrixStack.push(copy);
+}
+
+function mvPopMatrix() {
+  if (mvMatrixStack.length == 0) {
+    throw "Invalid popMatrix!";
+  }
+  mvMatrix = mvMatrixStack.pop();
+}
 
 
 //
@@ -161,81 +172,31 @@ function degToRad(degrees) {
 }
 
 //
-// initBuffers
+// initObjects
 //
-// Initialize the buffers we'll need. For this demo, we have
-// two objecta -- a simple cube and pyramidß.
+// Initialize the objects we'll need.
 //
-function initBuffers() {
-    ImportObjectFile("./assets/models/jama_import.obj");
+function initObjects() {
+    models.jama = Model.fromFile("./assets/models/jama_import.obj");
+    models.kocka = Model.fromFile("./assets/models/test2.obj");
 
-  // CUBE
-  // Create a buffer for the cube's vertices.
-  cubeVertexPositionBuffer = gl.createBuffer();
-  
-  // Select the cubeVertexPositionBuffer as the one to apply vertex
-  // operations to from here out.
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-  
-  
-  // Now pass the list of vertices into WebGL to build the shape. We
-  // do this by creating a Float32Array from the JavaScript array,
-  // then use it to fill the current vertex buffer.
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allVertex), gl.STATIC_DRAW);
-  cubeVertexPositionBuffer.itemSize = 3;
-  cubeVertexPositionBuffer.numItems = allVertex.length;
+    let jama = new Object(models.jama);
+    let kocka1 = new Object(models.kocka);
+    let kocka2 = new Object(models.kocka);
+
+    jama.rotation[1] = 90.0;
+    jama.position[1] = -2.0;
+
+    kocka1.rotation[1] = 30;
+
+    kocka2.position = [-2.5, 0, 0];
+    kocka2.rotation = [40, 0, 0];
+    kocka2.scale = [0.7, 0.5, 0.5];
 
 
-  // Normals
-  cubeVertexNormalBuffer = gl.createBuffer();
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexNormalBuffer);
-
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allVertexNormals), gl.STATIC_DRAW);
-  cubeVertexNormalBuffer.itemSize = 3;
-  cubeVertexNormalBuffer.numItems = allVertexNormals.length;
-
-  /*
-  // Now set up the colors for the vertices. We'll use solid colors
-  // for each face.
-  cubeVertexColorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
-  colors = [
-      [1.0, 0.0, 0.0, 1.0], // Front face
-      [1.0, 1.0, 0.0, 1.0], // Back face
-      [0.0, 1.0, 0.0, 1.0], // Top face
-      [1.0, 0.5, 0.5, 1.0], // Bottom face
-      [1.0, 0.0, 1.0, 1.0], // Right face
-      [0.0, 0.0, 1.0, 1.0]  // Left face
-  ];
-
-  // Convert the array of colors into a table for all the vertices.
-  var unpackedColors = [];
-  for (var i in colors) {
-    var color = colors[i];
-
-    // Repeat each color four times for the four vertices of the face
-    for (var j=0; j < 4; j++) {
-          unpackedColors = unpackedColors.concat(color);
-      }
-  }
-
-  // Pass the colors into WebGL
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
-  cubeVertexColorBuffer.itemSize = 4;
-  cubeVertexColorBuffer.numItems = 24;
-*/
-
-  // Build the element array buffer; this specifies the indices
-  // into the vertex array for each face's vertices.
-  cubeVertexIndexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-
-
-  // Now send the element array to GL
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(allFaces), gl.STATIC_DRAW);
-  cubeVertexIndexBuffer.itemSize = 1;
-  cubeVertexIndexBuffer.numItems = allFaces.length;
+    objects.push(jama);
+    objects.push(kocka1);
+    objects.push(kocka2);
 }
 
 //
@@ -259,105 +220,48 @@ function drawScene() {
   // the center of the scene.
   mat4.identity(mvMatrix);
 
+  // Camera position
+  mat4.translate(mvMatrix, cameraPosition);
+  mat4.rotateZ(mvMatrix, degToRad(cameraRotation[2]));
+  mat4.rotateY(mvMatrix, degToRad(cameraRotation[1]));
+  mat4.rotateX(mvMatrix, degToRad(cameraRotation[0]));
+  mat4.scale(mvMatrix, cameraScale);
 
-  // CUBE:
+  for(let i = 0; i<objects.length; i++){
+    mvPushMatrix();
 
-  // Now move the drawing position a bit to where we want to start
-  // drawing the cube.
-  mat4.translate(mvMatrix, [3.0, 0.0, -17.0]);
-  mat4.rotate(mvMatrix, degToRad(30), [1, 1, 1]);
+    let obj = objects[i];
+    let model = obj.model;
 
-  // Draw the cube by binding the array buffer to the cube's vertices
-  // array, setting attributes, and pushing it to GL.
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    mat4.translate(mvMatrix, obj.position);
+    mat4.rotateZ(mvMatrix, degToRad(obj.rotation[2]));
+    mat4.rotateY(mvMatrix, degToRad(obj.rotation[1]));
+    mat4.rotateX(mvMatrix, degToRad(obj.rotation[0]));
+    mat4.scale(mvMatrix, obj.scale);
+
+    // Draw the object by binding the array buffer to the object's vertices
+    // array, setting attributes, and pushing it to GL.
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.verticesBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, model.verticesBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    
+    // Normals
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.normalsBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, model.normalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    // Set the colors attribute for the vertices.
+    /*
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    */
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.facesBuffer);
+
+    // Draw the cube.
+    setMatrixUniforms();
+    gl.drawElements(gl.TRIANGLES, model.facesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
+    mvPopMatrix();
+  }
   
-  // Normals
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexNormalBuffer);
-  gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, cubeVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-  // Set the colors attribute for the vertices.
-  /*
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
-  gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-  */
-
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-
-  // Draw the cube.
-  setMatrixUniforms();
-  gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-}
-
-function ImportObjectFile(file)
-{
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function ()
-    {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status == 0)
-            {
-                let tempNormals = [];
-                let vert2normal = {};
-                var allText = rawFile.responseText;
-                var elements = allText.replace(/\n/g, " ").split(" ");
-                //DebugLog(elements, kTagRender, "ImportObjectFile");
-                for (var i = 0; i < elements.length; i+=4) {
-
-                    //for (var j = 0; j < 4; ++j) {
-                    //    DebugLog(elements[i + j], kTagRender, "ImportObjectFile");
-                    //}
-                    
-                    //DebugLog("-----");
-                    if ("v".localeCompare(elements[i]) == 0){
-                        for (var j = 1; j < 4; ++j) {
-                            allVertex.push(parseFloat(elements[i+j]));
-                        }
-                    } else if ("f".localeCompare(elements[i]) == 0) {
-                        for (var j = 1; j < 4; ++j) {
-                            var face_components = elements[i+j].split("//");
-                            //DebugLog(face_components[0] + " " + face_components[1], kTagRender, "ImportObjectFile");
-                            let vertex = parseInt(face_components[0]) - 1;
-                            let normal = parseInt(face_components[1]) - 1;
-                            vert2normal[vertex] = normal;
-
-                            allFaces.push(vertex);
-                        }
-                    
-                    }else if ("vn".localeCompare(elements[i]) == 0) {
-                        for (var j = 1; j < 4; ++j) {
-                            tempNormals.push(parseFloat(elements[i+j]));
-                        }
-                    }else {
-                        i -= 3;
-                        //DebugLog("$$$$$");
-                    }
-                }
-
-                console.log(vert2normal);
-
-                for (let k=0; k< allVertex.length/3; k++) {
-                  let ix = vert2normal[k];
-                  for (let j=0; j<3; j++){
-                    if(ix !== undefined){
-                      allVertexNormals[3*k+j] = tempNormals[3*ix+j];
-                    } else {
-                      allVertexNormals[3*k+j] = 0.0;
-                    }
-                  }
-                  
-                }
-                //DebugLog("allVertex.length: " + allVertex.length);
-                //for (var i = 0; i < allVertex.length; ++i) {
-                //    DebugLog("vi: " + i + "val:" + allVertex[i], kTagRender, "ImportObjectFile");
-                //}
-
-                //DebugLog(allFaces);
-            }
-        }
-    }
-    rawFile.send(null);
 }
 
 
@@ -380,7 +284,7 @@ function InitRender() {
     
     // Here's where we call the routine that builds all the objects
     // we'll be drawing.
-    initBuffers();
+    initObjects();
     
   }
 }
