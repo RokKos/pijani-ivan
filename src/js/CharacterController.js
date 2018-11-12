@@ -28,6 +28,13 @@ var prevZ = 0;
 var elapsed = 0;
 
 
+function InitInput() {
+    //TODO: Init user input
+    DebugLog("Init User Input", kTagInput, "InitInput");
+    animate();
+}
+
+
 // Stopinje v radiane + normalizacija
 function degToRad(degrees) {
 	
@@ -120,8 +127,6 @@ function HandleInput() {
         yawRate = -0.1;
     else 
         yawRate = 0;
-        
-
     if(currentlyPressedKeys[38]) //up
         speed = 0.003;
     else if(currentlyPressedKeys[40]) //down
