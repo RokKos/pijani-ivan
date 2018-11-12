@@ -11,18 +11,21 @@ var koraki = 0;
 var yaw  = 0;
 var yawRate = 0;
 var speed = 0;
+var upS = 0;
+var downS = 0;
 var positionX = 0;
 var positionY = 0.4;
 var positionZ = 0;
 
-// Simulacija hoje -> premikamo se po sinusoidi - spremenljivka pove kot
-var joggingAngle = 0;
-
 // Spremenljivka casa za funkcijo animate
 var lastTime = 0;
+var jumping = false;
 
-//Koliko casa je preteklo za funkcijo animate
-var elapsed=0;
+var prevX = 0;
+var prevY = 0;
+var prevZ = 0;
+
+var elapsed = 0;
 
 
 // Stopinje v radiane + normalizacija
@@ -51,6 +54,35 @@ function initGL(canvas){
     return gl;
 }
 
+function animate() {
+    var timenow = new Date().getTime();
+    if(lastTime != 0) {
+        elapsed = timenow - lastTime;
+        
+        if(positionY < 39.5 && positionY > 1.5 && jumping == true) {
+            var tmpS = upS - downS;
+            positionY += speed * elapsed;
+            
+            if(positionY > 1.5 && positionY < 2.5) {
+                jumping = false;
+                downS = 0;
+                upS = 0;
+            }
+            
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 //tipkovnica
 function handleKeyDown(event) {
     currentlyPressedKeys[event.keyCode] = true;
@@ -66,24 +98,24 @@ function HandleInput() {
     if(currentlyPressedKeys[34]) //page down
         positionZ += 0.05;
     if(currentlyPressedKeys[37]) //left
-        rotationVelocityY -= 1;
-    if(currentlyPressedKeys[39]) //right
-        rotationVelocityY += 1;
+        yawRate = 0.1;
+    else if(currentlyPressedKeys[39]) //right
+        yawRate = -0.1;
+    else 
+        yawRate = 0;
+        
+
     if(currentlyPressedKeys[38]) //up
         speed = 0.003;
     else if(currentlyPressedKeys[40]) //down
         speed = -0.003;
     else
         speed = 0;
+        
+    if(currentlyPressedKeys[32]) { //space
+        if(!jumping) {
+            jumping = true;
+        }
+    } 
 }
 
-function animate() {
-    var timenow = new Date().getTime();
-    if(lastTime != 0) {
-        elapsed = timenow - lastTime;
-        
-        if(speed != 0) {
-            
-        }
-    }
-}
