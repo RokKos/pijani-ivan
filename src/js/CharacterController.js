@@ -68,18 +68,35 @@ function animate() {
                 downS = 0;
                 upS = 0;
             }
+        } else if (positionY >= 39.5)
+            positionY -= 0.1;
+          else if(positionY < 1.5) 
+            positionY += 0.1;
             
+        if(speed != 0) {
+            if(positionX < 19.5 && positionX > -19.5) 
+                positionX -= Math.sin(degToRad(yaw)) * speed * elapsed;
+            else if(positionX >= 19.5)
+                positionX -= 0.2;
+            else 
+                positionX += 0.2;
+                
+            if(positionZ < 19.5 && positionZ > -19.5)
+                positionZ -= Math.cos(degToRad(yaw)) * speed * elapsed;
+            else if(positionZ >= 19.5)
+                positionZ -= 0.2;
+            else
+                positionZ += 0.2;
+                
         }
+         yaw += yawRate * elapsed; 
+            
     }
+    lastTime = timenow;
+    HandleInput();
+    
+    
 }
-
-
-
-
-
-
-
-
 
 
 
