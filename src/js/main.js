@@ -10,7 +10,7 @@ function Start() {
     InitRender();
     InitGame();
     InitPhysics();
-    //InitInput();
+    InitInput();
 }
 
 function Update() {
