@@ -222,9 +222,11 @@ function drawScene() {
 
   // Camera position
   mat4.translate(mvMatrix, cameraPosition);
-  mat4.rotateZ(mvMatrix, degToRad(cameraRotation[2]));
-  mat4.rotateY(mvMatrix, degToRad(cameraRotation[1]));
-  mat4.rotateX(mvMatrix, degToRad(cameraRotation[0]));
+
+  //mat4.rotateZ(mvMatrix, degToRad(cameraRotation[2]));
+  //mat4.rotateY(mvMatrix, degToRad(cameraRotation[1]));
+  //mat4.rotateX(mvMatrix, degToRad(cameraRotation[0]));
+  mat4.multiply(mvMatrix, moonRotationMatrix);
   mat4.scale(mvMatrix, cameraScale);
 
   for(let i = 0; i<objects.length; i++){
