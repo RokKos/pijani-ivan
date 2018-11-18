@@ -1,11 +1,14 @@
 // Global variable definitionvar canvas;
 const kTagRender = "Render";
+var canvas;
 var gl;
 var shaderProgram;
+var physicsShaderProgram;
 
-var cameraPosition = [0,0,-15];
+var cameraPosition = [0,0,5];
 var cameraRotation = [0,0,0];
-var cameraScale = [1,1,1];
+
+var lightPosition = [0,0,0];
 
 // Models
 var models = {};
@@ -16,6 +19,7 @@ var objects = [];
 // Model-view and projection matrix
 var mvMatrixStack = [];
 var mvMatrix = mat4.create();
+var mMatrix = mat4.create();
 var pMatrix = mat4.create();
 
 function mvPushMatrix() {
@@ -148,8 +152,57 @@ function initShaders() {
   // store location of uMVMatrix variable defined in shader - model-view matrix 
   shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 
+  // store location of uMMatrix variable defined in shader - model matrix 
+  shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
+
   // normal matrix
   shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+
+  shaderProgram.lightPositionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
+}
+
+function initPhysicsDebugShaders() {
+  var p_fragmentShader = getShader(gl, "physics-debug-shader-fs");
+  var p_vertexShader = getShader(gl, "physics-debug-shader-vs");
+  
+  // Create the shader program
+  physicsShaderProgram = gl.createProgram();
+  gl.attachShader(physicsShaderProgram, p_vertexShader);
+  gl.attachShader(physicsShaderProgram, p_fragmentShader);
+  gl.linkProgram(physicsShaderProgram);
+  
+  // If creating the shader program failed, alert
+  if (!gl.getProgramParameter(physicsShaderProgram, gl.LINK_STATUS)) {
+    alert("Unable to initialize the shader program.");
+  }
+  
+  // start using shading program for rendering
+  gl.useProgram(physicsShaderProgram);
+  
+  // store location of aVertexPosition and aVertexNormal variable defined in shader
+  physicsShaderProgram.vertexPositionAttribute = gl.getAttribLocation(physicsShaderProgram, "aVertexPosition");
+  physicsShaderProgram.vertexBaryCentricAttribute = gl.getAttribLocation(physicsShaderProgram, "aBaryCentric");
+  DebugLog(physicsShaderProgram.vertexBaryCentricAttribute, kTagRender, "initPhysicsDebugShaders");
+  DebugLog(physicsShaderProgram.vertexPositionAttribute, kTagRender, "initPhysicsDebugShaders");
+  
+  // turn on vertex position and normals attribute at specified position
+  gl.enableVertexAttribArray(physicsShaderProgram.vertexPositionAttribute);
+  gl.enableVertexAttribArray(physicsShaderProgram.vertexBaryCentricAttribute);
+
+  // store location of aVertexColor variable defined in shader
+  //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+
+  // turn on vertex color attribute at specified position
+  //gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+
+  // store location of uPMatrix variable defined in shader - projection matrix 
+  physicsShaderProgram.pMatrixUniform = gl.getUniformLocation(physicsShaderProgram, "uPMatrix");
+
+  // store location of uMVMatrix variable defined in shader - model-view matrix 
+  physicsShaderProgram.mvMatrixUniform = gl.getUniformLocation(physicsShaderProgram, "uMVMatrix");
+
+  // normal matrix
+  physicsShaderProgram.nMatrixUniform = gl.getUniformLocation(physicsShaderProgram, "uNMatrix");
 }
 
 //
@@ -157,14 +210,16 @@ function initShaders() {
 //
 // Set the uniform values in shaders for model-view and projection matrix.
 //
-function setMatrixUniforms() {
-  gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+function setMatrixUniforms(_shaderProgram) {
+  gl.uniformMatrix4fv(_shaderProgram.pMatrixUniform, false, pMatrix);
+  gl.uniformMatrix4fv(_shaderProgram.mvMatrixUniform, false, mvMatrix);
+  gl.uniformMatrix4fv(_shaderProgram.mMatrixUniform, false, mMatrix);
 
   var normalMatrix = mat3.create();
   mat4.toInverseMat3(mvMatrix, normalMatrix);
   mat3.transpose(normalMatrix);
-  gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
+  gl.uniformMatrix3fv(_shaderProgram.nMatrixUniform, false, normalMatrix);
+  gl.uniform3f(_shaderProgram.lightPositionUniform, lightPosition[0], lightPosition[1], lightPosition[2]);
 }
 
 function degToRad(degrees) {
@@ -180,23 +235,27 @@ function initObjects() {
     models.jama = Model.fromFile("./assets/models/jama_import.obj");
     models.kocka = Model.fromFile("./assets/models/test2.obj");
 
-    let jama = new Object(models.jama);
-    let kocka1 = new Object(models.kocka);
-    let kocka2 = new Object(models.kocka);
+    let jama = new PhysicsObject(models.jama);
+    let kocka1 = new PhysicsObject(models.kocka);
+    let kocka2 = new PhysicsObject(models.kocka);
 
     jama.rotation[1] = 90.0;
     jama.position[1] = -2.0;
 
-    kocka1.rotation[1] = 30;
+    kocka1.rotation[1] = 40;
 
     kocka2.position = [-2.5, 0, 0];
-    kocka2.rotation = [40, 0, 0];
+    kocka2.rotation = [40, -20, 0];
     kocka2.scale = [0.7, 0.5, 0.5];
 
 
     objects.push(jama);
     objects.push(kocka1);
     objects.push(kocka2);
+}
+
+function negate(vector){
+  return [-vector[0], -vector[1], -vector[2]]
 }
 
 //
@@ -221,25 +280,45 @@ function drawScene() {
   mat4.identity(mvMatrix);
 
   // Camera position
-  mat4.translate(mvMatrix, cameraPosition);
-
-  //mat4.rotateZ(mvMatrix, degToRad(cameraRotation[2]));
-  //mat4.rotateY(mvMatrix, degToRad(cameraRotation[1]));
-  //mat4.rotateX(mvMatrix, degToRad(cameraRotation[0]));
-  mat4.multiply(mvMatrix, moonRotationMatrix);
-  mat4.scale(mvMatrix, cameraScale);
-
+  mat4.rotateX(mvMatrix, degToRad(-cameraRotation[0]));
+  mat4.rotateY(mvMatrix, degToRad(-cameraRotation[1]));
+  mat4.rotateZ(mvMatrix, degToRad(-cameraRotation[2]));
+  mat4.translate(mvMatrix, negate(cameraPosition));
+  
   for(let i = 0; i<objects.length; i++){
     mvPushMatrix();
+    mat4.identity(mMatrix);
 
     let obj = objects[i];
     let model = obj.model;
 
-    mat4.translate(mvMatrix, obj.position);
-    mat4.rotateZ(mvMatrix, degToRad(obj.rotation[2]));
-    mat4.rotateY(mvMatrix, degToRad(obj.rotation[1]));
-    mat4.rotateX(mvMatrix, degToRad(obj.rotation[0]));
-    mat4.scale(mvMatrix, obj.scale);
+    mat4.translate(mMatrix, obj.position);
+    mat4.rotateZ(mMatrix, degToRad(obj.rotation[2]));
+    mat4.rotateY(mMatrix, degToRad(obj.rotation[1]));
+    mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
+    mat4.scale(mMatrix, obj.scale);
+    mat4.multiply(mvMatrix, mMatrix, mvMatrix);
+
+    if (PHYSICS_DEBUG) {
+      gl.useProgram(physicsShaderProgram);
+      gl.bindBuffer(gl.ARRAY_BUFFER, model.boundingBoxBufferVertex);
+      gl.vertexAttribPointer(physicsShaderProgram.vertexPositionAttribute, model.boundingBoxBufferVertex.itemSize, gl.FLOAT, false, 0, 0);  
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, model.baricentricBuffer);
+      gl.vertexAttribPointer(physicsShaderProgram.vertexBaryCentricAttribute, model.baricentricBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      gl.enable(gl.BLEND);
+      gl.disable(gl.DEPTH_TEST);
+
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.boundingBoxBufferfacesBuffer);
+
+      // Draw the cube.
+      setMatrixUniforms(physicsShaderProgram);
+      gl.drawElements(gl.TRIANGLES, model.boundingBoxBufferfacesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+    }
+    
+    gl.useProgram(shaderProgram);
 
     // Draw the object by binding the array buffer to the object's vertices
     // array, setting attributes, and pushing it to GL.
@@ -254,12 +333,15 @@ function drawScene() {
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
     */
-
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.facesBuffer);
 
     // Draw the cube.
-    setMatrixUniforms();
+    setMatrixUniforms(shaderProgram);
     gl.drawElements(gl.TRIANGLES, model.facesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+    
+
+    
+
 
     mvPopMatrix();
   }
@@ -282,7 +364,14 @@ function InitRender() {
 
     // Initialize the shaders; this is where all the lighting for the
     // vertices and so forth is established.
+    if (PHYSICS_DEBUG){
+      initPhysicsDebugShaders();
+    }
     initShaders();
+    
+    
+    
+    
     
     // Here's where we call the routine that builds all the objects
     // we'll be drawing.
