@@ -72,11 +72,12 @@ class Model {
                     this.minVertex = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
                     this.maxVertex = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
 
-
-                    let tempNormals = [];
-                    let vert2normal = {};
+                    let readVertices = [];
+                    let readNormals = [];
+                    let readFaces = [];
+                    
                     let allText = rawFile.responseText;
-                    let elements = allText.replace(/\n/g, " ").split(" ");
+                    let elements = allText.replace(/\n/g, " ").split(/\s+/);
                 
                     for (let i = 0; i < elements.length; i+=4) {
 
@@ -84,7 +85,7 @@ class Model {
                         if ("v".localeCompare(elements[i]) == 0){
                             for (let j = 1; j < 4; ++j) {
                                 let vert = parseFloat(elements[i+j]);
-                                allVertices.push(vert);
+                                readVertices.push(vert);
 
                                 // Physics purpose
                                 if (this.minVertex[j-1] > vert) {
@@ -103,19 +104,16 @@ class Model {
                         else if ("f".localeCompare(elements[i]) == 0) {
                             for (let j = 1; j < 4; ++j) {
                                 var face_components = elements[i+j].split("//");
-                                //DebugLog(face_components[0] + " " + face_components[1], kTagRender, "ImportObjectFile");
                                 let vertex = parseInt(face_components[0]) - 1;
                                 let normal = parseInt(face_components[1]) - 1;
-                                vert2normal[vertex] = normal;
-
-                                allFaces.push(vertex);
+                                readFaces.push([vertex, normal]);
                             }
                         
                         }
                         // Parse normal
                         else if ("vn".localeCompare(elements[i]) == 0) {
                             for (let j = 1; j < 4; ++j) {
-                                tempNormals.push(parseFloat(elements[i+j]));
+                                readNormals.push(parseFloat(elements[i+j]));
                             }
                         }else {
                             i -= 3;
@@ -123,21 +121,29 @@ class Model {
 
                     }
 
-                    // Number of normals may be smaller than the number of vertices
-                    // Here we get the normal for each vertex, so the sizes match
-                    // (needed for WebGL)
-                    for (let k=0; k< allVertices.length/3; k++) {
-                        let ix = vert2normal[k];
-                        for (let j=0; j<3; j++){
-                          if(ix !== undefined){
-                            allNormals[3*k+j] = tempNormals[3*ix+j];
-                          } else {
-                            allNormals[3*k+j] = 0.0;
-                          }
-                        }
-                    }
 
-                    // console.log(allVertices, allNormals, allFaces);
+
+                    let faceMap = new Map();
+                    let faceMapCount = 0;
+                    // Go through faces and populate allVertices, allNormals, allFaces
+                    for (let i=0; i<readFaces.length; i++){
+                        let faceVN = readFaces[i];
+                        let fVertex = faceVN[0];
+                        let fNormal = faceVN[1];
+
+                        // if (vertex, normal) pair not in map, then add to map
+                        if (!faceMap.has(faceVN)){
+                            faceMap.set(faceVN, faceMapCount);
+                            faceMapCount += 1;
+
+                            for (let j=0; j<3; j++){
+                                allVertices.push(readVertices[3*fVertex+j]);
+                                allNormals.push(readNormals[3*fNormal+j]);
+                            }
+                        }
+
+                        allFaces.push(faceMap.get(faceVN));
+                    }
 
                     // Assign geometry to model
                     model.setVertices(allVertices);

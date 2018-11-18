@@ -1,12 +1,14 @@
 // Global variable definitionvar canvas;
 const kTagRender = "Render";
+var canvas;
 var gl;
 var shaderProgram;
 var physicsShaderProgram;
 
-var cameraPosition = [0,0,-15];
+var cameraPosition = [0,0,5];
 var cameraRotation = [0,0,0];
-var cameraScale = [1,1,1];
+
+var lightPosition = [0,0,0];
 
 // Models
 var models = {};
@@ -17,6 +19,7 @@ var objects = [];
 // Model-view and projection matrix
 var mvMatrixStack = [];
 var mvMatrix = mat4.create();
+var mMatrix = mat4.create();
 var pMatrix = mat4.create();
 
 function mvPushMatrix() {
@@ -149,8 +152,13 @@ function initShaders() {
   // store location of uMVMatrix variable defined in shader - model-view matrix 
   shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 
+  // store location of uMMatrix variable defined in shader - model matrix 
+  shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
+
   // normal matrix
   shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+
+  shaderProgram.lightPositionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
 }
 
 function initPhysicsDebugShaders() {
@@ -205,11 +213,13 @@ function initPhysicsDebugShaders() {
 function setMatrixUniforms(_shaderProgram) {
   gl.uniformMatrix4fv(_shaderProgram.pMatrixUniform, false, pMatrix);
   gl.uniformMatrix4fv(_shaderProgram.mvMatrixUniform, false, mvMatrix);
+  gl.uniformMatrix4fv(_shaderProgram.mMatrixUniform, false, mMatrix);
 
   var normalMatrix = mat3.create();
   mat4.toInverseMat3(mvMatrix, normalMatrix);
   mat3.transpose(normalMatrix);
   gl.uniformMatrix3fv(_shaderProgram.nMatrixUniform, false, normalMatrix);
+  gl.uniform3f(_shaderProgram.lightPositionUniform, lightPosition[0], lightPosition[1], lightPosition[2]);
 }
 
 function degToRad(degrees) {
@@ -232,16 +242,20 @@ function initObjects() {
     jama.rotation[1] = 90.0;
     jama.position[1] = -2.0;
 
-    kocka1.rotation[1] = 30;
+    kocka1.rotation[1] = 40;
 
     kocka2.position = [-2.5, 0, 0];
-    kocka2.rotation = [40, 0, 0];
+    kocka2.rotation = [40, -20, 0];
     kocka2.scale = [0.7, 0.5, 0.5];
 
 
     objects.push(jama);
     objects.push(kocka1);
     objects.push(kocka2);
+}
+
+function negate(vector){
+  return [-vector[0], -vector[1], -vector[2]]
 }
 
 //
@@ -266,25 +280,23 @@ function drawScene() {
   mat4.identity(mvMatrix);
 
   // Camera position
-  mat4.translate(mvMatrix, cameraPosition);
-
-  //mat4.rotateZ(mvMatrix, degToRad(cameraRotation[2]));
-  //mat4.rotateY(mvMatrix, degToRad(cameraRotation[1]));
-  //mat4.rotateX(mvMatrix, degToRad(cameraRotation[0]));
-  mat4.multiply(mvMatrix, moonRotationMatrix);
-  mat4.scale(mvMatrix, cameraScale);
-
+  mat4.rotateX(mvMatrix, degToRad(-cameraRotation[0]));
+  mat4.rotateY(mvMatrix, degToRad(-cameraRotation[1]));
+  mat4.rotateZ(mvMatrix, degToRad(-cameraRotation[2]));
+  mat4.translate(mvMatrix, negate(cameraPosition));
+  
   for(let i = 0; i<objects.length; i++){
     mvPushMatrix();
+    mat4.identity(mMatrix);
 
     let obj = objects[i];
     let model = obj.model;
 
-    mat4.translate(mvMatrix, obj.position);
-    mat4.rotateZ(mvMatrix, degToRad(obj.rotation[2]));
-    mat4.rotateY(mvMatrix, degToRad(obj.rotation[1]));
-    mat4.rotateX(mvMatrix, degToRad(obj.rotation[0]));
-    mat4.scale(mvMatrix, obj.scale);
+    mat4.translate(mMatrix, obj.position);
+    mat4.rotateZ(mMatrix, degToRad(obj.rotation[2]));
+    mat4.rotateY(mMatrix, degToRad(obj.rotation[1]));
+    mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
+    mat4.scale(mMatrix, obj.scale);
 
     
 
@@ -308,6 +320,8 @@ function drawScene() {
     }
     
     gl.useProgram(shaderProgram);
+    mat4.multiply(mvMatrix, mMatrix, mvMatrix);
+
     // Draw the object by binding the array buffer to the object's vertices
     // array, setting attributes, and pushing it to GL.
     gl.bindBuffer(gl.ARRAY_BUFFER, model.verticesBuffer);
