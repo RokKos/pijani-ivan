@@ -235,9 +235,9 @@ function initObjects() {
     models.jama = Model.fromFile("./assets/models/jama_import.obj");
     models.kocka = Model.fromFile("./assets/models/test2.obj");
 
-    let jama = new PhysicsObject(models.jama);
-    let kocka1 = new PhysicsObject(models.kocka);
-    let kocka2 = new PhysicsObject(models.kocka);
+    let jama = new PhysicsObject(models.jama, TypeOfBoxCollider.kExeterior);
+    let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
+    let kocka2 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
 
     jama.rotation[1] = 90.0;
     jama.position[1] = -2.0;
@@ -298,6 +298,7 @@ function drawScene() {
     mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
     mat4.scale(mMatrix, obj.scale);
     mat4.multiply(mvMatrix, mMatrix, mvMatrix);
+    obj.SetmvMatrix(mvMatrix);
 
     if (PHYSICS_DEBUG) {
       gl.useProgram(physicsShaderProgram);
