@@ -225,9 +225,9 @@ function initObjects() {
     models.jama = Model.fromFile("./assets/models/jama_import.obj");
     models.kocka = Model.fromFile("./assets/models/test2.obj");
 
-    let jama = new Object(models.jama);
-    let kocka1 = new Object(models.kocka);
-    let kocka2 = new Object(models.kocka);
+    let jama = new PhysicsObject(models.jama);
+    let kocka1 = new PhysicsObject(models.kocka);
+    let kocka2 = new PhysicsObject(models.kocka);
 
     jama.rotation[1] = 90.0;
     jama.position[1] = -2.0;

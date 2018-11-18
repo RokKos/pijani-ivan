@@ -8,6 +8,8 @@ class Model {
         this.baricentricBuffer = gl.createBuffer();
         this.boundingBoxBufferVertex = gl.createBuffer();
         this.boundingBoxBufferfacesBuffer = gl.createBuffer();
+        this.minVertex;
+        this.maxVertex;
     }
 
     _bindBuffer(buffer, values, item_size){
@@ -67,8 +69,9 @@ class Model {
                     let allBaricenters = [];
                     let baricenterVectors = [[1.0,0.0,0.0], [0.0,1.0,0.0], [0.0,0.0,1.0]];
                     let currBaricenterVector = 0;
-                    let minVertex = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
-                    let maxVertex = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
+                    this.minVertex = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
+                    this.maxVertex = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
+
 
                     let tempNormals = [];
                     let vert2normal = {};
@@ -84,12 +87,12 @@ class Model {
                                 allVertices.push(vert);
 
                                 // Physics purpose
-                                if (minVertex[j-1] > vert) {
-                                    minVertex[j-1] = vert;
+                                if (this.minVertex[j-1] > vert) {
+                                    this.minVertex[j-1] = vert;
                                 }
 
-                                if (maxVertex[j-1] < vert) {
-                                    maxVertex[j-1] = vert;
+                                if (this.maxVertex[j-1] < vert) {
+                                    this.maxVertex[j-1] = vert;
                                 }
                                 allBaricenters.push(baricenterVectors[currBaricenterVector][j-1]);
                             }
@@ -149,69 +152,23 @@ class Model {
                         DebugLog(binary, kTagModel, "fromFile");
                         for (var j = 0; j < 3; ++j) {
                             if (binary.charAt(j)=="0") {
-                                allBoundingBoxVertices.push(minVertex[j]);
+                                allBoundingBoxVertices.push(this.minVertex[j]);
                             } else {
-                                allBoundingBoxVertices.push(maxVertex[j]);
+                                allBoundingBoxVertices.push(this.maxVertex[j]);
                             }
 
                         }
                     }
                     DebugLog(allBoundingBoxVertices, kTagModel, "fromFile");
                     model.setBoundingBox(allBoundingBoxVertices);
-
-                    /*let allBoundingBoxFaces = [0,1,2,  0,2,3,
-                                               0,4,2,  0,2,6,
-                                               0,4,1,  0,1,5,
-                                               4,5,6,  4,6,7,
-                                               1,5,3,  1,3,7,
-                                               2,6,3,  2,3,7 
-                                              ];
-                    */
                    
-                   let allBoundingBoxFaces =[2 - 1,
-                   3 - 1,
-                   1 - 1,
-                   4 - 1,
-                   7 - 1,
-                   3 - 1,
-                   8 - 1,
-                   5 - 1,
-                   7 - 1,
-                   6 - 1,
-                   1 - 1,
-                   5 - 1,
-                   7 - 1,
-                   1 - 1,
-                   3 - 1,
-                   4 - 1,
-                   6 - 1,
-                   8 - 1,
-                   2 - 1,
-                   4 - 1,
-                   3 - 1,
-                   4 - 1,
-                   8 - 1,
-                   7 - 1,
-                   8 - 1,
-                   6 - 1,
-                   5 - 1,
-                   6 - 1,
-                   2 - 1,
-                   1 - 1,
-                   7 - 1,
-                   5 - 1,
-                   1 - 1,
-                   4 - 1,
-                   2 - 1,
-                   6 -1];
+                   let allBoundingBoxFaces =[1,2,0, 3,6,2, 
+                                             7,4,6, 5,0,4,
+                                             6,0,2, 3,5,7,
+                                             1,3,2, 3,7,6,
+                                             7,5,4, 5,1,0,
+                                             6,4,0, 3,1,5];
                     
-                    /*for (var i = 0; i < 36; i+=4) {
-                        for(var j = 0; j < 4; ++j) {
-                            allBoundingBoxFaces.push(i+(j % 3));
-                        }
-                        allBoundingBoxFaces.push(i+2);
-                        allBoundingBoxFaces.push(i+3);
-                    }*/
                     DebugLog(allBoundingBoxFaces, kTagModel, "fromFile");
                     model.setBoundingBoxFaces(allBoundingBoxFaces);
                 }
