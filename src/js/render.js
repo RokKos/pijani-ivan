@@ -14,8 +14,6 @@ var models = {};
 // Var objects
 var objects = [];
 
-var physics_debug = true;
-
 // Model-view and projection matrix
 var mvMatrixStack = [];
 var mvMatrix = mat4.create();
@@ -290,13 +288,17 @@ function drawScene() {
 
     
 
-    if (physics_debug) {
+    if (PHYSICS_DEBUG) {
       gl.useProgram(physicsShaderProgram);
       gl.bindBuffer(gl.ARRAY_BUFFER, model.boundingBoxBufferVertex);
       gl.vertexAttribPointer(physicsShaderProgram.vertexPositionAttribute, model.boundingBoxBufferVertex.itemSize, gl.FLOAT, false, 0, 0);  
 
       gl.bindBuffer(gl.ARRAY_BUFFER, model.baricentricBuffer);
       gl.vertexAttribPointer(physicsShaderProgram.vertexBaryCentricAttribute, model.baricentricBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      gl.enable(gl.BLEND);
+      gl.disable(gl.DEPTH_TEST);
 
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.boundingBoxBufferfacesBuffer);
 
@@ -350,7 +352,7 @@ function InitRender() {
 
     // Initialize the shaders; this is where all the lighting for the
     // vertices and so forth is established.
-    if (physics_debug){
+    if (PHYSICS_DEBUG){
       initPhysicsDebugShaders();
     }
     initShaders();
