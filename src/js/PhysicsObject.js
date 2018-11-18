@@ -1,7 +1,7 @@
 const kTagPhysicsObject = "PhysicsObject";
 var TypeOfBoxCollider = {kInterior : 0, kExeterior : 1, kLast : 2};
 var FixedDeltaTime = 1.0/15.0;  //  Because we do 15 frames per second
-const PHYSICS_DEBUG = true;
+
 
 class PhysicsObject extends Object{
     constructor(model, _TypeOfCollider) {

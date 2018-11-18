@@ -297,8 +297,7 @@ function drawScene() {
     mat4.rotateY(mMatrix, degToRad(obj.rotation[1]));
     mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
     mat4.scale(mMatrix, obj.scale);
-
-    
+    mat4.multiply(mvMatrix, mMatrix, mvMatrix);
 
     if (PHYSICS_DEBUG) {
       gl.useProgram(physicsShaderProgram);
@@ -320,7 +319,6 @@ function drawScene() {
     }
     
     gl.useProgram(shaderProgram);
-    mat4.multiply(mvMatrix, mMatrix, mvMatrix);
 
     // Draw the object by binding the array buffer to the object's vertices
     // array, setting attributes, and pushing it to GL.
