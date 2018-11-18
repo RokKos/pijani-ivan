@@ -199,7 +199,7 @@ function initObjects() {
     kocka1.rotation[1] = 40;
 
     kocka2.position = [-2.5, 0, 0];
-    kocka2.rotation = [40, 0, 0];
+    kocka2.rotation = [40, -20, 0];
     kocka2.scale = [0.7, 0.5, 0.5];
 
 
