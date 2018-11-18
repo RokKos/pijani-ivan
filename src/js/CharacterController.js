@@ -77,6 +77,9 @@ function HandleInput() {
 
         moveCharacter(characterSpeed * 0.01 * forward, characterSpeed * 0.01 * sideways);
     }
+
+    // Physics Debug
+    PHYSICS_DEBUG = document.getElementById("PhysicsDebug").checked;
 }
 
 class PointerLockManager {

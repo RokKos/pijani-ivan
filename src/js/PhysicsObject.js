@@ -16,6 +16,7 @@ class PhysicsObject extends Object{
         let b_minVertex = other.GetMinVertex();
         let b_maxVertex = other.GetMaxVertex();
         
+        // This is because models get async loaded
         var isAPoint = a_minVertex[0] == 0 && a_minVertex[1] == 0 && a_minVertex[2] == 0;
         var isBPoint = b_minVertex[0] == 0 && b_minVertex[1] == 0 && b_minVertex[2] == 0;
         if (isAPoint || isBPoint) {

@@ -1,7 +1,7 @@
 const kTagPhysics = "Physics";
 
 var physicsObject = [];
-const PHYSICS_DEBUG = true;
+var PHYSICS_DEBUG = true;
 
 function InitPhysics() {
     //TODO: Init game parameters and settings

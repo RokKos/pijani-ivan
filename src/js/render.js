@@ -242,7 +242,9 @@ function initObjects() {
     jama.rotation[1] = 90.0;
     jama.position[1] = -2.0;
 
+    kocka1.position[0] = 1;
     kocka1.rotation[1] = 40;
+    
 
     kocka2.position = [-2.5, 0, 0];
     kocka2.rotation = [40, -20, 0];
