@@ -1,11 +1,13 @@
 const kTagMain = "Main";
 
+var PAUSE = false;
 
 function Start() {
     // TODO: - Initiale buffers and drawing stuff
     //       - Initialize physics
     //       - Initialize game parameters
     //       - Initiale controls
+    document.getElementById("Pause").checked = false;
     DebugLog("Start Game", kTagMain, "Start");
     InitRender();
     InitGame();
@@ -21,6 +23,11 @@ function Update() {
     //          - Move character
     //          - Move camera
     //       - Draw stuff on screen
+    PAUSE = document.getElementById("Pause").checked;
+    if (PAUSE){
+        return;
+    }
+
     DebugLog("Update call", kTagMain, "Update");
     HandleInput();
     UpdateGameParameters();

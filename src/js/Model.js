@@ -1,6 +1,7 @@
 const kTagModel = "Model";
 class Model {
-    constructor() {
+    constructor(name) {
+        this.name = name;
         this.verticesBuffer = gl.createBuffer();
         this.normalsBuffer = gl.createBuffer();
         this.facesBuffer = gl.createBuffer();
@@ -8,8 +9,8 @@ class Model {
         this.baricentricBuffer = gl.createBuffer();
         this.boundingBoxBufferVertex = gl.createBuffer();
         this.boundingBoxBufferfacesBuffer = gl.createBuffer();
-        this.minVertex;
-        this.maxVertex;
+        this.minVertex = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
+        this.maxVertex = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
     }
 
     _bindBuffer(buffer, values, item_size){
@@ -57,7 +58,7 @@ class Model {
         let rawFile = new XMLHttpRequest();
         rawFile.open("GET", file, false);
 
-        let model = new Model();
+        let model = new Model(file);
 
         rawFile.onreadystatechange = function() {
             if(rawFile.readyState === 4) {
@@ -69,8 +70,6 @@ class Model {
                     let allBaricenters = [];
                     let baricenterVectors = [[1.0,0.0,0.0], [0.0,1.0,0.0], [0.0,0.0,1.0]];
                     let currBaricenterVector = 0;
-                    this.minVertex = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
-                    this.maxVertex = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
 
                     let readVertices = [];
                     let readNormals = [];
@@ -88,12 +87,12 @@ class Model {
                                 readVertices.push(vert);
 
                                 // Physics purpose
-                                if (this.minVertex[j-1] > vert) {
-                                    this.minVertex[j-1] = vert;
+                                if (model.minVertex[j-1] > vert) {
+                                    model.minVertex[j-1] = vert;
                                 }
 
-                                if (this.maxVertex[j-1] < vert) {
-                                    this.maxVertex[j-1] = vert;
+                                if (model.maxVertex[j-1] < vert) {
+                                    model.maxVertex[j-1] = vert;
                                 }
                                 allBaricenters.push(baricenterVectors[currBaricenterVector][j-1]);
                             }
@@ -158,9 +157,9 @@ class Model {
                         DebugLog(binary, kTagModel, "fromFile");
                         for (var j = 0; j < 3; ++j) {
                             if (binary.charAt(j)=="0") {
-                                allBoundingBoxVertices.push(this.minVertex[j]);
+                                allBoundingBoxVertices.push(model.minVertex[j]);
                             } else {
-                                allBoundingBoxVertices.push(this.maxVertex[j]);
+                                allBoundingBoxVertices.push(model.maxVertex[j]);
                             }
 
                         }
