@@ -15,6 +15,13 @@ class PhysicsObject extends Object{
         let a_maxVertex = this.GetMaxVertex();
         let b_minVertex = other.GetMinVertex();
         let b_maxVertex = other.GetMaxVertex();
+        
+        var isAPoint = a_minVertex[0] == 0 && a_minVertex[1] == 0 && a_minVertex[2] == 0;
+        var isBPoint = b_minVertex[0] == 0 && b_minVertex[1] == 0 && b_minVertex[2] == 0;
+        if (isAPoint || isBPoint) {
+            return false;
+        }
+        
         // Todo: Upostevaj collision type
         if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior || this.TypeOfCollider == TypeOfBoxCollider.kExeterior) {
             return false;
@@ -36,7 +43,7 @@ class PhysicsObject extends Object{
                 if (this.IsInCollisionWith(other)) {
                     DebugLog("Collision" + this.model.name + " with " + other.model.name, kTagPhysicsObject, "PhysicsUpdate");
                     DebugLog("me min:" +this.GetMinVertex() + " max: " + this.GetMaxVertex() + "other min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
-                    //this.velocity = [0.0,0.0,0.0];
+                    this.velocity = [0.0,0.0,0.0];
                 }
 
             }

@@ -15,7 +15,7 @@ function InitPhysics() {
         }
     }
 
-    physicsObject[1].SetVelocity([0.1,0,0]);
+    physicsObject[1].SetVelocity([-0.1,0,0]);
 
 
 }
