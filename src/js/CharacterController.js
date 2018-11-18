@@ -54,9 +54,6 @@ function handleKeyUp(event) {
 }
 
 function HandleInput() {
-<<<<<<< HEAD
-    //TODO: handle input from user
-=======
     if(currentlyPressedKeys[37]) //left
         cameraPosition[0] += 0.05;
     else if(currentlyPressedKeys[39]) //right
@@ -67,5 +64,4 @@ function HandleInput() {
     else if(currentlyPressedKeys[40]) //down
         cameraPosition[2] -= 0.05;
     
->>>>>>> sara
 }

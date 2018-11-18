@@ -1,13 +1,18 @@
-
+const kTagModel = "Model";
 class Model {
     constructor() {
         this.verticesBuffer = gl.createBuffer();
         this.normalsBuffer = gl.createBuffer();
         this.facesBuffer = gl.createBuffer();
+        // Physics
+        this.baricentricBuffer = gl.createBuffer();
+        this.boundingBoxBufferVertex = gl.createBuffer();
+        this.boundingBoxBufferfacesBuffer = gl.createBuffer();
     }
 
     _bindBuffer(buffer, values, item_size){
-        console.log(values.length);
+        DebugLog(values.length, kTagModel, "_bindBuffer");
+        DebugLog(values, kTagModel, "_bindBuffer");
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(values), gl.STATIC_DRAW);
         buffer.itemSize = item_size;
@@ -29,8 +34,20 @@ class Model {
         this._bindBuffer(this.normalsBuffer, normals, 3);
     }
 
+    setBaricentric(baricentric){
+        this._bindBuffer(this.baricentricBuffer, baricentric, 3);
+    }
+
+    setBoundingBox(boundingBox){
+        this._bindBuffer(this.boundingBoxBufferVertex, boundingBox, 3);
+    }
+
     setFaces(faces){
         this._bindElementBuffer(this.facesBuffer, faces);
+    }
+    
+    setBoundingBoxFaces(faces){
+        this._bindElementBuffer(this.boundingBoxBufferfacesBuffer, faces);
     }
 
     // Reads model from file
@@ -47,6 +64,11 @@ class Model {
                     let allVertices = [];
                     let allFaces = [];
                     let allNormals = [];
+                    let allBaricenters = [];
+                    let baricenterVectors = [[1.0,0.0,0.0], [0.0,1.0,0.0], [0.0,0.0,1.0]];
+                    let currBaricenterVector = 0;
+                    let minVertex = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
+                    let maxVertex = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
 
                     let tempNormals = [];
                     let vert2normal = {};
@@ -58,8 +80,21 @@ class Model {
                         // Parse vertex
                         if ("v".localeCompare(elements[i]) == 0){
                             for (let j = 1; j < 4; ++j) {
-                                allVertices.push(parseFloat(elements[i+j]));
+                                let vert = parseFloat(elements[i+j]);
+                                allVertices.push(vert);
+
+                                // Physics purpose
+                                if (minVertex[j-1] > vert) {
+                                    minVertex[j-1] = vert;
+                                }
+
+                                if (maxVertex[j-1] < vert) {
+                                    maxVertex[j-1] = vert;
+                                }
+                                allBaricenters.push(baricenterVectors[currBaricenterVector][j-1]);
                             }
+                            currBaricenterVector += 1;
+                            currBaricenterVector %= 3;
                         } 
                         // Parse face
                         else if ("f".localeCompare(elements[i]) == 0) {
@@ -105,7 +140,80 @@ class Model {
                     model.setVertices(allVertices);
                     model.setFaces(allFaces);
                     model.setNormals(allNormals);
-                
+                    
+                    // Physics
+                    model.setBaricentric(allBaricenters);
+                    let allBoundingBoxVertices = [];
+                    for (var i = 0; i < 8; ++i) {
+                        let binary = i.toString(2).pad(3);
+                        DebugLog(binary, kTagModel, "fromFile");
+                        for (var j = 0; j < 3; ++j) {
+                            if (binary.charAt(j)=="0") {
+                                allBoundingBoxVertices.push(minVertex[j]);
+                            } else {
+                                allBoundingBoxVertices.push(maxVertex[j]);
+                            }
+
+                        }
+                    }
+                    DebugLog(allBoundingBoxVertices, kTagModel, "fromFile");
+                    model.setBoundingBox(allBoundingBoxVertices);
+
+                    /*let allBoundingBoxFaces = [0,1,2,  0,2,3,
+                                               0,4,2,  0,2,6,
+                                               0,4,1,  0,1,5,
+                                               4,5,6,  4,6,7,
+                                               1,5,3,  1,3,7,
+                                               2,6,3,  2,3,7 
+                                              ];
+                    */
+                   
+                   let allBoundingBoxFaces =[2 - 1,
+                   3 - 1,
+                   1 - 1,
+                   4 - 1,
+                   7 - 1,
+                   3 - 1,
+                   8 - 1,
+                   5 - 1,
+                   7 - 1,
+                   6 - 1,
+                   1 - 1,
+                   5 - 1,
+                   7 - 1,
+                   1 - 1,
+                   3 - 1,
+                   4 - 1,
+                   6 - 1,
+                   8 - 1,
+                   2 - 1,
+                   4 - 1,
+                   3 - 1,
+                   4 - 1,
+                   8 - 1,
+                   7 - 1,
+                   8 - 1,
+                   6 - 1,
+                   5 - 1,
+                   6 - 1,
+                   2 - 1,
+                   1 - 1,
+                   7 - 1,
+                   5 - 1,
+                   1 - 1,
+                   4 - 1,
+                   2 - 1,
+                   6 -1];
+                    
+                    /*for (var i = 0; i < 36; i+=4) {
+                        for(var j = 0; j < 4; ++j) {
+                            allBoundingBoxFaces.push(i+(j % 3));
+                        }
+                        allBoundingBoxFaces.push(i+2);
+                        allBoundingBoxFaces.push(i+3);
+                    }*/
+                    DebugLog(allBoundingBoxFaces, kTagModel, "fromFile");
+                    model.setBoundingBoxFaces(allBoundingBoxFaces);
                 }
             }
         }
@@ -114,3 +222,10 @@ class Model {
         return model;
     }
 }
+
+// This adds leading zeros to the front of the string
+String.prototype.pad = function(size) {
+    var s = String(this);
+    while (s.length < (size || 2)) {s = "0" + s;}
+    return s;
+  }

@@ -10,6 +10,7 @@
 		<!-- Our Custom stuff -->
 		<script src="./js/Model.js" type="text/javascript"></script>
 		<script src="./js/Object.js" type="text/javascript"></script>
+		<script src="./js/PhysicsObject.js" type="text/javascript"></script>
         <script src="./js/main.js" type="text/javascript"></script>
         <script src="./js/debug.js" type="text/javascript"></script>
         <script src="./js/render.js" type="text/javascript"></script>
@@ -51,7 +52,43 @@
 				
 				vertNormal = vec4(transformedNormal, 1.0);
 		    }
+		</script>
+		
+
+		<!-- Physics Debug Fragment shader program -->
+	    <script id="physics-debug-shader-fs" type="x-shader/x-fragment">
+			// set medium percision 
+			precision mediump float;
+			varying vec3 vBC;
+
+			void main(void){
+				//gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+				if(any(lessThan(vBC, vec3(0.02)))){
+					gl_FragColor = vec4(0.5, 1.0, 0.0, 1.0);
+				}
+				else{
+					gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+				}
+			}
 	    </script>
+
+    
+	    <!-- Physics Debug  Vertex shader program -->	    
+	    <script id="physics-debug-shader-vs" type="x-shader/x-vertex">
+			varying vec3 vBC;
+			// atributes for setting vertex position and color
+			attribute vec3 aBaryCentric;
+			attribute vec3 aVertexPosition;
+
+		    uniform mat4 uMVMatrix;	// model-view matrix
+			uniform mat4 uPMatrix;	// projection matrix
+			uniform mat3 uNMatrix;	// projection matrix
+			void main(void){
+    			vBC = aBaryCentric;
+    			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			}
+	    </script>
+
 	</head>
 	<body onload="main()">
 		<h1>WebGL - Pijani Ivan</h1>

@@ -2,6 +2,7 @@
 const kTagRender = "Render";
 var gl;
 var shaderProgram;
+var physicsShaderProgram;
 
 var cameraPosition = [0,0,-15];
 var cameraRotation = [0,0,0];
@@ -12,6 +13,8 @@ var models = {};
 
 // Var objects
 var objects = [];
+
+var physics_debug = true;
 
 // Model-view and projection matrix
 var mvMatrixStack = [];
@@ -152,19 +155,63 @@ function initShaders() {
   shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
 }
 
+function initPhysicsDebugShaders() {
+  var p_fragmentShader = getShader(gl, "physics-debug-shader-fs");
+  var p_vertexShader = getShader(gl, "physics-debug-shader-vs");
+  
+  // Create the shader program
+  physicsShaderProgram = gl.createProgram();
+  gl.attachShader(physicsShaderProgram, p_vertexShader);
+  gl.attachShader(physicsShaderProgram, p_fragmentShader);
+  gl.linkProgram(physicsShaderProgram);
+  
+  // If creating the shader program failed, alert
+  if (!gl.getProgramParameter(physicsShaderProgram, gl.LINK_STATUS)) {
+    alert("Unable to initialize the shader program.");
+  }
+  
+  // start using shading program for rendering
+  gl.useProgram(physicsShaderProgram);
+  
+  // store location of aVertexPosition and aVertexNormal variable defined in shader
+  physicsShaderProgram.vertexPositionAttribute = gl.getAttribLocation(physicsShaderProgram, "aVertexPosition");
+  physicsShaderProgram.vertexBaryCentricAttribute = gl.getAttribLocation(physicsShaderProgram, "aBaryCentric");
+  DebugLog(physicsShaderProgram.vertexBaryCentricAttribute, kTagRender, "initPhysicsDebugShaders");
+  DebugLog(physicsShaderProgram.vertexPositionAttribute, kTagRender, "initPhysicsDebugShaders");
+  
+  // turn on vertex position and normals attribute at specified position
+  gl.enableVertexAttribArray(physicsShaderProgram.vertexPositionAttribute);
+  gl.enableVertexAttribArray(physicsShaderProgram.vertexBaryCentricAttribute);
+
+  // store location of aVertexColor variable defined in shader
+  //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+
+  // turn on vertex color attribute at specified position
+  //gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+
+  // store location of uPMatrix variable defined in shader - projection matrix 
+  physicsShaderProgram.pMatrixUniform = gl.getUniformLocation(physicsShaderProgram, "uPMatrix");
+
+  // store location of uMVMatrix variable defined in shader - model-view matrix 
+  physicsShaderProgram.mvMatrixUniform = gl.getUniformLocation(physicsShaderProgram, "uMVMatrix");
+
+  // normal matrix
+  physicsShaderProgram.nMatrixUniform = gl.getUniformLocation(physicsShaderProgram, "uNMatrix");
+}
+
 //
 // setMatrixUniforms
 //
 // Set the uniform values in shaders for model-view and projection matrix.
 //
-function setMatrixUniforms() {
-  gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+function setMatrixUniforms(_shaderProgram) {
+  gl.uniformMatrix4fv(_shaderProgram.pMatrixUniform, false, pMatrix);
+  gl.uniformMatrix4fv(_shaderProgram.mvMatrixUniform, false, mvMatrix);
 
   var normalMatrix = mat3.create();
   mat4.toInverseMat3(mvMatrix, normalMatrix);
   mat3.transpose(normalMatrix);
-  gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
+  gl.uniformMatrix3fv(_shaderProgram.nMatrixUniform, false, normalMatrix);
 }
 
 function degToRad(degrees) {
@@ -241,6 +288,24 @@ function drawScene() {
     mat4.rotateX(mvMatrix, degToRad(obj.rotation[0]));
     mat4.scale(mvMatrix, obj.scale);
 
+    
+
+    if (physics_debug) {
+      gl.useProgram(physicsShaderProgram);
+      gl.bindBuffer(gl.ARRAY_BUFFER, model.boundingBoxBufferVertex);
+      gl.vertexAttribPointer(physicsShaderProgram.vertexPositionAttribute, model.boundingBoxBufferVertex.itemSize, gl.FLOAT, false, 0, 0);  
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, model.baricentricBuffer);
+      gl.vertexAttribPointer(physicsShaderProgram.vertexBaryCentricAttribute, model.baricentricBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.boundingBoxBufferfacesBuffer);
+
+      // Draw the cube.
+      setMatrixUniforms(physicsShaderProgram);
+      gl.drawElements(gl.TRIANGLES, model.boundingBoxBufferfacesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+    }
+    
+    gl.useProgram(shaderProgram);
     // Draw the object by binding the array buffer to the object's vertices
     // array, setting attributes, and pushing it to GL.
     gl.bindBuffer(gl.ARRAY_BUFFER, model.verticesBuffer);
@@ -254,12 +319,15 @@ function drawScene() {
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
     */
-
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.facesBuffer);
 
     // Draw the cube.
-    setMatrixUniforms();
+    setMatrixUniforms(shaderProgram);
     gl.drawElements(gl.TRIANGLES, model.facesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+    
+
+    
+
 
     mvPopMatrix();
   }
@@ -282,7 +350,14 @@ function InitRender() {
 
     // Initialize the shaders; this is where all the lighting for the
     // vertices and so forth is established.
+    if (physics_debug){
+      initPhysicsDebugShaders();
+    }
     initShaders();
+    
+    
+    
+    
     
     // Here's where we call the routine that builds all the objects
     // we'll be drawing.
