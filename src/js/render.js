@@ -6,7 +6,7 @@ var shaderProgram;
 var cameraPosition = [0,0,15];
 var cameraRotation = [0,0,0];
 
-var lightPosition = [0,0,0];
+var lightPosition = [0,0,-15];
 
 // Models
 var models = {};
