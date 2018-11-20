@@ -5,7 +5,7 @@ var FixedDeltaTime = 1.0/15.0;  //  Because we do 15 frames per second
 class PhysicsObject extends Object{
     constructor(model, _TypeOfCollider) {
         super(model);
-        DebugLog(model.minVertex);
+        //DebugLog(model.minVertex);
         this.TypeOfCollider = _TypeOfCollider;
         this.velocity = [0.0, 0.0, 0.0];
     }
@@ -22,11 +22,24 @@ class PhysicsObject extends Object{
         if (isAPoint || isBPoint) {
             return false;
         }
+
+        if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior && this.TypeOfCollider == TypeOfBoxCollider.kExeterior) {
+            return true;
+        }
         
         // Todo: Upostevaj collision type
-        if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior || this.TypeOfCollider == TypeOfBoxCollider.kExeterior) {
-            return false;
+        /*if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior && this.TypeOfCollider == TypeOfBoxCollider.kInterior) {
+            //cddwDebugLog("a: " + a_minVertex  + " " + a_maxVertex + " b " + b_minVertex  + " " + b_maxVertex);
+            return (a_minVertex[0] <= b_minVertex[0] || a_maxVertex[0] >= b_maxVertex[0]) ||
+                   (a_minVertex[1] <= b_minVertex[1] || a_maxVertex[1] >= b_maxVertex[1]) ||
+                   (a_minVertex[2] <= b_minVertex[2] || a_maxVertex[2] >= b_maxVertex[2]);  
         }
+
+        if (this.TypeOfCollider == TypeOfBoxCollider.kExeterior && other.TypeOfCollider == TypeOfBoxCollider.kInterior) {
+            return (b_minVertex[0] <= a_minVertex[0] || b_maxVertex[0] >= a_maxVertex[0]) ||
+                   (b_minVertex[1] <= a_minVertex[1] || b_maxVertex[1] >= a_maxVertex[1]) ||
+                   (b_minVertex[2] <= a_minVertex[2] || b_maxVertex[2] >= a_maxVertex[2]);  
+        }*/
         
         return (a_minVertex[0] <= b_maxVertex[0] && a_maxVertex[0] >= b_minVertex[0]) &&
                (a_minVertex[1] <= b_maxVertex[1] && a_maxVertex[1] >= b_minVertex[1]) &&
@@ -42,8 +55,9 @@ class PhysicsObject extends Object{
             let other = physicsObject[i];
             if(this != other) {
                 if (this.IsInCollisionWith(other)) {
-                    DebugLog("Collision" + this.model.name + " with " + other.model.name, kTagPhysicsObject, "PhysicsUpdate");
-                    DebugLog("me min:" +this.GetMinVertex() + " max: " + this.GetMaxVertex() + "other min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
+                    DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
+                    DebugLog("me min:" +this.GetMinVertex() + " max: " + this.GetMaxVertex());
+                    DebugLog("er min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
                     this.velocity = [0.0,0.0,0.0];
                 }
 

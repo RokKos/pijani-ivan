@@ -16,6 +16,7 @@ function InitInput() {
     DebugLog("Init User Input", kTagInput, "InitInput");
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
+    document.onmousedown = InstantiateBullet;
 
     let plm = new PointerLockManager(canvas, handleMouseMove);
 }
