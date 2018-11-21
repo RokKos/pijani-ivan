@@ -24,11 +24,11 @@
 			precision mediump float;
 
 			varying float vertLight;
-			
+			varying vec3 vertColor;
+
 		    void main(void) {
 	        	// Setting color of fragments to normals
-				vec3 color = vec3(0.2,0.5,0.8);
-		        gl_FragColor = vec4(color*vertLight,1.0);
+		        gl_FragColor = vec4(vertColor*vertLight,1.0);
 		    }
 	    </script>
 
@@ -38,6 +38,7 @@
     		// atributes for setting vertex position and color
 			attribute vec3 aVertexPosition;
 			attribute vec3 aVertexNormal;
+			attribute vec3 aVertexColor;
 
 			uniform mat4 uMMatrix; // model-matrix
 		    uniform mat4 uMVMatrix;	// model-view matrix
@@ -47,6 +48,8 @@
 			uniform vec3 uLightPosition;
 			
 			varying float vertLight;
+			varying vec3 vertColor;
+
 		    // variable for passing color from vertex shader to fragment shader
 		    void main(void) {
 				// calculate the vertex position
@@ -58,6 +61,8 @@
 				vec3 eye = normalize(-vertexPosition);
 				vec3 lightDir = normalize(lightDirection + eye);
 				vertLight = max(dot(transformedNormal, lightDirection), 0.0);
+
+				vertColor = aVertexColor;
 				
 				// vertNormal = vec4(transformedNormal, 1.0);
 		    }

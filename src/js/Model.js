@@ -4,6 +4,7 @@ class Model {
         this.name = name;
         this.verticesBuffer = gl.createBuffer();
         this.normalsBuffer = gl.createBuffer();
+        this.colorsBuffer = gl.createBuffer();
         this.facesBuffer = gl.createBuffer();
         // Physics
         this.baricentricBuffer = gl.createBuffer();
@@ -37,6 +38,10 @@ class Model {
         this._bindBuffer(this.normalsBuffer, normals, 3);
     }
 
+    setColors(colors){
+        this._bindBuffer(this.colorsBuffer, colors, 3);
+    }
+
     setBaricentric(baricentric){
         this._bindBuffer(this.baricentricBuffer, baricentric, 3);
     }
@@ -53,8 +58,88 @@ class Model {
         this._bindElementBuffer(this.boundingBoxBufferfacesBuffer, faces);
     }
 
+    static parseObj(content){
+        let allVertices = [];
+        let allFaces = [];
+        let allNormals = [];
+
+        let readVertices = [];
+        let readNormals = [];
+        let readFaces = [];
+        
+        let allText = content;
+        let elements = allText.replace(/\n/g, " ").split(/\s+/);
+    
+        for (let i = 0; i < elements.length; i+=4) {
+
+            // Parse vertex
+            if ("v".localeCompare(elements[i]) == 0){
+                for (let j = 1; j < 4; ++j) {
+                    let vert = parseFloat(elements[i+j]);
+                    readVertices.push(vert);
+                }
+            } 
+            // Parse face
+            else if ("f".localeCompare(elements[i]) == 0) {
+                for (let j = 1; j < 4; ++j) {
+                    var face_components = elements[i+j].split("//");
+                    let vertex = parseInt(face_components[0]) - 1;
+                    let normal = parseInt(face_components[1]) - 1;
+                    readFaces.push([vertex, normal]);
+                }
+            
+            }
+            // Parse normal
+            else if ("vn".localeCompare(elements[i]) == 0) {
+                for (let j = 1; j < 4; ++j) {
+                    readNormals.push(parseFloat(elements[i+j]));
+                }
+            }else {
+                i -= 3;
+            }
+
+        }
+
+        let faceMap = new Map();
+        let faceMapCount = 0;
+        // Go through faces and populate allVertices, allNormals, allFaces
+        for (let i=0; i<readFaces.length; i++){
+            let faceVN = readFaces[i];
+            let fVertex = faceVN[0];
+            let fNormal = faceVN[1];
+
+            // if (vertex, normal) pair not in map, then add to map
+            if (!faceMap.has(faceVN)){
+                faceMap.set(faceVN, faceMapCount);
+                faceMapCount += 1;
+
+                for (let j=0; j<3; j++){
+                    allVertices.push(readVertices[3*fVertex+j]);
+                    allNormals.push(readNormals[3*fNormal+j]);
+                }
+            }
+
+            allFaces.push(faceMap.get(faceVN));
+        }
+
+        let data = {
+            vertices: allVertices,
+            normals: allNormals,
+            faces: allFaces,
+            colors: []
+        };
+
+        return data;
+    }
+
+    static parseJSON(content){
+        let data = JSON.parse(content);
+        return data;
+    }
+
     // Reads model from file
-    static fromFile(file){
+    static fromFile(file, type){
+        type = type || "obj";
         let rawFile = new XMLHttpRequest();
         rawFile.open("GET", file, false);
 
@@ -64,90 +149,53 @@ class Model {
             if(rawFile.readyState === 4) {
                 if(rawFile.status === 200 || rawFile.status == 0) {
 
-                    let allVertices = [];
-                    let allFaces = [];
-                    let allNormals = [];
+                    // Parse data
+                    let data = {};
+                    if(type == "obj"){
+                        data = Model.parseObj(rawFile.responseText);
+                    }
+                    else if (type == "json"){
+                        data = Model.parseJSON(rawFile.responseText);
+                    }
+
+                    console.log("DATA", type, data);
+
+                    // Set color to white if empty
+                    if(data.colors.length == 0){
+                        for (let i=0; i<data.vertices.length; i++){
+                            data.colors.push(1.0);
+                        }
+                    }
+
+                    // Physics
                     let allBaricenters = [];
                     let baricenterVectors = [[1.0,0.0,0.0], [0.0,1.0,0.0], [0.0,0.0,1.0]];
                     let currBaricenterVector = 0;
 
-                    let readVertices = [];
-                    let readNormals = [];
-                    let readFaces = [];
+                    for (let i=0; i<data.vertices.length; i++){
+                        for (let j=0; j<3; j++) {
+                            let vert = data.vertices[3*i+j];
+                            // Physics purpose
+                            if (model.minVertex[j] > vert) {
+                                model.minVertex[j] = vert;
+                            }
+
+                            if (model.maxVertex[j] < vert) {
+                                model.maxVertex[j] = vert;
+                            }
+                            allBaricenters.push(baricenterVectors[currBaricenterVector][j]);
+                        }
+                        currBaricenterVector += 1;
+                        currBaricenterVector %= 3;
+                    }
+
                     
-                    let allText = rawFile.responseText;
-                    let elements = allText.replace(/\n/g, " ").split(/\s+/);
-                
-                    for (let i = 0; i < elements.length; i+=4) {
-
-                        // Parse vertex
-                        if ("v".localeCompare(elements[i]) == 0){
-                            for (let j = 1; j < 4; ++j) {
-                                let vert = parseFloat(elements[i+j]);
-                                readVertices.push(vert);
-
-                                // Physics purpose
-                                if (model.minVertex[j-1] > vert) {
-                                    model.minVertex[j-1] = vert;
-                                }
-
-                                if (model.maxVertex[j-1] < vert) {
-                                    model.maxVertex[j-1] = vert;
-                                }
-                                allBaricenters.push(baricenterVectors[currBaricenterVector][j-1]);
-                            }
-                            currBaricenterVector += 1;
-                            currBaricenterVector %= 3;
-                        } 
-                        // Parse face
-                        else if ("f".localeCompare(elements[i]) == 0) {
-                            for (let j = 1; j < 4; ++j) {
-                                var face_components = elements[i+j].split("//");
-                                let vertex = parseInt(face_components[0]) - 1;
-                                let normal = parseInt(face_components[1]) - 1;
-                                readFaces.push([vertex, normal]);
-                            }
-                        
-                        }
-                        // Parse normal
-                        else if ("vn".localeCompare(elements[i]) == 0) {
-                            for (let j = 1; j < 4; ++j) {
-                                readNormals.push(parseFloat(elements[i+j]));
-                            }
-                        }else {
-                            i -= 3;
-                        }
-
-                    }
-
-
-
-                    let faceMap = new Map();
-                    let faceMapCount = 0;
-                    // Go through faces and populate allVertices, allNormals, allFaces
-                    for (let i=0; i<readFaces.length; i++){
-                        let faceVN = readFaces[i];
-                        let fVertex = faceVN[0];
-                        let fNormal = faceVN[1];
-
-                        // if (vertex, normal) pair not in map, then add to map
-                        if (!faceMap.has(faceVN)){
-                            faceMap.set(faceVN, faceMapCount);
-                            faceMapCount += 1;
-
-                            for (let j=0; j<3; j++){
-                                allVertices.push(readVertices[3*fVertex+j]);
-                                allNormals.push(readNormals[3*fNormal+j]);
-                            }
-                        }
-
-                        allFaces.push(faceMap.get(faceVN));
-                    }
-
+                    
                     // Assign geometry to model
-                    model.setVertices(allVertices);
-                    model.setFaces(allFaces);
-                    model.setNormals(allNormals);
+                    model.setVertices(data.vertices);
+                    model.setFaces(data.faces);
+                    model.setNormals(data.normals);
+                    model.setColors(data.colors);
                     
                     // Physics
                     model.setBaricentric(allBaricenters);
@@ -167,12 +215,12 @@ class Model {
                     DebugLog(allBoundingBoxVertices, kTagModel, "fromFile");
                     model.setBoundingBox(allBoundingBoxVertices);
                    
-                   let allBoundingBoxFaces =[1,2,0, 3,6,2, 
-                                             7,4,6, 5,0,4,
-                                             6,0,2, 3,5,7,
-                                             1,3,2, 3,7,6,
-                                             7,5,4, 5,1,0,
-                                             6,4,0, 3,1,5];
+                    let allBoundingBoxFaces =[1,2,0, 3,6,2, 
+                                                7,4,6, 5,0,4,
+                                                6,0,2, 3,5,7,
+                                                1,3,2, 3,7,6,
+                                                7,5,4, 5,1,0,
+                                                6,4,0, 3,1,5];
                     
                     DebugLog(allBoundingBoxFaces, kTagModel, "fromFile");
                     model.setBoundingBoxFaces(allBoundingBoxFaces);

@@ -135,10 +135,12 @@ function initShaders() {
   // store location of aVertexPosition and aVertexNormal variable defined in shader
   shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
   shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
+  shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor")
   
   // turn on vertex position and normals attribute at specified position
   gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
   gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+  gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
   // store location of aVertexColor variable defined in shader
   //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
@@ -232,7 +234,9 @@ function degToRad(degrees) {
 // Initialize the objects we'll need.
 //
 function initObjects() {
-    models.jama = Model.fromFile("./assets/models/jama_import.obj");
+    models.jama = Model.fromFile("./assets/models/prehod_in_jama_1.json", "json");
+    // models.jama = Model.fromFile("./assets/models/prehod_in_jama_1.obj", "obj");
+    
     models.kocka = Model.fromFile("./assets/models/test2.obj");
 
     let jama = new PhysicsObject(models.jama, TypeOfBoxCollider.kExeterior);
@@ -319,6 +323,9 @@ function drawScene() {
       // Draw the cube.
       setMatrixUniforms(physicsShaderProgram);
       gl.drawElements(gl.TRIANGLES, model.boundingBoxBufferfacesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+    } else {
+      gl.disable(gl.BLEND);
+      gl.enable(gl.DEPTH_TEST);
     }
     
     gl.useProgram(shaderProgram);
@@ -331,11 +338,12 @@ function drawScene() {
     // Normals
     gl.bindBuffer(gl.ARRAY_BUFFER, model.normalsBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, model.normalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    // Set the colors attribute for the vertices.
-    /*
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    */
+
+    // Colors
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.colorsBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, model.colorsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Faces
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.facesBuffer);
 
     // Draw the cube.
