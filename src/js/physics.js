@@ -33,10 +33,11 @@ function InstantiateBullet() {
     
     bullet.position = [0,0,0];
     bullet.position[0] =  cameraPosition[0];
-    bullet.position[1] =  cameraPosition[1];
-    bullet.position[2] =  cameraPosition[2];
+    bullet.position[1] =  cameraPosition[1] - 0.01;
+    // TODO: Make better offset
+    bullet.position[2] =  cameraPosition[2] + 0.05;
     bullet.rotation = [0, 0, 0];
-    bullet.scale = [0.05, 0.05, 0.3];
+    bullet.scale = [0.01, 0.01, 0.1];
 
     let angle = cameraRotation[1];
     bullet.velocity = [0,0,0];
