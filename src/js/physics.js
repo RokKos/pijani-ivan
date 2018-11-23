@@ -2,6 +2,7 @@ const kTagPhysics = "Physics";
 
 var physicsObject = [];
 var PHYSICS_DEBUG = true;
+var THICKNES_WALLS = 0.3;
 
 function InitPhysics() {
     //TODO: Init game parameters and settings
@@ -53,4 +54,21 @@ function InstantiateBullet() {
     objects.push(bullet);
     DebugLog("Bullet instantiated", kTagPhysics, "InstantiateBullet")
 
+}
+
+function ConstructExteriorPhysicsObject(object) {
+
+    DebugLog("here");
+    DebugLog(models.kocka.minVertex);
+    let spodnjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
+    spodnjaPloskev.position = object.model.minVertex;
+    let a = Math.abs(object.model.minVertex[0] - object.model.maxVertex[0])
+    let b = Math.abs(object.model.minVertex[2] - object.model.maxVertex[2])
+    spodnjaPloskev.scale = [a, THICKNES_WALLS, b];
+    
+    objects.push(spodnjaPloskev);
+
+    //let zgornjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
+    //zgornjaPloskev.position = [8,0,8];
+    //objects.push(zgornjaPloskev);
 }

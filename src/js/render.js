@@ -12,6 +12,7 @@ var lightPosition = [0,0,0];
 
 // Models
 var models = {};
+var modelsLoaded = 0;
 
 // Var objects
 var objects = [];
@@ -233,13 +234,28 @@ function degToRad(degrees) {
 //
 // Initialize the objects we'll need.
 //
-function initObjects() {
+function initModels() {
+    modelsLoaded = 2;
+    DebugLog("Models in line: " + modelsLoaded, kTagRender, "initModels");
     models.jama = Model.fromFile("./assets/models/prehod_in_jama_1.json", "json");
-    // models.jama = Model.fromFile("./assets/models/prehod_in_jama_1.obj", "obj");
     
+    // models.jama = Model.fromFile("./assets/models/prehod_in_jama_1.obj", "obj");
+  
+    DebugLog("Models in line: " + modelsLoaded, kTagRender, "initModels");
     models.kocka = Model.fromFile("./assets/models/test2.obj");
+}
 
-    let jama = new PhysicsObject(models.jama, TypeOfBoxCollider.kExeterior);
+function InitObjects() {
+
+    // HACKY, BUT I don't know how else to handle this model loading
+    if (models.jama == null || models.kocka == null) {
+      DebugLog("DelayInitObjects");
+      setTimeout(InitObjects, 10);
+      return;
+    }
+    
+    let jama = new Object(models.jama);
+    ConstructExteriorPhysicsObject(jama);
     let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let kocka2 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
 
@@ -363,6 +379,16 @@ function drawScene() {
   
 }
 
+function CheckAllModelsLoaded() {
+  DebugLog("Checking Models loaded. Num: " + modelsLoaded, kTagRender, "CheckAllModelsLoaded");
+  if (modelsLoaded == 0) {
+    DebugLog("Initing stuff", kTagRender, "CheckAllModelsLoaded");
+    InitObjects();
+    InitPhysics();
+  }
+
+}
+
 
 function InitRender() {
   DebugLog("Init Render and the buffers", kTagRender, "InitRender");
@@ -390,7 +416,7 @@ function InitRender() {
     
     // Here's where we call the routine that builds all the objects
     // we'll be drawing.
-    initObjects();
+    initModels();
     
   }
 }

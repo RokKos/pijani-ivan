@@ -4,11 +4,14 @@ var FixedDeltaTime = 1.0/15.0;  //  Because we do 15 frames per second
 
 class PhysicsObject extends Object{
     constructor(model, _TypeOfCollider) {
-        super(model);
-        //DebugLog(model.minVertex);
-        this.TypeOfCollider = _TypeOfCollider;
-        this.velocity = [0.0, 0.0, 0.0];
+            DebugLog("here2");
+            super(model);
+            //DebugLog(model.minVertex);
+            this.TypeOfCollider = _TypeOfCollider;
+            this.velocity = [0.0, 0.0, 0.0];
     }
+
+
 
     IsInCollisionWith(other) {
         let a_minVertex = this.GetMinVertex();

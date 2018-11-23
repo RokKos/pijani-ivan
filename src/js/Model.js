@@ -226,6 +226,10 @@ class Model {
                     model.setBoundingBoxFaces(allBoundingBoxFaces);
                 }
             }
+
+            modelsLoaded -= 1;
+            DebugLog("--", kTagModel, "On model ready");
+            CheckAllModelsLoaded();
         }
         rawFile.send(null);
 
