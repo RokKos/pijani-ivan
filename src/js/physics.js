@@ -43,10 +43,7 @@ function InstantiateBullet() {
     bullet.velocity[0] = -Math.sin(toRadian(angle));
     bullet.velocity[2] = -Math.cos(toRadian(angle));
     
-    //TODO rotate bullet
-    //let angleX = cameraRotation[0];
-    //let angleZ = cameraRotation[2];
-    //bullet.rotation[1] = -Math.atan(angleX/angleZ);
+    bullet.rotation[1] = cameraRotation[1];
     bullet.SetName("Bullet_" + physicsObject.length);
     DebugLog(bullet.name + ":" +bullet.velocity, kTagPhysics, "InstantiateBullet");
 
