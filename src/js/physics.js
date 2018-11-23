@@ -61,10 +61,14 @@ function ConstructExteriorPhysicsObject(object) {
     DebugLog("here");
     DebugLog(models.kocka.minVertex);
     let spodnjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
+    let a = Math.abs(object.model.minVertex[0] - object.model.maxVertex[0]);
+    let b = Math.abs(object.model.minVertex[2] - object.model.maxVertex[2]) / 2;
     spodnjaPloskev.position = object.model.minVertex;
-    let a = Math.abs(object.model.minVertex[0] - object.model.maxVertex[0])
-    let b = Math.abs(object.model.minVertex[2] - object.model.maxVertex[2])
+    spodnjaPloskev.position[0] += object.model.maxVertex[0];
+    spodnjaPloskev.position[2] += object.model.maxVertex[2] / 2;
+    spodnjaPloskev.position[1] -= THICKNES_WALLS * 8;
     spodnjaPloskev.scale = [a, THICKNES_WALLS, b];
+    
     
     objects.push(spodnjaPloskev);
 
