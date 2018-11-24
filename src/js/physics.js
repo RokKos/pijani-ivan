@@ -7,16 +7,17 @@ var THICKNES_WALLS = 0.3;
 function InitPhysics() {
     //TODO: Init game parameters and settings
     DebugLog("Init Physics parameters", kTagPhysics, "InitPhysics");
-
+    DebugLog("len objects:" + objects.length, kTagPhysics, "InitPhysics");
     for(let i = 0; i < objects.length; i++){
         let element = objects[i];
+        DebugLog("element name:" + element.name, kTagPhysics, "InitPhysics");
         if (element instanceof PhysicsObject){
             physicsObject.push(element);
             DebugLog("Physics elemetn push");
         }
     }
 
-    physicsObject[1].SetVelocity([0.1,0,0]);
+    //physicsObject[1].SetVelocity([0.1,0,0]);
 
 
 }

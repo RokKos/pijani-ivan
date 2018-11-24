@@ -247,13 +247,6 @@ function initModels() {
 
 function InitObjects() {
 
-    // HACKY, BUT I don't know how else to handle this model loading
-    if (models.jama == null || models.kocka == null) {
-      DebugLog("DelayInitObjects");
-      setTimeout(InitObjects, 10);
-      return;
-    }
-    
     let jama = new Object(models.jama);
     ConstructExteriorPhysicsObject(jama);
     let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
@@ -271,9 +264,16 @@ function InitObjects() {
     kocka2.scale = [0.7, 0.5, 0.5];
 
 
+    CharacterBody = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
+    CharacterBody.scale = [0.5, 2, 0.5];
+    CharacterBody.SetName("CharacterBody");
+
     objects.push(jama);
-    objects.push(kocka1);
-    objects.push(kocka2);
+    //objects.push(kocka1);
+    //objects.push(kocka2);
+    objects.push(CharacterBody);
+    DebugLog("len objects:" + objects.length, kTagRender, "InitModels");
+    
 }
 
 function negate(vector){
@@ -382,6 +382,15 @@ function drawScene() {
 function CheckAllModelsLoaded() {
   DebugLog("Checking Models loaded. Num: " + modelsLoaded, kTagRender, "CheckAllModelsLoaded");
   if (modelsLoaded == 0) {
+
+    // HACKY, BUT I don't know how else to handle this model loading
+    if (models.jama == null || models.kocka == null) {
+      DebugLog("DelayInitObjects", kTagRender, "CheckAllModelsLoaded");
+      setTimeout(CheckAllModelsLoaded, 10);
+      return;
+    }
+
+
     DebugLog("Initing stuff", kTagRender, "CheckAllModelsLoaded");
     InitObjects();
     InitPhysics();
