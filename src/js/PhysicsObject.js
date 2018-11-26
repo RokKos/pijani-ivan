@@ -1,12 +1,9 @@
 const kTagPhysicsObject = "PhysicsObject";
 var TypeOfBoxCollider = {kInterior : 0, kExeterior : 1, kLast : 2};
-var FixedDeltaTime = 1.0/15.0;  //  Because we do 15 frames per second
 
 class PhysicsObject extends Object{
     constructor(model, _TypeOfCollider) {
-            DebugLog("here2");
             super(model);
-            //DebugLog(model.minVertex);
             this.TypeOfCollider = _TypeOfCollider;
             this.velocity = [0.0, 0.0, 0.0];
     }
@@ -56,6 +53,12 @@ class PhysicsObject extends Object{
 
         for (let i = 0; i < physicsObject.length; ++i) {
             let other = physicsObject[i];
+            
+            if (this instanceof BulletObject && other == CharacterBody) {
+                DebugLog(this.constructor.name)
+                continue;
+            }
+
             if(this != other) {
                 if (this.IsInCollisionWith(other)) {
                     DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");

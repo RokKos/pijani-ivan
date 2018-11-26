@@ -316,8 +316,9 @@ function drawScene() {
     let model = obj.model;
 
     mat4.translate(mMatrix, obj.position);
-    //if (obj instanceof PhysicsObject) {
-    //  DebugLog(obj.name + " " + obj.rotation, kTagRender, "drawScene");
+    //DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
+    //if (obj instanceof PhysicsObject || obj instanceof BulletObject) {
+    //  DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
     //}
     
     mat4.rotateZ(mMatrix, degToRad(obj.rotation[2]));
