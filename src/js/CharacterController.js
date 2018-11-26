@@ -9,6 +9,7 @@ var lastMouseY;
 
 var mouseSpeed = 15;
 var characterSpeed = 10;
+var CharacterBody;
 
 
 function InitInput() {
@@ -16,6 +17,7 @@ function InitInput() {
     DebugLog("Init User Input", kTagInput, "InitInput");
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
+    document.onmousedown = InstantiateBullet;
 
     let plm = new PointerLockManager(canvas, handleMouseMove);
 }
@@ -54,6 +56,13 @@ function moveCharacter(forward, sideways){
 
     cameraPosition[0] -= - sideways * Math.cos(toRadian(angle));
     cameraPosition[2] -= sideways * Math.sin(toRadian(angle));
+
+    
+    // TODO FIX THIS
+
+    CharacterBody.position = [cameraPosition[0], CharacterBody.position[1], cameraPosition[2]];
+    DebugLog("Character velocity: " + CharacterBody.velocity);
+
 }
 
 function HandleInput() {
@@ -76,6 +85,12 @@ function HandleInput() {
         forward /= length;
 
         moveCharacter(characterSpeed * 0.01 * forward, characterSpeed * 0.01 * sideways);
+    } else {
+        if (CharacterBody != null) {
+            DebugLog("Stop");
+            CharacterBody.SetVelocity([0,0,0]);
+        }
+
     }
 
     // Physics Debug
