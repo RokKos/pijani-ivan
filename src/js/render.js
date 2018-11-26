@@ -266,6 +266,7 @@ function InitObjects() {
 
     CharacterBody = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     CharacterBody.scale = [1.5, 2, 1.5];
+    CharacterBody.position = [cameraPosition[0], cameraPosition[1], cameraPosition[2]];
     CharacterBody.SetName("CharacterBody");
 
     objects.push(jama);
