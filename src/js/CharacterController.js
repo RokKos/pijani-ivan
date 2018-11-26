@@ -51,10 +51,6 @@ function handleKeyUp(event) {
 function moveCharacter(forward, sideways){
     let angle = cameraRotation[1];
 
-    let oldCameraPosition = [0,0,0];
-    oldCameraPosition[0] =  cameraPosition[0];
-    oldCameraPosition[2] =  cameraPosition[2];
-
     cameraPosition[0] -= forward * Math.sin(toRadian(angle));
     cameraPosition[2] -= forward * Math.cos(toRadian(angle));
 
@@ -64,7 +60,7 @@ function moveCharacter(forward, sideways){
     
     // TODO FIX THIS
 
-    CharacterBody.SetVelocity([100 * (oldCameraPosition[0] - cameraPosition[0]),0, -100 * (oldCameraPosition[2] - cameraPosition[2])]);
+    CharacterBody.position = [cameraPosition[0], CharacterBody.position[1], cameraPosition[2]];
     DebugLog("Character velocity: " + CharacterBody.velocity);
 
 }
