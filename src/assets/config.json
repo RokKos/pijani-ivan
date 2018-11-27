@@ -24,6 +24,11 @@
             "name": "kocka",
             "filename": "assets/models/test2.obj",
             "fileType": "obj"
+        },
+        {
+            "name": "medved",
+            "filename": "assets/models/medved.obj",
+            "fileType": "obj"
         }
     ],
     "level": [
