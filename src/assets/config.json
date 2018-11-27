@@ -1,0 +1,111 @@
+{
+    "models" : [
+        {
+            "name": "levelTileStraight",
+            "filename": "assets/models/level_part_ravni.json",
+            "fileType": "json"
+        },
+        {
+            "name": "levelTileCorner",
+            "filename": "assets/models/level_part_ravni.json",
+            "fileType": "json"
+        },
+        {
+            "name": "levelTileIntersectionX",
+            "filename": "assets/models/level_part_ravni.json",
+            "fileType": "json"
+        },
+        {
+            "name": "levelTileCave",
+            "filename": "assets/models/level_part_jama.json",
+            "fileType": "json"
+        },
+        {
+            "name": "kocka",
+            "filename": "assets/models/test2.obj",
+            "fileType": "obj"
+        }
+    ],
+    "level": [
+        {
+            "grid_xy": [0,0],
+            "tile" : "levelTileCave",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [0,1],
+            "tile" : "levelTileStraight",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [0,2],
+            "tile" : "levelTileCorner",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [1,2],
+            "tile" : "levelTileStraight",
+            "rotation": 90
+        },
+        {
+            "grid_xy": [2,2],
+            "tile" : "levelTileIntersectionX",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [2,3],
+            "tile" : "levelTileStraight",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [2,4],
+            "tile" : "levelTileCave",
+            "rotation": 180
+        },
+        {
+            "grid_xy": [3,2],
+            "tile" : "levelTileCorner",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [3,3],
+            "tile" : "levelTileCorner",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [4,3],
+            "tile" : "levelTileStraight",
+            "rotation": 90
+        },
+        {
+            "grid_xy": [5,3],
+            "tile" : "levelTileCave",
+            "rotation": 270
+        },
+        {
+            "grid_xy": [2,1],
+            "tile" : "levelTileCorner",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [3,1],
+            "tile" : "levelTileStraight",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [4,1],
+            "tile" : "levelTileCorner",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [4,2],
+            "tile" : "levelTileCorner",
+            "rotation": 0
+        },
+        {
+            "grid_xy": [5,2],
+            "tile" : "levelTileStraight",
+            "rotation": 0
+        }
+    ]
+}
