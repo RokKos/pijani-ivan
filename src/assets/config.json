@@ -40,7 +40,7 @@
         {
             "grid_xy": [0,2],
             "model" : "levelTileCorner",
-            "rotation": 0
+            "rotation": 270
         },
         {
             "grid_xy": [1,2],
@@ -65,12 +65,12 @@
         {
             "grid_xy": [3,2],
             "model" : "levelTileCorner",
-            "rotation": 0
+            "rotation": 90
         },
         {
             "grid_xy": [3,3],
             "model" : "levelTileCorner",
-            "rotation": 0
+            "rotation": 270
         },
         {
             "grid_xy": [4,3],
@@ -80,7 +80,7 @@
         {
             "grid_xy": [5,3],
             "model" : "levelTileCave",
-            "rotation": 270
+            "rotation": 90
         },
         {
             "grid_xy": [2,1],
@@ -90,22 +90,22 @@
         {
             "grid_xy": [3,1],
             "model" : "levelTileStraight",
-            "rotation": 0
+            "rotation": 90
         },
         {
             "grid_xy": [4,1],
             "model" : "levelTileCorner",
-            "rotation": 0
+            "rotation": 90
         },
         {
             "grid_xy": [4,2],
             "model" : "levelTileCorner",
-            "rotation": 0
+            "rotation": 270
         },
         {
             "grid_xy": [5,2],
             "model" : "levelTileStraight",
-            "rotation": 0
+            "rotation": 90
         }
     ]
 }
