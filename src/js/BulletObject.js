@@ -21,13 +21,13 @@ class BulletObject extends PhysicsObject{
         this.SetName("Bullet_" + physicsObject.length);
         DebugLog(this.name + ":" +this.velocity, kTagPhysics, "InstantiateBullet");
 
-        this.timeOfLife = 10.0;
+        this.timeOfLife = 100.0;
     }
 
     PhysicsUpdate(){
         super.PhysicsUpdate();
 
-        if (this.velocity == [0,0,0]){
+        if (this.InCollision){
             DebugLog("Destroyed by collision : " + this.name, kTagBullet, "PhysicsUpdate");
             this.DestroyBullet();
             return;
