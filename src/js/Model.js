@@ -143,97 +143,96 @@ class Model {
         let rawFile = new XMLHttpRequest();
         rawFile.open("GET", file, false);
 
-        let model = new Model(file);
+        
 
-        rawFile.onreadystatechange = function() {
-            if(rawFile.readyState === 4) {
-                if(rawFile.status === 200 || rawFile.status == 0) {
-
-                    // Parse data
-                    let data = {};
-                    if(type == "obj"){
-                        data = Model.parseObj(rawFile.responseText);
-                    }
-                    else if (type == "json"){
-                        data = Model.parseJSON(rawFile.responseText);
-                    }
-
-                    console.log("DATA", type, data);
-
-                    // Set color to white if empty
-                    if(data.colors.length == 0){
+        return new Promise(function(resolve, reject){
+            let model = new Model(file);
+            rawFile.onreadystatechange = function() {
+                if(rawFile.readyState === 4) {
+                    if(rawFile.status === 200 || rawFile.status == 0) {
+    
+                        // Parse data
+                        let data = {};
+                        if(type == "obj"){
+                            data = Model.parseObj(rawFile.responseText);
+                        }
+                        else if (type == "json"){
+                            data = Model.parseJSON(rawFile.responseText);
+                        }
+    
+                        console.log("DATA", type, data);
+    
+                        // Set color to white if empty
+                        if(data.colors.length == 0){
+                            for (let i=0; i<data.vertices.length; i++){
+                                data.colors.push(1.0);
+                            }
+                        }
+    
+                        // Physics
+                        let allBaricenters = [];
+                        let baricenterVectors = [[1.0,0.0,0.0], [0.0,1.0,0.0], [0.0,0.0,1.0]];
+                        let currBaricenterVector = 0;
+    
                         for (let i=0; i<data.vertices.length; i++){
-                            data.colors.push(1.0);
-                        }
-                    }
-
-                    // Physics
-                    let allBaricenters = [];
-                    let baricenterVectors = [[1.0,0.0,0.0], [0.0,1.0,0.0], [0.0,0.0,1.0]];
-                    let currBaricenterVector = 0;
-
-                    for (let i=0; i<data.vertices.length; i++){
-                        for (let j=0; j<3; j++) {
-                            let vert = data.vertices[3*i+j];
-                            // Physics purpose
-                            if (model.minVertex[j] > vert) {
-                                model.minVertex[j] = vert;
+                            for (let j=0; j<3; j++) {
+                                let vert = data.vertices[3*i+j];
+                                // Physics purpose
+                                if (model.minVertex[j] > vert) {
+                                    model.minVertex[j] = vert;
+                                }
+    
+                                if (model.maxVertex[j] < vert) {
+                                    model.maxVertex[j] = vert;
+                                }
+                                allBaricenters.push(baricenterVectors[currBaricenterVector][j]);
                             }
-
-                            if (model.maxVertex[j] < vert) {
-                                model.maxVertex[j] = vert;
-                            }
-                            allBaricenters.push(baricenterVectors[currBaricenterVector][j]);
+                            currBaricenterVector += 1;
+                            currBaricenterVector %= 3;
                         }
-                        currBaricenterVector += 1;
-                        currBaricenterVector %= 3;
-                    }
-
-                    
-                    
-                    // Assign geometry to model
-                    model.setVertices(data.vertices);
-                    model.setFaces(data.faces);
-                    model.setNormals(data.normals);
-                    model.setColors(data.colors);
-                    
-                    // Physics
-                    model.setBaricentric(allBaricenters);
-                    let allBoundingBoxVertices = [];
-                    for (var i = 0; i < 8; ++i) {
-                        let binary = i.toString(2).pad(3);
-                        DebugLog(binary, kTagModel, "fromFile");
-                        for (var j = 0; j < 3; ++j) {
-                            if (binary.charAt(j)=="0") {
-                                allBoundingBoxVertices.push(model.minVertex[j]);
-                            } else {
-                                allBoundingBoxVertices.push(model.maxVertex[j]);
+    
+                        
+                        
+                        // Assign geometry to model
+                        model.setVertices(data.vertices);
+                        model.setFaces(data.faces);
+                        model.setNormals(data.normals);
+                        model.setColors(data.colors);
+                        
+                        // Physics
+                        model.setBaricentric(allBaricenters);
+                        let allBoundingBoxVertices = [];
+                        for (var i = 0; i < 8; ++i) {
+                            let binary = i.toString(2).pad(3);
+                            DebugLog(binary, kTagModel, "fromFile");
+                            for (var j = 0; j < 3; ++j) {
+                                if (binary.charAt(j)=="0") {
+                                    allBoundingBoxVertices.push(model.minVertex[j]);
+                                } else {
+                                    allBoundingBoxVertices.push(model.maxVertex[j]);
+                                }
+    
                             }
-
                         }
+                        DebugLog(allBoundingBoxVertices, kTagModel, "fromFile");
+                        model.setBoundingBox(allBoundingBoxVertices);
+                       
+                        let allBoundingBoxFaces =[1,2,0, 3,6,2, 
+                                                    7,4,6, 5,0,4,
+                                                    6,0,2, 3,5,7,
+                                                    1,3,2, 3,7,6,
+                                                    7,5,4, 5,1,0,
+                                                    6,4,0, 3,1,5];
+                        
+                        DebugLog(allBoundingBoxFaces, kTagModel, "fromFile");
+                        model.setBoundingBoxFaces(allBoundingBoxFaces);
+                        resolve(model);
                     }
-                    DebugLog(allBoundingBoxVertices, kTagModel, "fromFile");
-                    model.setBoundingBox(allBoundingBoxVertices);
-                   
-                    let allBoundingBoxFaces =[1,2,0, 3,6,2, 
-                                                7,4,6, 5,0,4,
-                                                6,0,2, 3,5,7,
-                                                1,3,2, 3,7,6,
-                                                7,5,4, 5,1,0,
-                                                6,4,0, 3,1,5];
-                    
-                    DebugLog(allBoundingBoxFaces, kTagModel, "fromFile");
-                    model.setBoundingBoxFaces(allBoundingBoxFaces);
                 }
+                reject();
             }
-
-            modelsLoaded -= 1;
-            DebugLog("--", kTagModel, "On model ready");
-            CheckAllModelsLoaded();
-        }
-        rawFile.send(null);
-
-        return model;
+            rawFile.send(null);
+        });
     }
 }
 
