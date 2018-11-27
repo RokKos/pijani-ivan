@@ -266,6 +266,7 @@ function InitObjects() {
 
     CharacterBody = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     CharacterBody.scale = [1.5, 2, 1.5];
+    CharacterBody.position = [cameraPosition[0], cameraPosition[1], cameraPosition[2]];
     CharacterBody.SetName("CharacterBody");
 
     objects.push(jama);
@@ -315,8 +316,9 @@ function drawScene() {
     let model = obj.model;
 
     mat4.translate(mMatrix, obj.position);
-    //if (obj instanceof PhysicsObject) {
-    //  DebugLog(obj.name + " " + obj.rotation, kTagRender, "drawScene");
+    //DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
+    //if (obj instanceof PhysicsObject || obj instanceof BulletObject) {
+    //  DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
     //}
     
     mat4.rotateZ(mMatrix, degToRad(obj.rotation[2]));
@@ -329,8 +331,10 @@ function drawScene() {
     // Don't draw character collider because then you cannot see anything
     if (obj == CharacterBody){
       mvPopMatrix();
-      return;
+      continue;
     }
+
+    //DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
 
     if (PHYSICS_DEBUG) {
       gl.useProgram(physicsShaderProgram);

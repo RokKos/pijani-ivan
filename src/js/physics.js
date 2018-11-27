@@ -1,8 +1,10 @@
+
 const kTagPhysics = "Physics";
 
 var physicsObject = [];
 var PHYSICS_DEBUG = true;
 var THICKNES_WALLS = 0.3;
+var FixedDeltaTime = 1.0/15.0;  //  Because we do 15 frames per second
 
 function InitPhysics() {
     //TODO: Init game parameters and settings
@@ -31,29 +33,13 @@ function CalculatePhysics() {
 }
 
 function InstantiateBullet() {
-    let bullet = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
-    
-    bullet.position = [0,0,0];
-    bullet.position[0] =  cameraPosition[0];
-    bullet.position[1] =  cameraPosition[1] - 0.01;
-    // TODO: Make better offset
-    bullet.position[2] =  cameraPosition[2] + 0.05;
-    bullet.rotation = [0, 0, 0];
-    bullet.scale = [0.01, 0.01, 0.1];
-
-    let angle = cameraRotation[1];
-    bullet.velocity = [0,0,0];
-    bullet.velocity[0] = -Math.sin(toRadian(angle));
-    bullet.velocity[2] = -Math.cos(toRadian(angle));
-    
-    bullet.rotation[1] = cameraRotation[1];
-    bullet.SetName("Bullet_" + physicsObject.length);
-    DebugLog(bullet.name + ":" +bullet.velocity, kTagPhysics, "InstantiateBullet");
-
+    let bullet = new BulletObject(models.kocka, TypeOfBoxCollider.kInterior);
 
     physicsObject.push(bullet);
+    DebugLog(objects.length);
     objects.push(bullet);
-    DebugLog("Bullet instantiated", kTagPhysics, "InstantiateBullet")
+    DebugLog(bullet.name + " instantiated", kTagPhysics, "InstantiateBullet")
+    DebugLog(objects.length);
 
 }
 
@@ -76,4 +62,8 @@ function ConstructExteriorPhysicsObject(object) {
     //let zgornjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     //zgornjaPloskev.position = [8,0,8];
     //objects.push(zgornjaPloskev);
+}
+
+function DotProduct(a,b){
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }

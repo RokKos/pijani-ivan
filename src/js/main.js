@@ -28,7 +28,7 @@ function Update() {
         return;
     }
 
-    DebugLog("Update call", kTagMain, "Update");
+    //DebugLog("Update call", kTagMain, "Update");
     HandleInput();
     UpdateGameParameters();
     CalculatePhysics();
