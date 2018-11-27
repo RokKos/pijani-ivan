@@ -1,3 +1,4 @@
+
 const kTagPhysics = "Physics";
 
 var physicsObject = [];
@@ -61,4 +62,8 @@ function ConstructExteriorPhysicsObject(object) {
     //let zgornjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     //zgornjaPloskev.position = [8,0,8];
     //objects.push(zgornjaPloskev);
+
+    function DotProduct(a,b){
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    }
 }
