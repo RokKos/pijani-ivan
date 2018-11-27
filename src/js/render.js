@@ -331,8 +331,10 @@ function drawScene() {
     // Don't draw character collider because then you cannot see anything
     if (obj == CharacterBody){
       mvPopMatrix();
-      return;
+      continue;
     }
+
+    //DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
 
     if (PHYSICS_DEBUG) {
       gl.useProgram(physicsShaderProgram);
