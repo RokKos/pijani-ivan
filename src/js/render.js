@@ -257,12 +257,18 @@ function InitObjects() {
 
     kocka1.position[0] = 1;
     kocka1.rotation[1] = 40;
+    //kocka1.velocity = [-1.0, 0,0];
     
 
     kocka2.position = [-2.5, 0, 0];
     kocka2.rotation = [40, -20, 0];
     kocka2.scale = [0.7, 0.5, 0.5];
     kocka2.velocity = [1.0, 0,0];
+    kocka2.mass = 4;
+    kocka1.mass = 100;
+
+    kocka2.restitution = 0.5;
+    kocka1.restitution = 1.5;
 
 
     CharacterBody = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
