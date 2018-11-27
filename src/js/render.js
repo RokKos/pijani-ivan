@@ -5,7 +5,7 @@ var gl;
 var shaderProgram;
 var physicsShaderProgram;
 
-var cameraPosition = [0,0,5];
+var cameraPosition = [0,0,0];
 var cameraRotation = [0,0,0];
 
 var lightPosition = [0,0,0];
@@ -229,31 +229,56 @@ function degToRad(degrees) {
     return degrees * Math.PI / 180;
 }
 
-//
-// initObjects
-//
-// Initialize the objects we'll need.
-//
-function initModels() {
-    modelsLoaded = 2;
-    DebugLog("Models in line: " + modelsLoaded, kTagRender, "initModels");
-    models.jama = Model.fromFile("./assets/models/prehod_in_jama_1.json", "json");
-    
-    // models.jama = Model.fromFile("./assets/models/prehod_in_jama_1.obj", "obj");
-  
-    DebugLog("Models in line: " + modelsLoaded, kTagRender, "initModels");
-    models.kocka = Model.fromFile("./assets/models/test2.obj");
+function initLevel(level_tiles){
+  let tileSize = 16.0;
+  // let levelObjects = [];
+  for(let i=0; i<level_tiles.length; i++){
+    let tile = level_tiles[i];
+
+    // set model
+    let tileObject = new Object(models[tile.model]);
+
+    // set position
+    tileObject.position[0] = tile.grid_xy[0] * tileSize;
+    tileObject.position[1] = -2.0;
+    tileObject.position[2] = - tile.grid_xy[1] * tileSize;
+
+    // set rotation
+    tileObject.rotation[1] = tile.rotation;
+
+    objects.push(tileObject);
+  }
+}
+
+function initModels(models_arr) {
+    let model_promises = [];
+    for(let i=0; i<models_arr.length; i++){
+      let model_def = models_arr[i];
+      let model_promise = Model.fromFile(model_def.filename, model_def.fileType);
+      model_promises.push(model_promise);
+
+      model_promise.then(function(model){
+        models[model_def.name] = model;
+      });
+    }
+
+    return Promise.all(model_promises);
 }
 
 function InitObjects() {
 
-    let jama = new Object(models.jama);
-    ConstructExteriorPhysicsObject(jama);
+    // let jama = new Object(models.part_jama);
+    // let jama2 = new Object(models.part_ravni);
+
+    // ConstructExteriorPhysicsObject(jama);
     let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let kocka2 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
 
-    jama.rotation[1] = 90.0;
-    jama.position[1] = -2.0;
+
+    // jama.position[1] = -2.0;
+
+    // jama2.position[1] = -2.0
+    // jama2.position[2] = -16.0;
 
     kocka1.position[0] = 1;
     kocka1.rotation[1] = 40;
@@ -269,7 +294,10 @@ function InitObjects() {
     CharacterBody.position = [cameraPosition[0], cameraPosition[1], cameraPosition[2]];
     CharacterBody.SetName("CharacterBody");
 
-    objects.push(jama);
+    console.log(CharacterBody);
+
+    // objects.push(jama);
+    // objects.push(jama2);
     objects.push(kocka1);
     objects.push(kocka2);
     objects.push(CharacterBody);
@@ -389,23 +417,22 @@ function drawScene() {
   
 }
 
-function CheckAllModelsLoaded() {
-  DebugLog("Checking Models loaded. Num: " + modelsLoaded, kTagRender, "CheckAllModelsLoaded");
-  if (modelsLoaded == 0) {
+function loadConfig(path){
+  let rawFile = new XMLHttpRequest();
+  rawFile.open("GET", path, false);
 
-    // HACKY, BUT I don't know how else to handle this model loading
-    if (models.jama == null || models.kocka == null) {
-      DebugLog("DelayInitObjects", kTagRender, "CheckAllModelsLoaded");
-      setTimeout(CheckAllModelsLoaded, 10);
-      return;
+  return new Promise(function(resolve, reject){
+    rawFile.onreadystatechange = function() {
+      if(rawFile.readyState === 4) {
+        if(rawFile.status === 200 || rawFile.status == 0) {
+          let data = JSON.parse(rawFile.responseText);
+          resolve(data);
+        }
+      }
+      reject();
     }
-
-
-    DebugLog("Initing stuff", kTagRender, "CheckAllModelsLoaded");
-    InitObjects();
-    InitPhysics();
-  }
-
+    rawFile.send(null);
+  });
 }
 
 
@@ -431,11 +458,21 @@ function InitRender() {
     
     
     
-    
+    let config = null;
+    loadConfig("assets/config.json")
+    .then(conf=>{
+      config = conf;
+      return initModels(config.models);
+    })
+    .then(function(){
+      initLevel(config.level);
+      InitObjects();
+      InitPhysics();
+    });
     
     // Here's where we call the routine that builds all the objects
     // we'll be drawing.
-    initModels();
+    
     
   }
 }
