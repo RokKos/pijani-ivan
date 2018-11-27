@@ -58,7 +58,7 @@ class PhysicsObject extends Object{
             let other = physicsObject[i];
             
             if (this instanceof BulletObject && other == CharacterBody) {
-                DebugLog(this.constructor.name + " " + this.velocity, kTagPhysicsObject, "PhysicsUpdate");
+                //DebugLog(this.constructor.name + " " + this.velocity, kTagPhysicsObject, "PhysicsUpdate");
                 continue;
             }
 
@@ -68,8 +68,10 @@ class PhysicsObject extends Object{
                     DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
                     DebugLog("me min:" +this.GetMinVertex() + " max: " + this.GetMaxVertex());
                     DebugLog("er min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
-                    //this.velocity = [0.0,0.0,0.0];
-                    this.ResolveCollision(other);
+                    
+                    if (this.velocity[0] != 0 || this.velocity[1] != 0 || this.velocity[2] != 0){
+                        this.ResolveCollision(other);
+                    }
                 }
 
             }
@@ -114,9 +116,10 @@ class PhysicsObject extends Object{
 
         let calculatedNormal = this.GetCollisionNormal(this, other);
         collisionNormal[0] = calculatedNormal[0];
-        collisionNormal[2] = calculatedNormal[2];
+        collisionNormal[2] = calculatedNormal[1];
+        DebugLog("Collision normal: " + collisionNormal, kTagPhysicsObject, "ResolveCollision");
 
-    
+        DebugLog("Relative velocity: " + relativeVelocity, kTagPhysicsObject, "ResolveCollision");
         // Calculate relative velocity in terms of the normal direction
         let velAlongNormal = DotProduct(relativeVelocity, collisionNormal);
         
@@ -124,34 +127,46 @@ class PhysicsObject extends Object{
         if(velAlongNormal > 0){
             return;
         }
-        
+        DebugLog("velAlongNormal: " + velAlongNormal, kTagPhysicsObject, "ResolveCollision");
         // Calculate restitution
         let minRes = Math.min( this.restitution, other.restitution);
         
         // Calculate impulse scalar
         let impulseScalar = -(1 + minRes) * velAlongNormal;
         impulseScalar /= 1 / this.mass + 1 / other.mass;
-        
+        DebugLog("Impulse scalar: " + impulseScalar, kTagPhysicsObject, "ResolveCollision");
         // Apply impulse
-        let impulse = [impulseScalar * collisionNormal[0], impulseScalar * collisionNormal[1]];
-        this.velocity[0] -= 1 / this.mass * impulse[0];
-        this.velocity[2] -= 1 / this.mass * impulse[2];
-        other.velocity[0] += 1 / other.mass * impulse[0];
-        other.velocity[2] += 1 / other.mass * impulse[2];
+        let impulse = [impulseScalar * collisionNormal[0], impulseScalar * collisionNormal[2]];
+        DebugLog("Impulse vector: " + impulse, kTagPhysicsObject, "ResolveCollision");
+        
+        if (impulse[0] != 0) {
+            this.velocity[0] -= 1 / this.mass * impulse[0];
+            other.velocity[0] += 1 / other.mass * impulse[0];
+        }
+
+        if (impulse[1] != 0) {
+            this.velocity[2] -= 1 / this.mass * impulse[1];
+            other.velocity[2] += 1 / other.mass * impulse[1];
+        }
+        
+        DebugLog("Me velocity" + this.velocity, kTagPhysicsObject, "ResolveCollision");
+        DebugLog("Other velocity" + this.velocity, kTagPhysicsObject, "ResolveCollision");
     }
 
     // This two vector consisit of minPosition of element and its extends(width and height)
     // We will only check in X and Z cordinate
     GetCollisionNormal(objA, objB){
-        
+        let minVertexA = objA.GetMinVertex();
+        let minVertexB = objB.GetMinVertex();
 
-        let leftBottomA = [objA.model.minVertex[0], objA.model.minVertex[1]];
+        let leftBottomA = [minVertexA[0], minVertexA[1]];
         let widthA = Math.abs(objA.model.minVertex[0] - objA.model.maxVertex[0]);
         let heightA = Math.abs(objA.model.minVertex[2] - objA.model.maxVertex[2]);
         let velXA = objA.velocity[0];
         let velZA = objA.velocity[2];
+        DebugLog("objA: " + objA.velocity + " objB: " + objB.velocity, kTagPhysicsObject, "GetCollisionNormal");
 
-        let leftBottomB = [objB.model.minVertex[0], objB.model.minVertex[1]];
+        let leftBottomB = [minVertexB[0], minVertexB[1]];
         let widthB = Math.abs(objB.model.minVertex[0] - objB.model.maxVertex[0]);
         let heightB = Math.abs(objB.model.minVertex[2] - objB.model.maxVertex[2]);
 
@@ -160,6 +175,12 @@ class PhysicsObject extends Object{
 
         let yInvEntry;
         let yInvExit;
+
+        DebugLog("leftBottomA: " + leftBottomA + " leftBottomB: " + leftBottomB, kTagPhysicsObject, "GetCollisionNormal")
+
+
+        DebugLog("widthA: " + widthA + " heightA: " + heightA, kTagPhysicsObject, "GetCollisionNormal");
+        DebugLog("widthB: " + widthB + " heightB: " + heightB, kTagPhysicsObject, "GetCollisionNormal");
 
         // find the distance between the objects on the near and far sides for both x and y
         if (velXA > 0.0){
@@ -179,6 +200,9 @@ class PhysicsObject extends Object{
             yInvEntry = (leftBottomB[1] + heightB) - leftBottomA[1];
             yInvExit = leftBottomB[1] - (leftBottomA[1] + heightA);
         }
+
+        DebugLog("xInvEntry: " + xInvEntry + " xInvExit: " + xInvExit, kTagPhysicsObject, "GetCollisionNormal");
+        DebugLog("yInvEntry: " + yInvEntry + " yInvExit: " + yInvExit, kTagPhysicsObject, "GetCollisionNormal");
 
         // find time of collision and time of leaving for each axis (if statement is to prevent divide by zero)
         let xEntry;
@@ -203,13 +227,17 @@ class PhysicsObject extends Object{
             yEntry = yInvEntry / velZA;
             yExit = yInvExit / velZA;
         }
+        DebugLog("velXA: " + velXA + " velZA: " + velZA, kTagPhysicsObject, "GetCollisionNormal");
+        DebugLog("xEntry: " + xEntry + " yEntry: " + yEntry, kTagPhysicsObject, "GetCollisionNormal");
+        DebugLog("xExit: " + xExit + " yExit: " + yExit, kTagPhysicsObject, "GetCollisionNormal");
 
         // find the earliest/latest times of collision
         let entryTime = Math.max(xEntry, yEntry);
         let exitTime = Math.min(xExit, yExit);
 
+        DebugLog("Entry time: " + entryTime + " Exit time: " + exitTime, kTagPhysicsObject, "GetCollisionNormal");
         // if there was no collision
-        if (entryTime > exitTime || xEntry < 0.0 && yEntry < 0.0 || xEntry > 1.0 || yEntry > 1.0) {
+        if (entryTime > exitTime){// || xEntry < 0.0 && yEntry < 0.0 || xEntry > 1.0 || yEntry > 1.0) {
             // return no normal
             return [0,0];
         } else {
