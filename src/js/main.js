@@ -36,7 +36,8 @@ function Update() {
     CalculatePhysics();
     // Move objects -> Probably done from renderer
     drawScene();
-    
+
+    _animateFlash();
 }
 
 

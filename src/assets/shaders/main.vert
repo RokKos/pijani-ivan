@@ -10,6 +10,8 @@ uniform mat3 uNMatrix;	// projection matrix
 
 uniform vec3 uLightPosition;
 
+uniform float uLightIntensity;
+
 varying float vertLight;
 varying float vertLightIntensity;
 varying vec3 vertColor;
@@ -28,8 +30,8 @@ void main(void) {
     vertLight = max(dot(transformedNormal, lightDirection), 0.0);
 
     float distanceToLight = length(toLight)+0.001;
-    float squareDistance = 1.0/(distanceToLight*distanceToLight);
-    vertLightIntensity = min(1.0, 40.0*squareDistance);
+    float squareDistance = 1.0/(distanceToLight * distanceToLight);
+    vertLightIntensity = uLightIntensity * min(1.0, 100.0 * squareDistance);
 
     vertColor = aVertexColor;
     

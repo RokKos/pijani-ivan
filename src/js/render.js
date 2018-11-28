@@ -10,6 +10,12 @@ var cameraRotation = [0,0,0];
 
 
 var lightPosition = [0,0,0];
+var flashAnimation = {
+  duration: 400.0,
+  maxIntensity: 6.0,
+  normalIntensity: 0.5
+};
+var lightIntensity = flashAnimation.normalIntensity;
 
 // Models
 var models = {};
@@ -142,6 +148,7 @@ function initMainShaders(vertexShader, fragmentShader) {
   shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
 
   shaderProgram.lightPositionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
+  shaderProgram.lightIntensityUniform = gl.getUniformLocation(shaderProgram, "uLightIntensity");
 }
 
 function initPhysicsDebugShaders(vertexShader, fragmentShader) {
@@ -199,7 +206,9 @@ function setMatrixUniforms(_shaderProgram) {
   mat4.toInverseMat3(mvMatrix, normalMatrix);
   mat3.transpose(normalMatrix);
   gl.uniformMatrix3fv(_shaderProgram.nMatrixUniform, false, normalMatrix);
+
   gl.uniform3f(_shaderProgram.lightPositionUniform, lightPosition[0], lightPosition[1], lightPosition[2]);
+  gl.uniform1f(_shaderProgram.lightIntensityUniform, lightIntensity);
 }
 
 function degToRad(degrees) {
@@ -463,6 +472,30 @@ function readFile(file){
     }
     rawFile.send(null);
   });
+}
+
+function startFlashAnimation(){
+  flashAnimation.start = new Date();
+}
+
+function _animateFlash(){
+  if(flashAnimation.start === undefined)
+    return;
+
+  let deltatime = (new Date()) - flashAnimation.start;
+
+  console.log(deltatime, flashAnimation);
+
+  let t = flashAnimation.duration;
+  let x = deltatime;
+  let c = flashAnimation.maxIntensity;
+  let a =  (-c/(t*t));
+  lightIntensity = flashAnimation.normalIntensity + a*x*x + c;
+
+  if (lightIntensity < flashAnimation.normalIntensity){
+    flashAnimation.start = undefined;
+    lightIntensity = flashAnimation.normalIntensity;
+  }
 }
 
 function InitRender() {
