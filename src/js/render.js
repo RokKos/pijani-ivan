@@ -8,6 +8,7 @@ var physicsShaderProgram;
 var cameraPosition = [0,0,0];
 var cameraRotation = [0,0,0];
 
+
 var lightPosition = [0,0,0];
 
 // Models
@@ -271,30 +272,32 @@ function InitObjects() {
     // let jama2 = new Object(models.part_ravni);
 
     // ConstructExteriorPhysicsObject(jama);
-    let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
+    //let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let kocka2 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
-
+    let medved = new BearObject(models.medved, TypeOfBoxCollider.kInterior);
+    medved.position = [-2.5, -1, 2];
+    medved.velocity = [0.01, 0, 0.01];
+    medved.mass = 20;
 
     // jama.position[1] = -2.0;
 
     // jama2.position[1] = -2.0
     // jama2.position[2] = -16.0;
 
-    kocka1.position[0] = 1;
-    kocka1.rotation[1] = 40;
+    //kocka1.position[0] = 1;
+    //kocka1.rotation[1] = 40;
     //kocka1.velocity = [-1.0, 0,0];
     
 
     kocka2.position = [-2.5, 0, 0];
     kocka2.rotation = [40, -20, 0];
     kocka2.scale = [0.7, 0.5, 0.5];
-    kocka2.velocity = [1.0, 0,0];
+    //kocka2.velocity = [1.0, 0,0];
     kocka2.mass = 4;
-    kocka1.mass = 100;
+    //kocka1.mass = 100;
 
     kocka2.restitution = 0.5;
-    kocka1.restitution = 1.5;
-
+    //kocka1.restitution = 1.5;
 
     CharacterBody = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     CharacterBody.scale = [1.5, 2, 1.5];
@@ -305,9 +308,10 @@ function InitObjects() {
 
     // objects.push(jama);
     // objects.push(jama2);
-    objects.push(kocka1);
-    objects.push(kocka2);
+    //objects.push(kocka1);
+    //objects.push(kocka2);
     objects.push(CharacterBody);
+    objects.push(medved);
     DebugLog("len objects:" + objects.length, kTagRender, "InitModels");
     
 }

@@ -11,6 +11,7 @@ function Start() {
     DebugLog("Start Game", kTagMain, "Start");
     InitRender();
     InitGame();
+    InitSounds();
     //InitPhysics();
     InitInput();
 }

@@ -42,6 +42,10 @@ function toRadian(degrees){
 //tipkovnica
 function handleKeyDown(event) {
     currentlyPressedKeys[event.keyCode] = true;
+
+    if (!IsBackgroundMusicPlaying) {
+        BackgroundMusic.play();
+    }
 }
 
 function handleKeyUp(event) {

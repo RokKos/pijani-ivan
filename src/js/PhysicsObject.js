@@ -9,6 +9,7 @@ class PhysicsObject extends Object{
             this.InCollision = false;
             this.restitution = 1 / (this.scale[0] * this.scale[1] * this.scale[2]);
             this.mass = this.scale[0] * this.scale[1] * this.scale[2];
+            this.collidetWith = [];  // Physics object that collidet this frame
     }
 
 
@@ -26,9 +27,9 @@ class PhysicsObject extends Object{
             return false;
         }
 
-        if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior && this.TypeOfCollider == TypeOfBoxCollider.kExeterior) {
+        /*if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior && this.TypeOfCollider == TypeOfBoxCollider.kExeterior) {
             return true;
-        }
+        }*/
         
         // Todo: Upostevaj collision type
         /*if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior && this.TypeOfCollider == TypeOfBoxCollider.kInterior) {
@@ -44,29 +45,36 @@ class PhysicsObject extends Object{
                    (b_minVertex[2] <= a_minVertex[2] || b_maxVertex[2] >= a_maxVertex[2]);  
         }*/
         
-        return (a_minVertex[0] <= b_maxVertex[0] && a_maxVertex[0] >= b_minVertex[0]) &&
-               (a_minVertex[1] <= b_maxVertex[1] && a_maxVertex[1] >= b_minVertex[1]) &&
-               (a_minVertex[2] <= b_maxVertex[2] && a_maxVertex[2] >= b_minVertex[2]);
+        //return (a_minVertex[0] <= b_maxVertex[0] && a_maxVertex[0] >= b_minVertex[0]) &&
+        //       (a_minVertex[1] <= b_maxVertex[1] && a_maxVertex[1] >= b_minVertex[1]) &&
+        //       (a_minVertex[2] <= b_maxVertex[2] && a_maxVertex[2] >= b_minVertex[2]);
+        return (this.position[0] <= other.position[0] + other.GetWidth() && this.position[0] + + this.GetWidth() >= other.position[0] &&
+                this.position[1] <= other.position[1] + other.GetWidth() && this.position[1] + + this.GetWidth() >= other.position[1] &&
+                this.position[2] <= other.position[2] + other.GetWidth() && this.position[2] + + this.GetWidth() >= other.position[2]);
+
     }
 
     PhysicsUpdate(){
         this.position[0] += this.velocity[0] * FixedDeltaTime;
         this.position[1] += this.velocity[1] * FixedDeltaTime;
         this.position[2] += this.velocity[2] * FixedDeltaTime;
+        this.collidetWith = [];
 
         for (let i = 0; i < physicsObject.length; ++i) {
             let other = physicsObject[i];
             
-            if (this instanceof BulletObject && other == CharacterBody) {
-                //DebugLog(this.constructor.name + " " + this.velocity, kTagPhysicsObject, "PhysicsUpdate");
+            if (this instanceof BulletObject && other == CharacterBody || other instanceof BulletObject && this == CharacterBody) {
                 continue;
             }
 
             if(this != other) {
                 if (this.IsInCollisionWith(other)) {
                     this.InCollision = true;
+                    if (this instanceof BulletObject && other instanceof BearObject) {
+                        other.loseLife();
+                    }
                     DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
-                    DebugLog("me min:" +this.GetMinVertex() + " max: " + this.GetMaxVertex());
+                    DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
                     DebugLog("er min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
                     
                     if (this.velocity[0] != 0 || this.velocity[1] != 0 || this.velocity[2] != 0){
@@ -101,6 +109,18 @@ class PhysicsObject extends Object{
 
     GetMaxVertex () {
         return this.GetVectorInWordSpace(this.model.maxVertex);
+    }
+
+    GetWidth(){
+        return Math.abs(this.model.minVertex[0] - this.model.maxVertex[0]) * this.scale[0];
+    }
+
+    GetHeight(){
+        return Math.abs(this.model.minVertex[1] - this.model.maxVertex[1]) * this.scale[0];
+    }
+
+    GetDepth(){
+        return Math.abs(this.model.minVertex[2] - this.model.maxVertex[2]) * this.scale[0];
     }
 
 
@@ -160,19 +180,19 @@ class PhysicsObject extends Object{
     // This two vector consisit of minPosition of element and its extends(width and height)
     // We will only check in X and Z cordinate
     GetCollisionNormal(objA, objB){
-        let minVertexA = objA.GetMinVertex();
-        let minVertexB = objB.GetMinVertex();
+        let minVertexA = [objA.position[0], objA.position[2]]; //objA.GetMinVertex();
+        let minVertexB = [objB.position[0], objB.position[2]];//objB.GetMinVertex();
 
-        let leftBottomA = [minVertexA[0], minVertexA[2]];
-        let widthA = Math.abs(objA.model.minVertex[0] - objA.model.maxVertex[0]);
-        let heightA = Math.abs(objA.model.minVertex[2] - objA.model.maxVertex[2]);
+        let leftBottomA = minVertexA; //[minVertexA[0], minVertexA[2]];
+        let widthA = objA.GetWidth();//Math.abs(objA.model.minVertex[0] - objA.model.maxVertex[0]);
+        let heightA = objA.GetDepth();//Math.abs(objA.model.minVertex[2] - objA.model.maxVertex[2]);
         let velXA = objA.velocity[0];
         let velZA = objA.velocity[2];
         //DebugLog("objA: " + objA.velocity + " objB: " + objB.velocity, kTagPhysicsObject, "GetCollisionNormal");
 
-        let leftBottomB = [minVertexB[0], minVertexB[2]];
-        let widthB = Math.abs(objB.model.minVertex[0] - objB.model.maxVertex[0]);
-        let heightB = Math.abs(objB.model.minVertex[2] - objB.model.maxVertex[2]);
+        let leftBottomB = minVertexB; //[minVertexB[0], minVertexB[2]];
+        let widthB = objB.GetWidth();// Math.abs(objB.model.minVertex[0] - objB.model.maxVertex[0]);
+        let heightB = objB.GetDepth();// Math.abs(objB.model.minVertex[2] - objB.model.maxVertex[2]);
 
         let xInvEntry;
         let xInvExit;
