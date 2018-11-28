@@ -27,8 +27,8 @@
         },
         {
             "name": "medved",
-            "filename": "assets/models/medved.obj",
-            "fileType": "obj"
+            "filename": "assets/models/medved.json",
+            "fileType": "json"
         }
     ],
     "level": [

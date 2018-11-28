@@ -259,7 +259,6 @@ function initShaders() {
   let promises = [];
 
   let f1 = Promise.all(mainShaders).then((shaderArr)=>{
-    console.log(shaderArr);
     let vert = shaderArr[0];
     let frag = shaderArr[1];
     initMainShaders(vert, frag);
@@ -292,8 +291,8 @@ function InitObjects() {
     //let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let kocka2 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let medved = new BearObject(models.medved, TypeOfBoxCollider.kInterior);
-    medved.position = [-2.5, -1, 2];
-    medved.velocity = [0.01, 0, 0.01];
+    medved.position = [3*16, -2.0, -2*16];
+    medved.velocity = [0.0, 0, 0.0];
     medved.mass = 20;
 
     // jama.position[1] = -2.0;
@@ -326,9 +325,9 @@ function InitObjects() {
     // objects.push(jama);
     // objects.push(jama2);
     //objects.push(kocka1);
-    objects.push(kocka2);
+    // objects.push(kocka2);
     objects.push(CharacterBody);
-    //objects.push(medved);
+    objects.push(medved);
     DebugLog("len objects:" + objects.length, kTagRender, "InitModels");
     ConstructExteriorPhysicsObject(kocka2);
     
@@ -483,8 +482,6 @@ function _animateFlash(){
     return;
 
   let deltatime = (new Date()) - flashAnimation.start;
-
-  console.log(deltatime, flashAnimation);
 
   let t = flashAnimation.duration;
   let x = deltatime;

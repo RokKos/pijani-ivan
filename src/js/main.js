@@ -17,6 +17,12 @@ function Start() {
     InitInput();
 }
 
+function updateObjects(){
+    for(let i=0; i<objects.length; i++){
+        objects[i].Update();
+    }
+}
+
 function Update() {
     // TODO: - Get User input
     //       - Calculate physics
@@ -34,6 +40,7 @@ function Update() {
     HandleInput();
     UpdateGameParameters();
     CalculatePhysics();
+    updateObjects();
     // Move objects -> Probably done from renderer
     drawScene();
 

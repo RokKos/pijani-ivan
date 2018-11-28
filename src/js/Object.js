@@ -39,4 +39,7 @@ class Object {
         return [centerX, centerY, centerZ];
     }
     
+    Update(){
+        
+    }
   }
