@@ -2,8 +2,8 @@
 const kTagPhysics = "Physics";
 
 var physicsObject = [];
-var PHYSICS_DEBUG = true;
-var THICKNES_WALLS = 0.3;
+var PHYSICS_DEBUG = false;
+var THICKNES_WALLS = 0.1;
 var FixedDeltaTime = 1.0/15.0;  //  Because we do 15 frames per second
 
 function InitPhysics() {
@@ -45,18 +45,46 @@ function InstantiateBullet() {
 
 function ConstructExteriorPhysicsObject(object) {
 
-    DebugLog("here");
-    DebugLog(models.kocka.minVertex);
     let spodnjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
-    let a = Math.abs(object.model.minVertex[0] - object.model.maxVertex[0]);
-    let b = Math.abs(object.model.minVertex[2] - object.model.maxVertex[2]) / 2;
-    spodnjaPloskev.position = object.model.minVertex;
-    spodnjaPloskev.position[0] += object.model.maxVertex[0];
-    spodnjaPloskev.position[2] += object.model.maxVertex[2] / 2;
-    spodnjaPloskev.position[1] -= THICKNES_WALLS * 8;
-    spodnjaPloskev.scale = [a, THICKNES_WALLS, b];
+
+    let minVertex = object.GetMinVertex();
+    let maxVertex = object.GetMaxVertex()
+
+    DebugLog("min vertex: " + minVertex, kTagPhysics, "ConstructExteriorPhysicsObject");
+    DebugLog("max vertex: " + maxVertex, kTagPhysics, "ConstructExteriorPhysicsObject");
+
+    let width = Math.abs(maxVertex[0] - minVertex[0]);
+    let height = Math.abs(maxVertex[1] - minVertex[1]);
+    let depth = Math.abs(maxVertex[2] - minVertex[2]);
+
+    DebugLog("spodnja ploskev width: " + width, kTagPhysics, "ConstructExteriorPhysicsObject");
+
+    let kockaWidth = Math.abs(models.kocka.maxVertex[0] - models.kocka.minVertex[0]);
+    let kockaHeight = Math.abs(models.kocka.maxVertex[1] - models.kocka.minVertex[1]);
+    let kockaDepth = Math.abs(models.kocka.maxVertex[2] - models.kocka.minVertex[2]);
+
+    DebugLog("kocka width: " + kockaWidth, kTagPhysics, "ConstructExteriorPhysicsObject");
+
+    let scaleX = width / kockaWidth;
+    let scaleY = height / kockaHeight;
+    let scaleZ = depth / kockaDepth;
+
+
+    // Initial position and scale
+    spodnjaPloskev.scale = [scaleZ * 1, THICKNES_WALLS, scaleZ * 1];
+    spodnjaPloskev.position = minVertex;
+    spodnjaPloskev.position[0] += width / 2;
+    spodnjaPloskev.position[2] += depth / 2;
+    SetmMatrix(spodnjaPloskev);
+    spodnjaPloskev.SetmMatrix(mMatrix);
     
     
+    spodnjaPloskev.position[1] -= (height + THICKNES_WALLS * 2);
+    
+    DebugLog("spodnja ploskev SCALE: " + spodnjaPloskev.scale, kTagPhysics, "ConstructExteriorPhysicsObject");
+    DebugLog("spodnja ploskev pos: " + spodnjaPloskev.position, kTagPhysics, "ConstructExteriorPhysicsObject");
+
+    DebugLog("obj pos: " + object.position, kTagPhysics, "ConstructExteriorPhysicsObject");
     objects.push(spodnjaPloskev);
 
     //let zgornjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);

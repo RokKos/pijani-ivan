@@ -305,6 +305,8 @@ function InitObjects() {
     //kocka1.mass = 100;
 
     kocka2.restitution = 0.5;
+    SetmMatrix(kocka2);
+    kocka2.SetmMatrix(mMatrix);
     //kocka1.restitution = 1.5;
 
     CharacterBody = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
@@ -312,21 +314,32 @@ function InitObjects() {
     CharacterBody.position = [cameraPosition[0], cameraPosition[1], cameraPosition[2]];
     CharacterBody.SetName("CharacterBody");
 
-    console.log(CharacterBody);
-
     // objects.push(jama);
     // objects.push(jama2);
     //objects.push(kocka1);
-    //objects.push(kocka2);
+    objects.push(kocka2);
     objects.push(CharacterBody);
-    objects.push(medved);
+    //objects.push(medved);
     DebugLog("len objects:" + objects.length, kTagRender, "InitModels");
+    ConstructExteriorPhysicsObject(kocka2);
     
 }
 
 function negate(vector){
   return [-vector[0], -vector[1], -vector[2]]
 }
+
+
+function SetmMatrix(obj) {
+    mat4.identity(mMatrix);
+    mat4.translate(mMatrix, obj.position);
+    
+    mat4.rotateZ(mMatrix, degToRad(obj.rotation[2]));
+    mat4.rotateY(mMatrix, degToRad(obj.rotation[1]));
+    mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
+    mat4.scale(mMatrix, obj.scale);
+  }
+
 
 //
 // drawScene
@@ -357,21 +370,11 @@ function drawScene() {
   
   for(let i = 0; i<objects.length; i++){
     mvPushMatrix();
-    mat4.identity(mMatrix);
+    
 
     let obj = objects[i];
     let model = obj.model;
-
-    mat4.translate(mMatrix, obj.position);
-    //DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
-    //if (obj instanceof PhysicsObject || obj instanceof BulletObject) {
-    //  DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
-    //}
-    
-    mat4.rotateZ(mMatrix, degToRad(obj.rotation[2]));
-    mat4.rotateY(mMatrix, degToRad(obj.rotation[1]));
-    mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
-    mat4.scale(mMatrix, obj.scale);
+    SetmMatrix(obj);
     obj.SetmMatrix(mMatrix);
     mat4.multiply(mvMatrix, mMatrix, mvMatrix);
     
