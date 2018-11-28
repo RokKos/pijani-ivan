@@ -45,12 +45,12 @@ class PhysicsObject extends Object{
                    (b_minVertex[2] <= a_minVertex[2] || b_maxVertex[2] >= a_maxVertex[2]);  
         }*/
         
-        //return (a_minVertex[0] <= b_maxVertex[0] && a_maxVertex[0] >= b_minVertex[0]) &&
-        //       (a_minVertex[1] <= b_maxVertex[1] && a_maxVertex[1] >= b_minVertex[1]) &&
-        //       (a_minVertex[2] <= b_maxVertex[2] && a_maxVertex[2] >= b_minVertex[2]);
-        return (this.position[0] <= other.position[0] + other.GetWidth() && this.position[0] + + this.GetWidth() >= other.position[0] &&
-                this.position[1] <= other.position[1] + other.GetWidth() && this.position[1] + + this.GetWidth() >= other.position[1] &&
-                this.position[2] <= other.position[2] + other.GetWidth() && this.position[2] + + this.GetWidth() >= other.position[2]);
+        return (a_minVertex[0] <= b_maxVertex[0] && a_maxVertex[0] >= b_minVertex[0]) &&
+               (a_minVertex[1] <= b_maxVertex[1] && a_maxVertex[1] >= b_minVertex[1]) &&
+               (a_minVertex[2] <= b_maxVertex[2] && a_maxVertex[2] >= b_minVertex[2]);
+        //return (this.position[0] <= other.position[0] + other.GetWidth() && this.position[0] + + this.GetWidth() >= other.position[0] &&
+        //        this.position[1] <= other.position[1] + other.GetWidth() && this.position[1] + + this.GetWidth() >= other.position[1] &&
+        //        this.position[2] <= other.position[2] + other.GetWidth() && this.position[2] + + this.GetWidth() >= other.position[2]);
 
     }
 
@@ -99,7 +99,7 @@ class PhysicsObject extends Object{
     GetVectorInWordSpace(vector3){
         let wordCoordinates = vec3.create();
         vec3.set(vector3, wordCoordinates);
-        mat4.multiplyVec3(this.mvMatrix, wordCoordinates, wordCoordinates);
+        mat4.multiplyVec3(this.mMatrix, wordCoordinates, wordCoordinates);
         return wordCoordinates;
     }
 

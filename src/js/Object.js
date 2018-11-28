@@ -8,12 +8,12 @@ class Object {
         this.position = [0.0,0.0,0.0];
         this.rotation = [0.0, 0.0, 0.0];
         
-        this.mvMatrix = mat4.create();
+        this.mMatrix = mat4.create();
         this.name = "Object_" + objects.length+1;
     }
 
-    SetmvMatrix(mvMatrix) {
-        this.mvMatrix = mvMatrix;
+    SetmMatrix(mMatrix) {
+        this.mMatrix = mMatrix;
     }
 
     SetName(name) {

@@ -372,8 +372,9 @@ function drawScene() {
     mat4.rotateY(mMatrix, degToRad(obj.rotation[1]));
     mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
     mat4.scale(mMatrix, obj.scale);
+    obj.SetmMatrix(mMatrix);
     mat4.multiply(mvMatrix, mMatrix, mvMatrix);
-    obj.SetmvMatrix(mvMatrix);
+    
 
     // Don't draw character collider because then you cannot see anything
     if (obj == CharacterBody){
