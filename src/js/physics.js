@@ -41,6 +41,7 @@ function InstantiateBullet() {
     DebugLog(bullet.name + " instantiated", kTagPhysics, "InstantiateBullet")
     DebugLog(objects.length);
 
+    startFlashAnimation();
 }
 
 function ConstructExteriorPhysicsObject(object) {
