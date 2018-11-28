@@ -66,49 +66,31 @@ function initGL(canvas) {
 // Loads a shader program by scouring the current document,
 // looking for a script with the specified ID.
 //
-function getShader(gl, id) {
-  var shaderScript = document.getElementById(id);
-
-  // Didn't find an element with the specified ID; abort.
-  if (!shaderScript) {
-    return null;
-  }
-
-  // Walk through the source element's children, building the
-  // shader source string.
-  var shaderSource = "";
-  var currentChild = shaderScript.firstChild;
-  while (currentChild) {
-    if (currentChild.nodeType == 3) {
-        shaderSource += currentChild.textContent;
+function readShader(gl, file, type) {
+  return readFile(file).then(function(content){
+    let shader;
+    if (type == "fragment") {
+      shader = gl.createShader(gl.FRAGMENT_SHADER);
+    } else if (type == "vertex") {
+      shader = gl.createShader(gl.VERTEX_SHADER);
+    } else {
+      return Promise.reject("Unknown shader type.");  // Unknown shader type
     }
-    currentChild = currentChild.nextSibling;
-  }
-  
-  // Now figure out what type of shader script we have,
-  // based on its MIME type.
-  var shader;
-  if (shaderScript.type == "x-shader/x-fragment") {
-    shader = gl.createShader(gl.FRAGMENT_SHADER);
-  } else if (shaderScript.type == "x-shader/x-vertex") {
-    shader = gl.createShader(gl.VERTEX_SHADER);
-  } else {
-    return null;  // Unknown shader type
-  }
 
-  // Send the source to the shader object
-  gl.shaderSource(shader, shaderSource);
+    // Send the source to the shader object
+    gl.shaderSource(shader, content);
 
-  // Compile the shader program
-  gl.compileShader(shader);
+    // Compile the shader program
+    gl.compileShader(shader);
 
-  // See if it compiled successfully
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alert(gl.getShaderInfoLog(shader));
-    return null;
-  }
+    // See if it compiled successfully
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      alert(gl.getShaderInfoLog(shader));
+      return Promise.reject("Shader compilation error.");
+    }
 
-  return shader;
+    return shader;
+  });
 }
 
 //
@@ -116,10 +98,7 @@ function getShader(gl, id) {
 //
 // Initialize the shaders, so WebGL knows how to light our scene.
 //
-function initShaders() {
-  var fragmentShader = getShader(gl, "shader-fs");
-  var vertexShader = getShader(gl, "shader-vs");
-  
+function initMainShaders(vertexShader, fragmentShader) {
   // Create the shader program
   shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader);
@@ -165,14 +144,11 @@ function initShaders() {
   shaderProgram.lightPositionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
 }
 
-function initPhysicsDebugShaders() {
-  var p_fragmentShader = getShader(gl, "physics-debug-shader-fs");
-  var p_vertexShader = getShader(gl, "physics-debug-shader-vs");
-  
+function initPhysicsDebugShaders(vertexShader, fragmentShader) {
   // Create the shader program
   physicsShaderProgram = gl.createProgram();
-  gl.attachShader(physicsShaderProgram, p_vertexShader);
-  gl.attachShader(physicsShaderProgram, p_fragmentShader);
+  gl.attachShader(physicsShaderProgram, vertexShader);
+  gl.attachShader(physicsShaderProgram, fragmentShader);
   gl.linkProgram(physicsShaderProgram);
   
   // If creating the shader program failed, alert
@@ -264,6 +240,38 @@ function initModels(models_arr) {
     }
 
     return Promise.all(model_promises);
+}
+
+function initShaders() {
+  let mainShaders = [readShader(gl, "assets/shaders/main.vert", "vertex"),
+  readShader(gl, "assets/shaders/main.frag", "fragment")];
+  
+  // list of all promises
+  let promises = [];
+
+  let f1 = Promise.all(mainShaders).then((shaderArr)=>{
+    console.log(shaderArr);
+    let vert = shaderArr[0];
+    let frag = shaderArr[1];
+    initMainShaders(vert, frag);
+  });
+  promises.push(f1);
+
+  if (PHYSICS_DEBUG){
+    let physicsDebugShaders = [readShader(gl, "assets/shaders/physics-debug.vert", "vertex"),
+    readShader(gl, "assets/shaders/physics-debug.frag", "fragment")];
+    
+    let f2 = Promise.all(physicsDebugShaders).then((shaderArr)=>{
+      let vert = shaderArr[0];
+      let frag = shaderArr[1];
+      initPhysicsDebugShaders(vert, frag);
+    });
+
+    promises.push(f2);
+  }
+
+  // init is done when all promises are done
+  return Promise.all(promises);
 }
 
 function InitObjects() {
@@ -428,16 +436,23 @@ function drawScene() {
   
 }
 
+// Loads the config file
 function loadConfig(path){
+  return readFile(path).then((content)=>{
+    return JSON.parse(content);
+  });
+}
+
+// Reads file and returns a Promise with the content
+function readFile(file){
   let rawFile = new XMLHttpRequest();
-  rawFile.open("GET", path, false);
+  rawFile.open("GET", file, false);
 
   return new Promise(function(resolve, reject){
     rawFile.onreadystatechange = function() {
       if(rawFile.readyState === 4) {
         if(rawFile.status === 200 || rawFile.status == 0) {
-          let data = JSON.parse(rawFile.responseText);
-          resolve(data);
+          resolve(rawFile.responseText);
         }
       }
       reject();
@@ -445,7 +460,6 @@ function loadConfig(path){
     rawFile.send(null);
   });
 }
-
 
 function InitRender() {
   DebugLog("Init Render and the buffers", kTagRender, "InitRender");
@@ -459,19 +473,12 @@ function InitRender() {
     gl.clearDepth(1.0);                                     // Clear everything
     gl.enable(gl.DEPTH_TEST);                               // Enable depth testing
     gl.depthFunc(gl.LEQUAL);                                // Near things obscure far things
-
-    // Initialize the shaders; this is where all the lighting for the
-    // vertices and so forth is established.
-    if (PHYSICS_DEBUG){
-      initPhysicsDebugShaders();
-    }
-    initShaders();
-    
-    
     
     let config = null;
-    loadConfig("assets/config.json")
-    .then(conf=>{
+    initShaders().then(()=>{
+      return loadConfig("assets/config.json");
+    })
+    .then((conf)=>{
       config = conf;
       return initModels(config.models);
     })
