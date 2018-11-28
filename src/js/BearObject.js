@@ -4,7 +4,7 @@ class BearObject extends PhysicsObject{
     constructor(model, _TypeOfCollider) {
         super(model, _TypeOfCollider);
         this.life = 50;
-        this.speed = 5.0;
+        this.speed = 10.0;
         this.wakeUpDistance = 32.0;
         this.wokenUp = false;
     }
@@ -12,18 +12,7 @@ class BearObject extends PhysicsObject{
     PhysicsUpdate(){
         super.PhysicsUpdate();
 
-    }
 
-    Destroy(){
-        let index = objects.indexOf(this);
-        objects.splice(index, 1);
-        index = physicsObject.indexOf(this);
-        physicsObject.splice(index, 1);
-        delete this;
-
-    }
-
-    Update(){
         let playerPosition = cameraPosition;
         
         let toPlayer = [playerPosition[0]-this.position[0],
@@ -35,8 +24,11 @@ class BearObject extends PhysicsObject{
             let toPlayerNormalized = [toPlayer[0]/distance, toPlayer[1]/distance];
 
             if (distance > 5.0){
-                this.position[0] += this.speed * 0.01 * toPlayerNormalized[0];
-                this.position[2] += this.speed * 0.01 * toPlayerNormalized[1];
+                this.velocity[0] = this.speed * 0.1 * toPlayerNormalized[0];
+                this.velocity[2] = this.speed * 0.1 * toPlayerNormalized[1];
+            } else {
+                this.velocity[0] = 0;
+                this.velocity[2] = 0;
             }
             
             let angle = Math.atan2(toPlayerNormalized[1], toPlayerNormalized[0]);
@@ -46,6 +38,15 @@ class BearObject extends PhysicsObject{
                 this.wokenUp = true;
             }
         }
+    }
+
+    Destroy(){
+        let index = objects.indexOf(this);
+        objects.splice(index, 1);
+        index = physicsObject.indexOf(this);
+        physicsObject.splice(index, 1);
+        delete this;
+
     }
 
     loseLife() {
