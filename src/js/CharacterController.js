@@ -45,6 +45,7 @@ function handleKeyDown(event) {
 
     if (!IsBackgroundMusicPlaying) {
         BackgroundMusic.play();
+        IsBackgroundMusicPlaying = true;
     }
 }
 
