@@ -136,15 +136,3 @@ class PointerLockManager {
   }
   
   
-
-  
-var health = 100; //naj se zmanjsuje vsakič ko ga medved zadane oz ko se "zabijeta"
-
-//if(health == 0) kliči funkcijo close
-  
-function close(id) {
-    var el = document.getElementById(id);
-    el.style.display = 'none';
-    //spremeni da bo slo na FinalIndex kjer bo pisalo gameover in pa restart 
-}
-  
