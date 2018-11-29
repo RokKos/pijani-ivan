@@ -8,6 +8,7 @@ var physicsShaderProgram;
 var cameraPosition = [0,0,0];
 var cameraRotation = [0,0,0];
 
+var floorY = -2.0;
 
 var lightPosition = [0,0,0];
 var flashAnimation = {
@@ -226,7 +227,7 @@ function initLevel(level_tiles){
 
     // set position
     tileObject.position[0] = tile.grid_xy[0] * tileSize;
-    tileObject.position[1] = -2.0;
+    tileObject.position[1] = floorY;
     tileObject.position[2] = - tile.grid_xy[1] * tileSize;
 
     // set rotation
@@ -291,7 +292,7 @@ function InitObjects() {
     //let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let kocka2 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let medved = new BearObject(models.medved, TypeOfBoxCollider.kInterior);
-    medved.position = [3*16, -2.0, -2*16];
+    medved.position = [3*16, floorY, -2*16];
     medved.velocity = [0.0, 0, 0.0];
     medved.mass = 20;
 
