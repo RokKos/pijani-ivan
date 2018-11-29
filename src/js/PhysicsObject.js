@@ -10,6 +10,8 @@ class PhysicsObject extends Object{
             this.restitution = 1 / (this.scale[0] * this.scale[1] * this.scale[2]);
             this.mass = this.scale[0] * this.scale[1] * this.scale[2];
             this.collidetWith = [];  // Physics object that collidet this frame
+
+            this.OnPhysicsUpdate = function (){};
     }
 
 
@@ -86,6 +88,7 @@ class PhysicsObject extends Object{
 
         }
 
+        this.OnPhysicsUpdate();
     }
 
     SetVelocity(velocity) {

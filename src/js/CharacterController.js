@@ -8,7 +8,7 @@ var lastMouseX;
 var lastMouseY;
 
 var mouseSpeed = 15;
-var characterSpeed = 10;
+var characterSpeed = 15;
 var CharacterBody;
 
 
@@ -22,6 +22,11 @@ function InitInput() {
     let plm = new PointerLockManager(canvas, handleMouseMove);
 }
 
+
+function characterBodyUpdate(){
+    let p = CharacterBody.position;
+    cameraPosition = [p[0], p[1], p[2]];
+}
 
 
 function handleMouseMove(event) {
@@ -56,14 +61,13 @@ function handleKeyUp(event) {
 function moveCharacter(forward, sideways){
     let angle = cameraRotation[1];
 
-    cameraPosition[0] -= forward * Math.sin(toRadian(angle));
-    cameraPosition[2] -= forward * Math.cos(toRadian(angle));
+    let xVelocity = - forward * Math.sin(toRadian(angle))
+        + sideways * Math.cos(toRadian(angle));
 
-    cameraPosition[0] -= - sideways * Math.cos(toRadian(angle));
-    cameraPosition[2] -= sideways * Math.sin(toRadian(angle));
+    let zVelocity = - forward * Math.cos(toRadian(angle))
+        - sideways * Math.sin(toRadian(angle))
 
-    CharacterBody.position = [cameraPosition[0], CharacterBody.position[1], cameraPosition[2]];
-
+    CharacterBody.velocity = [xVelocity, 0, zVelocity];
 }
 
 function HandleInput() {
@@ -85,7 +89,7 @@ function HandleInput() {
         sideways /= length;
         forward /= length;
 
-        moveCharacter(characterSpeed * 0.01 * forward, characterSpeed * 0.01 * sideways);
+        moveCharacter(characterSpeed * 0.1 * forward, characterSpeed * 0.1 * sideways);
     } else {
         if (CharacterBody != null) {
             //DebugLog("Stop");

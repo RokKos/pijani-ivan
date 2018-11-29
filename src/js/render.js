@@ -322,6 +322,7 @@ function InitObjects() {
     CharacterBody.scale = [1.5, 2, 1.5];
     CharacterBody.position = [cameraPosition[0], cameraPosition[1], cameraPosition[2]];
     CharacterBody.SetName("CharacterBody");
+    CharacterBody.OnPhysicsUpdate = characterBodyUpdate;
 
     // objects.push(jama);
     // objects.push(jama2);

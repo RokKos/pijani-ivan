@@ -3,32 +3,87 @@
         {
             "name": "levelTileStraight",
             "filename": "assets/models/level_part_ravni.json",
-            "fileType": "json"
+            "fileType": "json",
+            "colliders": []
         },
         {
             "name": "levelTileCorner",
             "filename": "assets/models/level_part_kot.json",
-            "fileType": "json"
+            "fileType": "json",
+            "colliders": [
+                {
+                    "min": [
+                        3.2409937381744385,
+                        0.08550071716308594,
+                        -8.176889419555664
+                    ],
+                    "max": [
+                        4.600994110107422,
+                        4.925500869750977,
+                        -3.376889705657959
+                    ]
+                },
+                {
+                    "min": [
+                        -3.9860010147094727,
+                        0.08550071716308594,
+                        -8.64061164855957
+                    ],
+                    "max": [
+                        -2.8660006523132324,
+                        4.925500869750977,
+                        4.0793890953063965
+                    ]
+                },
+                {
+                    "min": [
+                        -4.474804878234863,
+                        0.08550071716308594,
+                        2.8918204307556152
+                    ],
+                    "max": [
+                        8.245195388793945,
+                        4.925500869750977,
+                        4.011820316314697
+                    ]
+                },
+                {
+                    "min": [
+                        3.539536952972412,
+                        0.08550071716308594,
+                        -4.419646263122559
+                    ],
+                    "max": [
+                        8.339536666870117,
+                        4.925500869750977,
+                        -3.0596463680267334
+                    ]
+                }
+            ]
         },
         {
             "name": "levelTileIntersectionX",
             "filename": "assets/models/level_part_krizisce_x.json",
-            "fileType": "json"
+            "fileType": "json",
+            "colliders": []
         },
         {
             "name": "levelTileCave",
             "filename": "assets/models/level_part_jama.json",
-            "fileType": "json"
+            "fileType": "json",
+            "colliders": []
         },
         {
             "name": "kocka",
             "filename": "assets/models/test2.obj",
-            "fileType": "obj"
+            "fileType": "obj",
+            "colliders": []
         },
         {
             "name": "medved",
             "filename": "assets/models/medved.json",
-            "fileType": "json"
+            "fileType": "json",
+            "colliders": []
         }
     ],
     "level": [
