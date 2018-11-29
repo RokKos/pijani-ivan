@@ -33,7 +33,7 @@ function CalculatePhysics() {
 }
 
 function InstantiateBullet() {
-    let bullet = new BulletObject(models.kocka, TypeOfBoxCollider.kInterior);
+    let bullet = new BulletObject(models.bullet, TypeOfBoxCollider.kInterior);
 
     physicsObject.push(bullet);
     DebugLog(objects.length);
