@@ -33,7 +33,7 @@ function CalculatePhysics() {
 }
 
 function InstantiateBullet() {
-    let bullet = new BulletObject(models.bullet, TypeOfBoxCollider.kInterior);
+    let bullet = new BulletObject(models.bullet);
 
     physicsObject.push(bullet);
     DebugLog(objects.length);
@@ -47,7 +47,7 @@ function InstantiateBullet() {
 
 function ConstructExteriorPhysicsObject(object) {
 
-    let spodnjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
+    let spodnjaPloskev = new PhysicsObject(models.kocka, "spodnja ploskev");
 
     let minVertex = object.GetMinVertex();
     let maxVertex = object.GetMaxVertex()

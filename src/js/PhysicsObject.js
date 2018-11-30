@@ -1,10 +1,8 @@
 const kTagPhysicsObject = "PhysicsObject";
-var TypeOfBoxCollider = {kInterior : 0, kExeterior : 1, kLast : 2};
 
 class PhysicsObject extends Object{
-    constructor(model, _TypeOfCollider) {
-            super(model);
-            this.TypeOfCollider = _TypeOfCollider;
+    constructor(model,name) {
+            super(model, name);
             this.velocity = [0.0, 0.0, 0.0];
             this.InCollision = false;
             this.restitution = 1 / (this.scale[0] * this.scale[1] * this.scale[2]);
@@ -119,11 +117,11 @@ class PhysicsObject extends Object{
     }
 
     GetHeight(){
-        return Math.abs(this.model.minVertex[1] - this.model.maxVertex[1]) * this.scale[0];
+        return Math.abs(this.model.minVertex[1] - this.model.maxVertex[1]) * this.scale[1];
     }
 
     GetDepth(){
-        return Math.abs(this.model.minVertex[2] - this.model.maxVertex[2]) * this.scale[0];
+        return Math.abs(this.model.minVertex[2] - this.model.maxVertex[2]) * this.scale[2];
     }
 
 
