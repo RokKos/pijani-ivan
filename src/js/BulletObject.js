@@ -1,8 +1,8 @@
 const kTagBullet = "BulletObject";
 
 class BulletObject extends PhysicsObject{
-    constructor(model, _TypeOfCollider) {
-        super(model, _TypeOfCollider);
+    constructor(model) {
+        super(model, "Bullet_" + physicsObject.length);
 
         let bulletSpeed = 7.0;
 
@@ -20,10 +20,9 @@ class BulletObject extends PhysicsObject{
         this.velocity[2] = -bulletSpeed * Math.cos(toRadian(angle));
         
         this.rotation[1] = cameraRotation[1];
-        this.SetName("Bullet_" + physicsObject.length);
         DebugLog(this.name + ":" +this.velocity, kTagPhysics, "InstantiateBullet");
 
-        this.timeOfLife = 100.0;
+        this.timeOfLife = 20.0;
     }
 
     PhysicsUpdate(){

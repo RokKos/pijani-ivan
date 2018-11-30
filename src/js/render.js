@@ -226,7 +226,7 @@ function initLevel(level_tiles){
     let tile = level_tiles[i];
 
     // set model
-    let tileObject = new Object(models[tile.model]);
+    let tileObject = new Object(models[tile.model], tile.model);
 
     // set position
     tileObject.position[0] = tile.grid_xy[0] * tileSize;
@@ -269,7 +269,7 @@ function initShaders() {
   });
   promises.push(f1);
 
-  if (PHYSICS_DEBUG){
+  //if (PHYSICS_DEBUG){
     let physicsDebugShaders = [readShader(gl, "assets/shaders/physics-debug.vert", "vertex"),
     readShader(gl, "assets/shaders/physics-debug.frag", "fragment")];
     
@@ -280,7 +280,7 @@ function initShaders() {
     });
 
     promises.push(f2);
-  }
+  //}
 
   // init is done when all promises are done
   return Promise.all(promises);
@@ -293,11 +293,13 @@ function InitObjects() {
 
     // ConstructExteriorPhysicsObject(jama);
     //let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
-    let kocka2 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
-    let medved = new BearObject(models.medved, TypeOfBoxCollider.kInterior);
+    let kocka2 = new PhysicsObject(models.kocka, "kocka2");
+    let medved = new BearObject(models.medved, "MEDVED");
     medved.position = [3*16, floorY, -2*16];
     medved.velocity = [0.0, 0, 0.0];
     medved.mass = 20;
+    SetmMatrix(medved);
+    medved.SetmMatrix(mMatrix);
 
     // jama.position[1] = -2.0;
 
@@ -321,11 +323,12 @@ function InitObjects() {
     kocka2.SetmMatrix(mMatrix);
     //kocka1.restitution = 1.5;
 
-    CharacterBody = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
+    CharacterBody = new PhysicsObject(models.kocka,"Character Body");
     CharacterBody.scale = [1.5, 2, 1.5];
     CharacterBody.position = [cameraPosition[0], cameraPosition[1], cameraPosition[2]];
-    CharacterBody.SetName("CharacterBody");
     CharacterBody.OnPhysicsUpdate = characterBodyUpdate;
+    SetmMatrix(CharacterBody);
+    CharacterBody.SetmMatrix(mMatrix);
 
     // objects.push(jama);
     // objects.push(jama2);
@@ -334,7 +337,7 @@ function InitObjects() {
     objects.push(CharacterBody);
     objects.push(medved);
     DebugLog("len objects:" + objects.length, kTagRender, "InitModels");
-    ConstructExteriorPhysicsObject(kocka2);
+    //ConstructExteriorPhysicsObject(kocka2);
     
 }
 

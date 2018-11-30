@@ -1,6 +1,6 @@
 
 class Object {
-    constructor(model) {
+    constructor(model, name) {
         this.model = model;
         this.scale = [1.0, 1.0, 1.0];
         
@@ -9,11 +9,11 @@ class Object {
         this.rotation = [0.0, 0.0, 0.0];
         
         this.mMatrix = mat4.create();
-        this.name = "Object_" + objects.length+1;
+        this.name = name;
     }
 
     SetmMatrix(mMatrix) {
-        this.mMatrix = mMatrix;
+        mat4.set(mMatrix, this.mMatrix);
     }
 
     SetName(name) {

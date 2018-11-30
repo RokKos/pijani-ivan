@@ -3,7 +3,7 @@ const kTagBear = "BearObject";
 class BearObject extends PhysicsObject{
     constructor(model, _TypeOfCollider) {
         super(model, _TypeOfCollider);
-        this.life = 50;
+        this.life = 5;
         this.speed = 10.0;
         this.wakeUpDistance = 32.0;
         this.wokenUp = false;
@@ -51,7 +51,9 @@ class BearObject extends PhysicsObject{
     }
 
     loseLife() {
+        
         this.life -= 1;
+        DebugLog("Bear LOSE LIFE" + this.life);
         if (this.life <= 0) {
             DebugLog("Destroyed by bullets : " + this.name, kTagBear, "PhysicsUpdate");
             this.Destroy();
