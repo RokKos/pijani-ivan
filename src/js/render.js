@@ -316,6 +316,20 @@ function InitObjects() {
     medved.mass = 20;
     SetmMatrix(medved);
     medved.SetmMatrix(mMatrix);
+
+    let medved2 = new BearObject(models.medved, "MEDVED_2");
+    medved2.position = [4*16, floorY, -3*16];
+    medved2.velocity = [0.0, 0, 0.0];
+    medved2.mass = 20;
+    SetmMatrix(medved2);
+    medved2.SetmMatrix(mMatrix);
+
+    let medved3 = new BearObject(models.medved, "MEDVED_3");
+    medved3.position = [5*16, floorY, -2*16];
+    medved3.velocity = [0.0, 0, 0.0];
+    medved3.mass = 20;
+    SetmMatrix(medved3);
+    medved3.SetmMatrix(mMatrix);
     
 
     kocka2.position = [-2.5, 0, 0];
@@ -336,6 +350,8 @@ function InitObjects() {
 
     objects.push(CharacterBody);
     objects.push(medved);
+    objects.push(medved2);
+    objects.push(medved3);
     DebugLog("len objects:" + objects.length, kTagRender, "InitObjects");
     
 }
