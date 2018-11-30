@@ -48,8 +48,8 @@ function toRadian(degrees){
 function handleKeyDown(event) {
     currentlyPressedKeys[event.keyCode] = true;
 
-    if (!IsBackgroundMusicPlaying) {
-        BackgroundMusic.play();
+    if(!IsBackgroundMusicPlaying){
+        BackgroundMusic.playLooped();
         IsBackgroundMusicPlaying = true;
     }
 }

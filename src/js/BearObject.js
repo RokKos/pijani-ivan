@@ -36,6 +36,7 @@ class BearObject extends PhysicsObject{
         } else {
             if(distance < this.wakeUpDistance){
                 this.wokenUp = true;
+                BearSound.play();
             }
         }
     }
