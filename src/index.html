@@ -28,9 +28,16 @@
 	<body onload="main();">
 		<h1>WebGL - Pijani Ivan</h1>
 		<div id="content">
-			<canvas id="glcanvas" width="1280px" height="720px">
-				No <code>&lt;canvas&gt;</code> suppport in your browser.
-			</canvas>
+			<div id="container">
+				<canvas id="glcanvas" width="1280px" height="720px">
+					No <code>&lt;canvas&gt;</code> suppport in your browser.
+				</canvas>
+				<div id="overlay">
+						<div>Health: <span id="health"></span></div>
+						<div>Bullets: <span id="bullets"></span></div>
+				</div>
+			</div>
+			
 			<br />
 			<br />
 			<input type="checkbox" id="Pause" checked /> Pause<br/>

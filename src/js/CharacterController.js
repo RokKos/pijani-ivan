@@ -11,15 +11,25 @@ var mouseSpeed = 15;
 var characterSpeed = 15;
 var CharacterBody;
 
+var numBullets = 100;
+var characterHealth = 100;
+
 
 function InitInput() {
     //TODO: Init user input
     DebugLog("Init User Input", kTagInput, "InitInput");
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
-    document.onmousedown = InstantiateBullet;
+    document.onmousedown = handleMouseDown;
 
     let plm = new PointerLockManager(canvas, handleMouseMove);
+}
+
+function handleMouseDown(){
+    if(numBullets>0){
+        numBullets -= 1;
+        InstantiateBullet();
+    }
 }
 
 

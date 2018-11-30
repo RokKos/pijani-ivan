@@ -31,6 +31,9 @@ var mvMatrix = mat4.create();
 var mMatrix = mat4.create();
 var pMatrix = mat4.create();
 
+var healthHUD;
+var bulletsHUD;
+
 function mvPushMatrix() {
   var copy = mat4.create();
   mat4.set(mvMatrix, copy);
@@ -448,6 +451,23 @@ function drawScene() {
     mvPopMatrix();
   }
   
+  drawHUD();
+}
+
+function drawHUD(){
+  healthHUD.nodeValue = characterHealth;
+  bulletsHUD.nodeValue = numBullets;
+}
+
+function initHUD(){
+  let healthElement = document.getElementById("health");
+  let bulletsElement = document.getElementById("bullets");
+
+  healthHUD = document.createTextNode("");
+  bulletsHUD = document.createTextNode("");
+
+  healthElement.appendChild(healthHUD);
+  bulletsElement.appendChild(bulletsHUD);
 }
 
 // Loads the config file
@@ -524,10 +544,7 @@ function InitRender() {
       InitPhysics();
     });
     
-    // Here's where we call the routine that builds all the objects
-    // we'll be drawing.
-    
-    
+    initHUD();
   }
 }
 

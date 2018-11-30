@@ -44,3 +44,21 @@ td {
 	border-color:#f7b6ff;
 }
 */
+
+#container {
+	width: 1280px;
+	height: 720px;
+	position: relative;
+	display: inline-block;
+}
+
+#overlay {
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	font-size: 32pt;
+	position: absolute;
+	padding: 20px;
+    left: 10px;
+	bottom: 10px;
+	color: #ffffff;
+	background-color: rgba(0, 0, 0, 0.5);
+}
