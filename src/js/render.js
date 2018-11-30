@@ -247,8 +247,7 @@ function initLevel(level_tiles){
     for (let key in colliders) {
       if (colliders.hasOwnProperty(key)) {           
         let collider = colliders[key]
-        let coll_obj = new PhysicsObject(models.kocka, model.name);
-        coll_obj.mass = Number.MAX_SAFE_INTEGER;
+        let coll_obj = new WallColliderObject(models.kocka, model.name);
         ConstructExteriorPhysicsObject(coll_obj, tileObject, collider.min, collider.max);
       }
     }
@@ -453,6 +452,12 @@ function drawScene() {
       gl.enable(gl.DEPTH_TEST);
     }
     
+    // Check after physics debug so If we need to debug physics the walls will be seen
+    if (obj instanceof WallColliderObject) {
+      mvPopMatrix();
+      continue;
+    }
+
     gl.useProgram(shaderProgram);
 
     // Draw the object by binding the array buffer to the object's vertices
