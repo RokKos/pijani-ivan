@@ -228,9 +228,11 @@ function initLevel(level_tiles){
   // let levelObjects = [];
   for(let i=0; i<level_tiles.length; i++){
     let tile = level_tiles[i];
-
+    let modelName = tile.model;
+    let model = models[modelName];
+    
     // set model
-    let tileObject = new Object(models[tile.model], tile.model);
+    let tileObject = new Object(model, modelName);
 
     // set position
     tileObject.position[0] = tile.grid_xy[0] * tileSize;
@@ -240,6 +242,21 @@ function initLevel(level_tiles){
     // set rotation
     tileObject.rotation[1] = tile.rotation;
 
+    // Set mMatrix used for colliders
+    SetmMatrix(tileObject);
+    tileObject.SetmMatrix(mMatrix);
+  
+    // set colliders
+    const colliders = model.colliders;
+    for (let key in colliders) {
+      if (colliders.hasOwnProperty(key)) {           
+        let collider = colliders[key]
+        let coll_obj = new WallColliderObject(models.kocka, model.name);
+        ConstructExteriorPhysicsObject(coll_obj, tileObject, collider.min, collider.max);
+      }
+    }
+   
+
     objects.push(tileObject);
   }
 }
@@ -248,7 +265,7 @@ function initModels(models_arr) {
     let model_promises = [];
     for(let i=0; i<models_arr.length; i++){
       let model_def = models_arr[i];
-      let model_promise = Model.fromFile(model_def.filename, model_def.fileType);
+      let model_promise = Model.fromFile(model_def.filename, model_def.fileType, model_def.colliders);
       model_promises.push(model_promise);
 
       model_promise.then(function(model){
@@ -292,11 +309,6 @@ function initShaders() {
 
 function InitObjects() {
 
-    // let jama = new Object(models.part_jama);
-    // let jama2 = new Object(models.part_ravni);
-
-    // ConstructExteriorPhysicsObject(jama);
-    //let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let kocka2 = new PhysicsObject(models.kocka, "kocka2");
     let medved = new BearObject(models.medved, "MEDVED");
     medved.position = [3*16, floorY, -2*16];
@@ -304,28 +316,16 @@ function InitObjects() {
     medved.mass = 20;
     SetmMatrix(medved);
     medved.SetmMatrix(mMatrix);
-
-    // jama.position[1] = -2.0;
-
-    // jama2.position[1] = -2.0
-    // jama2.position[2] = -16.0;
-
-    //kocka1.position[0] = 1;
-    //kocka1.rotation[1] = 40;
-    //kocka1.velocity = [-1.0, 0,0];
     
 
     kocka2.position = [-2.5, 0, 0];
     kocka2.rotation = [40, -20, 0];
     kocka2.scale = [0.7, 0.5, 0.5];
-    //kocka2.velocity = [1.0, 0,0];
     kocka2.mass = 4;
-    //kocka1.mass = 100;
 
     kocka2.restitution = 0.5;
     SetmMatrix(kocka2);
     kocka2.SetmMatrix(mMatrix);
-    //kocka1.restitution = 1.5;
 
     CharacterBody = new PhysicsObject(models.kocka,"Character Body");
     CharacterBody.scale = [1.5, 2, 1.5];
@@ -334,14 +334,9 @@ function InitObjects() {
     SetmMatrix(CharacterBody);
     CharacterBody.SetmMatrix(mMatrix);
 
-    // objects.push(jama);
-    // objects.push(jama2);
-    //objects.push(kocka1);
-    // objects.push(kocka2);
     objects.push(CharacterBody);
     objects.push(medved);
-    DebugLog("len objects:" + objects.length, kTagRender, "InitModels");
-    //ConstructExteriorPhysicsObject(kocka2);
+    DebugLog("len objects:" + objects.length, kTagRender, "InitObjects");
     
 }
 
@@ -394,8 +389,12 @@ function drawScene() {
 
     let obj = objects[i];
     let model = obj.model;
-    SetmMatrix(obj);
-    obj.SetmMatrix(mMatrix);
+    if (obj instanceof WallColliderObject) {
+      mat4.set(obj.mMatrix, mMatrix);
+    } else {
+      SetmMatrix(obj);
+      obj.SetmMatrix(mMatrix);
+    }
     mat4.multiply(mvMatrix, mMatrix, mvMatrix);
     
 
@@ -429,6 +428,12 @@ function drawScene() {
       gl.enable(gl.DEPTH_TEST);
     }
     
+    // Check after physics debug so If we need to debug physics the walls will be seen
+    if (obj instanceof WallColliderObject) {
+      mvPopMatrix();
+      continue;
+    }
+
     gl.useProgram(shaderProgram);
 
     // Draw the object by binding the array buffer to the object's vertices

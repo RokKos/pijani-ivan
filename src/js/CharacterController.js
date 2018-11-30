@@ -10,6 +10,7 @@ var lastMouseY;
 var mouseSpeed = 15;
 var characterSpeed = 15;
 var CharacterBody;
+var resolvingCharacterCollision = false;
 
 var numBullets = 100;
 var characterHealth = 100;
@@ -77,8 +78,11 @@ function moveCharacter(forward, sideways){
 
     let zVelocity = - forward * Math.cos(toRadian(angle))
         - sideways * Math.sin(toRadian(angle))
-
-    CharacterBody.velocity = [xVelocity, 0, zVelocity];
+   
+    if (!resolvingCharacterCollision) {
+        //DebugLog("Character velocity: " + xVelocity + " " + zVelocity);
+        CharacterBody.velocity = [xVelocity, 0, zVelocity];
+    }
 }
 
 function HandleInput() {
@@ -104,7 +108,9 @@ function HandleInput() {
     } else {
         if (CharacterBody != null) {
             //DebugLog("Stop");
-            CharacterBody.SetVelocity([0,0,0]);
+            CharacterBody.velocity[0] *= 0.1;
+            CharacterBody.velocity[1] *= 0.1;
+            CharacterBody.velocity[2] *= 0.1;
         }
 
     }

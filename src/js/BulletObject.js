@@ -23,6 +23,7 @@ class BulletObject extends PhysicsObject{
         DebugLog(this.name + ":" +this.velocity, kTagPhysics, "InstantiateBullet");
 
         this.timeOfLife = 20.0;
+        this.mass = 100;
     }
 
     PhysicsUpdate(){

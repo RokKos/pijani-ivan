@@ -45,12 +45,7 @@ function InstantiateBullet() {
     startFlashAnimation();
 }
 
-function ConstructExteriorPhysicsObject(object) {
-
-    let spodnjaPloskev = new PhysicsObject(models.kocka, "spodnja ploskev");
-
-    let minVertex = object.GetMinVertex();
-    let maxVertex = object.GetMaxVertex()
+function ConstructExteriorPhysicsObject(obj, parent, minVertex, maxVertex) {
 
     DebugLog("min vertex: " + minVertex, kTagPhysics, "ConstructExteriorPhysicsObject");
     DebugLog("max vertex: " + maxVertex, kTagPhysics, "ConstructExteriorPhysicsObject");
@@ -59,39 +54,52 @@ function ConstructExteriorPhysicsObject(object) {
     let height = Math.abs(maxVertex[1] - minVertex[1]);
     let depth = Math.abs(maxVertex[2] - minVertex[2]);
 
-    DebugLog("spodnja ploskev width: " + width, kTagPhysics, "ConstructExteriorPhysicsObject");
-
     let kockaWidth = Math.abs(models.kocka.maxVertex[0] - models.kocka.minVertex[0]);
     let kockaHeight = Math.abs(models.kocka.maxVertex[1] - models.kocka.minVertex[1]);
     let kockaDepth = Math.abs(models.kocka.maxVertex[2] - models.kocka.minVertex[2]);
-
-    DebugLog("kocka width: " + kockaWidth, kTagPhysics, "ConstructExteriorPhysicsObject");
 
     let scaleX = width / kockaWidth;
     let scaleY = height / kockaHeight;
     let scaleZ = depth / kockaDepth;
 
-
+    obj.scale = [1,1,1];
     // Initial position and scale
-    spodnjaPloskev.scale = [scaleZ * 1, THICKNES_WALLS, scaleZ * 1];
-    spodnjaPloskev.position = minVertex;
-    spodnjaPloskev.position[0] += width / 2;
-    spodnjaPloskev.position[2] += depth / 2;
-    SetmMatrix(spodnjaPloskev);
-    spodnjaPloskev.SetmMatrix(mMatrix);
+    obj.rotation = [0,0,0];
+    obj.rotation[0] = parent.rotation[0];
+    obj.rotation[1] = parent.rotation[1];
+    obj.rotation[2] = parent.rotation[2];
+    // Set to center of bounding box
+    obj.position = [0,0,0];
+    // offset for parent
+    obj.position[0] = parent.position[0];
+    obj.position[1] = parent.position[1];
+    obj.position[2] = parent.position[2];
+    SetmMatrix(obj);
     
-    
-    spodnjaPloskev.position[1] -= (height + THICKNES_WALLS * 2);
-    
-    DebugLog("spodnja ploskev SCALE: " + spodnjaPloskev.scale, kTagPhysics, "ConstructExteriorPhysicsObject");
-    DebugLog("spodnja ploskev pos: " + spodnjaPloskev.position, kTagPhysics, "ConstructExteriorPhysicsObject");
 
-    DebugLog("obj pos: " + object.position, kTagPhysics, "ConstructExteriorPhysicsObject");
-    objects.push(spodnjaPloskev);
+    // Put on right place where collider should be
+    obj.position[0] = minVertex[0];
+    obj.position[1] = minVertex[1];
+    obj.position[2] = minVertex[2];
 
-    //let zgornjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
-    //zgornjaPloskev.position = [8,0,8];
-    //objects.push(zgornjaPloskev);
+    obj.position[0] += width / 2;
+    obj.position[1] += height / 2;
+    obj.position[2] += depth / 2;
+
+    obj.scale = [scaleX, scaleY, scaleZ];
+    
+    let colliderOffsetMatrix = mat4.create();
+    mat4.identity(colliderOffsetMatrix);
+    mat4.translate(colliderOffsetMatrix, obj.position);
+    mat4.scale(colliderOffsetMatrix, obj.scale);
+    mat4.multiply(mMatrix, colliderOffsetMatrix, mMatrix);
+
+    obj.SetmMatrix(mMatrix);
+
+    
+    DebugLog(obj.name + " SCALE: " + obj.scale, kTagPhysics, "ConstructExteriorPhysicsObject");
+    DebugLog(obj.name + " pos: " + obj.position, kTagPhysics, "ConstructExteriorPhysicsObject");
+    objects.push(obj);
 }
 
 function DotProduct(a,b){
