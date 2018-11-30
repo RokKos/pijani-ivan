@@ -32,9 +32,23 @@
 				<canvas id="glcanvas" width="1280px" height="720px">
 					No <code>&lt;canvas&gt;</code> suppport in your browser.
 				</canvas>
-				<div id="overlay">
+				<div id="hud-overlay">
 						<div>Health: <span id="health"></span></div>
 						<div>Bullets: <span id="bullets"></span></div>
+				</div>
+				<div id=overlay>
+					<div id="start-menu">
+						<p>Pijani Ivan</p>
+						<a class="button" id="start_btn" href="#">Start the game</a>
+					</div>
+					<div id="game-over" style="display:none">
+						<p>You died...</p>
+						<a class="button" href=".">Try again</a>
+					</div>
+					<div id="win" style="display:none">
+							<p>You won!</p>
+							<a class="button" href=".">Restart</a>
+					</div>
 				</div>
 			</div>
 			

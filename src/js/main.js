@@ -1,6 +1,7 @@
 const kTagMain = "Main";
 
 var PAUSE = false;
+var gameStarted = false;
 
 function Start() {
     // TODO: - Initiale buffers and drawing stuff
@@ -32,7 +33,7 @@ function Update() {
     //          - Move camera
     //       - Draw stuff on screen
     PAUSE = document.getElementById("Pause").checked;
-    if (PAUSE){
+    if (PAUSE || !gameStarted){
         return;
     }
 
@@ -47,8 +48,24 @@ function Update() {
     _animateFlash();
 }
 
+function startGame(){
+    gameStarted = true;
+    startScreen.style.display = "none";
+    pointerLockManager.lock();
+}
 
+function gameOver(){
+    gameStarted = false;
+    gameOverScreen.style.display = "inline-block";
+    pointerLockManager.unlock();
+}
 
+// Call to show winScreen
+function showWinScreen(){
+    gameStarted = false;
+    winScreen.style.display = "inline-block";
+    pointerLockManager.unlock();
+}
 
 function main() {
     Start();

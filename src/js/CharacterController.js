@@ -13,6 +13,7 @@ var CharacterBody;
 
 var numBullets = 100;
 var characterHealth = 100;
+var pointerLockManager;
 
 
 function InitInput() {
@@ -22,7 +23,7 @@ function InitInput() {
     document.onkeyup = handleKeyUp;
     document.onmousedown = handleMouseDown;
 
-    let plm = new PointerLockManager(canvas, handleMouseMove);
+    pointerLockManager = new PointerLockManager(canvas, handleMouseMove);
 }
 
 function handleMouseDown(){
@@ -114,6 +115,10 @@ function HandleInput() {
 
 function PlayerLoseLife(){
     characterHealth -= 1;
+
+    if(characterHealth <= 0){
+        gameOver();
+    }
 }
 
 class PointerLockManager {
@@ -131,7 +136,7 @@ class PointerLockManager {
     }
   
     lock() {
-      if(!this.isLocked()){
+      if(!this.isLocked() && gameStarted){
         this.elem.requestPointerLock();
         document.addEventListener("mousemove", this.moveCallback, false);
       }
