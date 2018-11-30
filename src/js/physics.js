@@ -45,7 +45,7 @@ function InstantiateBullet() {
     startFlashAnimation();
 }
 
-function ConstructExteriorPhysicsObject(obj, parentObj, minVertex, maxVertex) {
+function ConstructExteriorPhysicsObject(obj, parent, minVertex, maxVertex) {
 
     DebugLog("min vertex: " + minVertex, kTagPhysics, "ConstructExteriorPhysicsObject");
     DebugLog("max vertex: " + maxVertex, kTagPhysics, "ConstructExteriorPhysicsObject");
@@ -54,13 +54,9 @@ function ConstructExteriorPhysicsObject(obj, parentObj, minVertex, maxVertex) {
     let height = Math.abs(maxVertex[1] - minVertex[1]);
     let depth = Math.abs(maxVertex[2] - minVertex[2]);
 
-    DebugLog(obj.name + " width: " + width, kTagPhysics, "ConstructExteriorPhysicsObject");
-
     let kockaWidth = Math.abs(models.kocka.maxVertex[0] - models.kocka.minVertex[0]);
     let kockaHeight = Math.abs(models.kocka.maxVertex[1] - models.kocka.minVertex[1]);
     let kockaDepth = Math.abs(models.kocka.maxVertex[2] - models.kocka.minVertex[2]);
-
-    DebugLog("kocka width: " + kockaWidth, kTagPhysics, "ConstructExteriorPhysicsObject");
 
     let scaleX = width / kockaWidth;
     let scaleY = height / kockaHeight;
@@ -68,15 +64,27 @@ function ConstructExteriorPhysicsObject(obj, parentObj, minVertex, maxVertex) {
 
 
     // Initial position and scale
-    obj.scale = [scaleZ * 1, THICKNES_WALLS, scaleZ * 1];
-    obj.position = minVertex;
+    obj.scale = [scaleX, scaleY, scaleZ];
+    obj.rotation = [0,0,0];
+    obj.rotation[0] = parent.rotation[0];
+    obj.rotation[1] = parent.rotation[1];
+    obj.rotation[2] = parent.rotation[2];
+    // Set to center of bounding box
+    obj.position = [0,0,0];
+    obj.position[0] = minVertex[0];
+    obj.position[1] = minVertex[1];
+    obj.position[2] = minVertex[2];
+    
     obj.position[0] += width / 2;
+    obj.position[1] += height / 2;
     obj.position[2] += depth / 2;
+    // offset for parent
+    obj.position[0] += parent.position[0];
+    obj.position[1] += parent.position[1];
+    obj.position[2] += parent.position[2];
     SetmMatrix(obj);
     obj.SetmMatrix(mMatrix);
     
-    
-    obj.position[1] -= (height + THICKNES_WALLS * 2);
     
     DebugLog(obj.name + " SCALE: " + obj.scale, kTagPhysics, "ConstructExteriorPhysicsObject");
     DebugLog(obj.name + " pos: " + obj.position, kTagPhysics, "ConstructExteriorPhysicsObject");

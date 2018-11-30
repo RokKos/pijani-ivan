@@ -224,9 +224,11 @@ function initLevel(level_tiles){
   // let levelObjects = [];
   for(let i=0; i<level_tiles.length; i++){
     let tile = level_tiles[i];
-
+    let modelName = tile.model;
+    let model = models[modelName];
+    
     // set model
-    let tileObject = new Object(models[tile.model], tile.model);
+    let tileObject = new Object(model, modelName);
 
     // set position
     tileObject.position[0] = tile.grid_xy[0] * tileSize;
@@ -235,6 +237,22 @@ function initLevel(level_tiles){
 
     // set rotation
     tileObject.rotation[1] = tile.rotation;
+
+    // Set mMatrix used for colliders
+    SetmMatrix(tileObject);
+    tileObject.SetmMatrix(mMatrix);
+  
+    // set colliders
+    const colliders = model.colliders;
+    for (let key in colliders) {
+      if (colliders.hasOwnProperty(key)) {           
+        let collider = colliders[key]
+        let coll_obj = new PhysicsObject(models.kocka, model.name);
+        coll_obj.mass = Number.MAX_SAFE_INTEGER;
+        ConstructExteriorPhysicsObject(coll_obj, tileObject, collider.min, collider.max);
+      }
+    }
+   
 
     objects.push(tileObject);
   }
@@ -344,19 +362,7 @@ function InitObjects() {
         let model = models[key];
         DebugLog(key, model, kTagRender, "InitObjects");
 
-        const colliders = model.colliders;
-        for (let keyC in colliders) {
-          DebugLog(keyC);
-          if (colliders.hasOwnProperty(keyC)) {           
-            //const collider = colliders[j];
-            let collider = colliders[keyC]
-            let coll_obj = new PhysicsObject(models.kocka, model.name);
-            coll_obj.mass = Number.MAX_SAFE_INTEGER;
-            // TODO Get room mMatrix
-            ConstructExteriorPhysicsObject(coll_obj, , collider.min, collider.max);
-          }
-          
-        }
+        
       }
       
     }
