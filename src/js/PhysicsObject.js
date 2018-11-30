@@ -44,7 +44,8 @@ class PhysicsObject extends Object{
 
         for (let i = 0; i < physicsObject.length; ++i) {
             let other = physicsObject[i];
-            
+
+
             if (this instanceof BulletObject && other == CharacterBody || other instanceof BulletObject && this == CharacterBody) {
                 continue;
             }
@@ -55,13 +56,13 @@ class PhysicsObject extends Object{
 
             if(this != other) {
 
-                /*if (other instanceof WallColliderObject && this == CharacterBody) {
-                    DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
-                    DebugLog(other.name + "min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex()); 
-                }*/
-
                 if (this.IsInCollisionWith(other)) {
                     this.InCollision = true;
+
+                    if (this == WinningCollider && other == CharacterBody || other == WinningCollider && this == CharacterBody){
+                        showWinScreen();
+                    }
+
                     if (this instanceof BulletObject && other instanceof BearObject) {
                         other.loseLife();
                     }

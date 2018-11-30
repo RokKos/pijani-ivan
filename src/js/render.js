@@ -24,6 +24,7 @@ var modelsLoaded = 0;
 
 // Var objects
 var objects = [];
+var WinningCollider;
 
 // Model-view and projection matrix
 var mvMatrixStack = [];
@@ -309,7 +310,14 @@ function initShaders() {
 
 function InitObjects() {
 
-    let kocka2 = new PhysicsObject(models.kocka, "kocka2");
+    WinningCollider = new PhysicsObject(models.kocka, "WinningCollider");
+
+    WinningCollider.position = [85,0,-32];
+    WinningCollider.scale = [3,3,3];
+    WinningCollider.mass = Number.MAX_SAFE_INTEGER;
+    SetmMatrix(WinningCollider);
+    WinningCollider.SetmMatrix(mMatrix);
+
     let medved = new BearObject(models.medved, "MEDVED");
     medved.position = [3*16, floorY, -2*16];
     medved.velocity = [0.0, 0, 0.0];
@@ -330,16 +338,7 @@ function InitObjects() {
     medved3.mass = 20;
     SetmMatrix(medved3);
     medved3.SetmMatrix(mMatrix);
-    
-
-    kocka2.position = [-2.5, 0, 0];
-    kocka2.rotation = [40, -20, 0];
-    kocka2.scale = [0.7, 0.5, 0.5];
-    kocka2.mass = 4;
-
-    kocka2.restitution = 0.5;
-    SetmMatrix(kocka2);
-    kocka2.SetmMatrix(mMatrix);
+  
 
     CharacterBody = new PhysicsObject(models.kocka,"Character Body");
     CharacterBody.scale = [1.5, 2, 1.5];
@@ -349,6 +348,7 @@ function InitObjects() {
     CharacterBody.SetmMatrix(mMatrix);
 
     objects.push(CharacterBody);
+    objects.push(WinningCollider);
     objects.push(medved);
     objects.push(medved2);
     objects.push(medved3);
