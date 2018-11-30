@@ -45,12 +45,7 @@ function InstantiateBullet() {
     startFlashAnimation();
 }
 
-function ConstructExteriorPhysicsObject(object) {
-
-    let spodnjaPloskev = new PhysicsObject(models.kocka, "spodnja ploskev");
-
-    let minVertex = object.GetMinVertex();
-    let maxVertex = object.GetMaxVertex()
+function ConstructExteriorPhysicsObject(obj, parentObj, minVertex, maxVertex) {
 
     DebugLog("min vertex: " + minVertex, kTagPhysics, "ConstructExteriorPhysicsObject");
     DebugLog("max vertex: " + maxVertex, kTagPhysics, "ConstructExteriorPhysicsObject");
@@ -59,7 +54,7 @@ function ConstructExteriorPhysicsObject(object) {
     let height = Math.abs(maxVertex[1] - minVertex[1]);
     let depth = Math.abs(maxVertex[2] - minVertex[2]);
 
-    DebugLog("spodnja ploskev width: " + width, kTagPhysics, "ConstructExteriorPhysicsObject");
+    DebugLog(obj.name + " width: " + width, kTagPhysics, "ConstructExteriorPhysicsObject");
 
     let kockaWidth = Math.abs(models.kocka.maxVertex[0] - models.kocka.minVertex[0]);
     let kockaHeight = Math.abs(models.kocka.maxVertex[1] - models.kocka.minVertex[1]);
@@ -73,25 +68,19 @@ function ConstructExteriorPhysicsObject(object) {
 
 
     // Initial position and scale
-    spodnjaPloskev.scale = [scaleZ * 1, THICKNES_WALLS, scaleZ * 1];
-    spodnjaPloskev.position = minVertex;
-    spodnjaPloskev.position[0] += width / 2;
-    spodnjaPloskev.position[2] += depth / 2;
-    SetmMatrix(spodnjaPloskev);
-    spodnjaPloskev.SetmMatrix(mMatrix);
+    obj.scale = [scaleZ * 1, THICKNES_WALLS, scaleZ * 1];
+    obj.position = minVertex;
+    obj.position[0] += width / 2;
+    obj.position[2] += depth / 2;
+    SetmMatrix(obj);
+    obj.SetmMatrix(mMatrix);
     
     
-    spodnjaPloskev.position[1] -= (height + THICKNES_WALLS * 2);
+    obj.position[1] -= (height + THICKNES_WALLS * 2);
     
-    DebugLog("spodnja ploskev SCALE: " + spodnjaPloskev.scale, kTagPhysics, "ConstructExteriorPhysicsObject");
-    DebugLog("spodnja ploskev pos: " + spodnjaPloskev.position, kTagPhysics, "ConstructExteriorPhysicsObject");
-
-    DebugLog("obj pos: " + object.position, kTagPhysics, "ConstructExteriorPhysicsObject");
-    objects.push(spodnjaPloskev);
-
-    //let zgornjaPloskev = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
-    //zgornjaPloskev.position = [8,0,8];
-    //objects.push(zgornjaPloskev);
+    DebugLog(obj.name + " SCALE: " + obj.scale, kTagPhysics, "ConstructExteriorPhysicsObject");
+    DebugLog(obj.name + " pos: " + obj.position, kTagPhysics, "ConstructExteriorPhysicsObject");
+    objects.push(obj);
 }
 
 function DotProduct(a,b){

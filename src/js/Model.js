@@ -12,6 +12,7 @@ class Model {
         this.boundingBoxBufferfacesBuffer = gl.createBuffer();
         this.minVertex = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
         this.maxVertex = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
+        this.colliders = [];
     }
 
     _bindBuffer(buffer, values, item_size){
@@ -56,6 +57,10 @@ class Model {
     
     setBoundingBoxFaces(faces){
         this._bindElementBuffer(this.boundingBoxBufferfacesBuffer, faces);
+    }
+
+    setColliders(colliders){
+        this.colliders = colliders;
     }
 
     static parseObj(content){
@@ -138,7 +143,7 @@ class Model {
     }
 
     // Reads model from file
-    static fromFile(file, type){
+    static fromFile(file, type, colliders){
         type = type || "obj";
         let rawFile = new XMLHttpRequest();
         rawFile.open("GET", file, false);
@@ -198,6 +203,7 @@ class Model {
                         model.setFaces(data.faces);
                         model.setNormals(data.normals);
                         model.setColors(data.colors);
+                        model.setColliders(colliders);
                         
                         // Physics
                         model.setBaricentric(allBaricenters);

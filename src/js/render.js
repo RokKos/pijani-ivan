@@ -244,7 +244,7 @@ function initModels(models_arr) {
     let model_promises = [];
     for(let i=0; i<models_arr.length; i++){
       let model_def = models_arr[i];
-      let model_promise = Model.fromFile(model_def.filename, model_def.fileType);
+      let model_promise = Model.fromFile(model_def.filename, model_def.fileType, model_def.colliders);
       model_promises.push(model_promise);
 
       model_promise.then(function(model){
@@ -336,8 +336,30 @@ function InitObjects() {
     // objects.push(kocka2);
     objects.push(CharacterBody);
     objects.push(medved);
-    DebugLog("len objects:" + objects.length, kTagRender, "InitModels");
-    //ConstructExteriorPhysicsObject(kocka2);
+    DebugLog("len objects:" + objects.length, kTagRender, "InitObjects");
+    //DebugLog("len models:" + Object.keys(models).length, kTagRender, "InitObjects");
+    for (var key in models) {
+      //const model = models[i];
+      if (models.hasOwnProperty(key)) {           
+        let model = models[key];
+        DebugLog(key, model, kTagRender, "InitObjects");
+
+        const colliders = model.colliders;
+        for (let keyC in colliders) {
+          DebugLog(keyC);
+          if (colliders.hasOwnProperty(keyC)) {           
+            //const collider = colliders[j];
+            let collider = colliders[keyC]
+            let coll_obj = new PhysicsObject(models.kocka, model.name);
+            coll_obj.mass = Number.MAX_SAFE_INTEGER;
+            // TODO Get room mMatrix
+            ConstructExteriorPhysicsObject(coll_obj, , collider.min, collider.max);
+          }
+          
+        }
+      }
+      
+    }
     
 }
 
