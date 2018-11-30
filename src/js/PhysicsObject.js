@@ -17,8 +17,15 @@ class PhysicsObject extends Object{
     IsInCollisionWith(other) {
         let a_minVertex = this.GetMinVertex();
         let a_maxVertex = this.GetMaxVertex();
+
+        let aMaxVertex = [Math.max(a_minVertex[0], a_maxVertex[0]), Math.max(a_minVertex[1], a_maxVertex[1]), Math.max(a_minVertex[2], a_maxVertex[2])];
+        let aMinVertex = [Math.min(a_minVertex[0], a_maxVertex[0]), Math.min(a_minVertex[1], a_maxVertex[1]), Math.min(a_minVertex[2], a_maxVertex[2])];
+
         let b_minVertex = other.GetMinVertex();
         let b_maxVertex = other.GetMaxVertex();
+
+        let bMaxVertex = [Math.max(b_minVertex[0], b_maxVertex[0]), Math.max(b_minVertex[1], b_maxVertex[1]), Math.max(b_minVertex[2], b_maxVertex[2])];
+        let bMinVertex = [Math.min(b_minVertex[0], b_maxVertex[0]), Math.min(b_minVertex[1], b_maxVertex[1]), Math.min(b_minVertex[2], b_maxVertex[2])];
         
         // This is because models get async loaded
         var isAPoint = a_minVertex[0] == 0 && a_minVertex[1] == 0 && a_minVertex[2] == 0;
@@ -26,38 +33,13 @@ class PhysicsObject extends Object{
         if (isAPoint || isBPoint) {
             return false;
         }
-
-        /*if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior && this.TypeOfCollider == TypeOfBoxCollider.kExeterior) {
-            return true;
-        }*/
         
-        // Todo: Upostevaj collision type
-        /*if (other.TypeOfCollider == TypeOfBoxCollider.kExeterior && this.TypeOfCollider == TypeOfBoxCollider.kInterior) {
-            //cddwDebugLog("a: " + a_minVertex  + " " + a_maxVertex + " b " + b_minVertex  + " " + b_maxVertex);
-            return (a_minVertex[0] <= b_minVertex[0] || a_maxVertex[0] >= b_maxVertex[0]) ||
-                   (a_minVertex[1] <= b_minVertex[1] || a_maxVertex[1] >= b_maxVertex[1]) ||
-                   (a_minVertex[2] <= b_minVertex[2] || a_maxVertex[2] >= b_maxVertex[2]);  
-        }
-
-        if (this.TypeOfCollider == TypeOfBoxCollider.kExeterior && other.TypeOfCollider == TypeOfBoxCollider.kInterior) {
-            return (b_minVertex[0] <= a_minVertex[0] || b_maxVertex[0] >= a_maxVertex[0]) ||
-                   (b_minVertex[1] <= a_minVertex[1] || b_maxVertex[1] >= a_maxVertex[1]) ||
-                   (b_minVertex[2] <= a_minVertex[2] || b_maxVertex[2] >= a_maxVertex[2]);  
-        }*/
-        
-        return (a_minVertex[0] <= b_maxVertex[0] && a_maxVertex[0] >= b_minVertex[0]) &&
-               (a_minVertex[1] <= b_maxVertex[1] && a_maxVertex[1] >= b_minVertex[1]) &&
-               (a_minVertex[2] <= b_maxVertex[2] && a_maxVertex[2] >= b_minVertex[2]);
-        //return (this.position[0] <= other.position[0] + other.GetWidth() && this.position[0] + + this.GetWidth() >= other.position[0] &&
-        //        this.position[1] <= other.position[1] + other.GetWidth() && this.position[1] + + this.GetWidth() >= other.position[1] &&
-        //        this.position[2] <= other.position[2] + other.GetWidth() && this.position[2] + + this.GetWidth() >= other.position[2]);
+        return (aMinVertex[0] <= bMaxVertex[0] && aMaxVertex[0] >= bMinVertex[0]) &&
+               (aMinVertex[2] <= bMaxVertex[2] && aMaxVertex[2] >= bMinVertex[2]);
 
     }
 
     PhysicsUpdate(){
-        this.position[0] += this.velocity[0] * FixedDeltaTime;
-        this.position[1] += this.velocity[1] * FixedDeltaTime;
-        this.position[2] += this.velocity[2] * FixedDeltaTime;
         this.collidetWith = [];
 
         for (let i = 0; i < physicsObject.length; ++i) {
@@ -65,6 +47,11 @@ class PhysicsObject extends Object{
             
             if (this instanceof BulletObject && other == CharacterBody || other instanceof BulletObject && this == CharacterBody) {
                 continue;
+            }
+
+            if (this instanceof BulletObject && other instanceof BearObject) {
+                DebugLog(this.name + " min: " + this.GetMinVertex() + " max: " + this.GetMaxVertex());
+                DebugLog(other.name + " max: " + other.GetMaxVertex() + " min: " + other.GetMinVertex());
             }
 
             if(this != other) {
@@ -85,6 +72,10 @@ class PhysicsObject extends Object{
             }
 
         }
+
+        this.position[0] += this.velocity[0] * FixedDeltaTime;
+        this.position[1] += this.velocity[1] * FixedDeltaTime;
+        this.position[2] += this.velocity[2] * FixedDeltaTime;
 
         this.OnPhysicsUpdate();
     }
