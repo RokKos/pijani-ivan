@@ -75,9 +75,9 @@ class PhysicsObject extends Object{
                     if (this instanceof BulletObject && other instanceof BearObject) {
                         other.loseLife();
                     }
-                    DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
-                    DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
-                    DebugLog("er min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
+                    // DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
+                    // DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
+                    // DebugLog("er min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
                     
                     if (this.velocity[0] != 0 || this.velocity[1] != 0 || this.velocity[2] != 0){
                         this.ResolveCollision(other);

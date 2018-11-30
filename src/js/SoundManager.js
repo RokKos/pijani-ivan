@@ -1,21 +1,18 @@
 
 var BackgroundMusic;
 var GunShotSound;
-var IsBackgroundMusicPlaying = false;
+var BearSound;
 
+var IsBackgroundMusicPlaying = false;
 
 function InitSounds() {
     BackgroundMusic = new LoadSound("assets/sounds/backgroundmusic.mp3");
+    BearSound = new LoadSound("assets/sounds/bear.wav");
     GunShotSound = new LoadSoundPool("assets/sounds/gunshot.wav", 5);
 }
 
 function LoadSoundPool(src, poolSize){
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
+    this.sound = new Audio(src);
 
     this.poolSize = poolSize;
     this.sounds = [this.sound];
@@ -34,12 +31,16 @@ function LoadSoundPool(src, poolSize){
 }
 
 function LoadSound(src) {
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
+    this.sound = new Audio(src);
+
+    this.playLooped = function(){
+        this.sound.addEventListener('ended', ()=>{
+            this.sound.currentTime = 0;
+            this.sound.play();
+        }, false);
+        this.sound.play();
+    }
+
     this.play = function(){
         this.sound.play();
     }
