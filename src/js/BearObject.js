@@ -6,6 +6,7 @@ class BearObject extends PhysicsObject{
         this.life = 5;
         this.speed = 10.0;
         this.wakeUpDistance = 32.0;
+        this.distanceBeforeStop = 4.2;
         this.wokenUp = false;
     }
 
@@ -23,7 +24,7 @@ class BearObject extends PhysicsObject{
         if (this.wokenUp){
             let toPlayerNormalized = [toPlayer[0]/distance, toPlayer[1]/distance];
 
-            if (distance > 5.0){
+            if (distance > this.distanceBeforeStop){
                 this.velocity[0] = this.speed * 0.1 * toPlayerNormalized[0];
                 this.velocity[2] = this.speed * 0.1 * toPlayerNormalized[1];
             } else {

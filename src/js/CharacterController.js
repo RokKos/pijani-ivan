@@ -112,6 +112,10 @@ function HandleInput() {
     PHYSICS_DEBUG = document.getElementById("PhysicsDebug").checked;
 }
 
+function PlayerLoseLife(){
+    characterHealth -= 1;
+}
+
 class PointerLockManager {
 
     constructor(elem, moveCallback) {

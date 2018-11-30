@@ -49,16 +49,15 @@ class PhysicsObject extends Object{
                 continue;
             }
 
-            if (this instanceof BulletObject && other instanceof BearObject) {
-                DebugLog(this.name + " min: " + this.GetMinVertex() + " max: " + this.GetMaxVertex());
-                DebugLog(other.name + " max: " + other.GetMaxVertex() + " min: " + other.GetMinVertex());
-            }
-
             if(this != other) {
                 if (this.IsInCollisionWith(other)) {
                     this.InCollision = true;
                     if (this instanceof BulletObject && other instanceof BearObject) {
                         other.loseLife();
+                    }
+
+                    if (other instanceof BearObject && this == CharacterBody) {
+                        PlayerLoseLife();
                     }
                     // DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
                     // DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
