@@ -62,29 +62,40 @@ function ConstructExteriorPhysicsObject(obj, parent, minVertex, maxVertex) {
     let scaleY = height / kockaHeight;
     let scaleZ = depth / kockaDepth;
 
-
+    obj.scale = [1,1,1];
     // Initial position and scale
-    obj.scale = [scaleX, scaleY, scaleZ];
     obj.rotation = [0,0,0];
     obj.rotation[0] = parent.rotation[0];
     obj.rotation[1] = parent.rotation[1];
     obj.rotation[2] = parent.rotation[2];
     // Set to center of bounding box
     obj.position = [0,0,0];
+    // offset for parent
+    obj.position[0] = parent.position[0];
+    obj.position[1] = parent.position[1];
+    obj.position[2] = parent.position[2];
+    SetmMatrix(obj);
+    
+
+    // Put on right place where collider should be
     obj.position[0] = minVertex[0];
     obj.position[1] = minVertex[1];
     obj.position[2] = minVertex[2];
-    
+
     obj.position[0] += width / 2;
     obj.position[1] += height / 2;
     obj.position[2] += depth / 2;
-    // offset for parent
-    obj.position[0] += parent.position[0];
-    obj.position[1] += parent.position[1];
-    obj.position[2] += parent.position[2];
-    SetmMatrix(obj);
-    obj.SetmMatrix(mMatrix);
+
+    obj.scale = [scaleX, scaleY, scaleZ];
     
+    let colliderOffsetMatrix = mat4.create();
+    mat4.identity(colliderOffsetMatrix);
+    mat4.translate(colliderOffsetMatrix, obj.position);
+    mat4.scale(colliderOffsetMatrix, obj.scale);
+    mat4.multiply(mMatrix, colliderOffsetMatrix, mMatrix);
+
+    obj.SetmMatrix(mMatrix);
+
     
     DebugLog(obj.name + " SCALE: " + obj.scale, kTagPhysics, "ConstructExteriorPhysicsObject");
     DebugLog(obj.name + " pos: " + obj.position, kTagPhysics, "ConstructExteriorPhysicsObject");

@@ -417,8 +417,12 @@ function drawScene() {
 
     let obj = objects[i];
     let model = obj.model;
-    SetmMatrix(obj);
-    obj.SetmMatrix(mMatrix);
+    if (obj instanceof WallColliderObject) {
+      mat4.set(obj.mMatrix, mMatrix);
+    } else {
+      SetmMatrix(obj);
+      obj.SetmMatrix(mMatrix);
+    }
     mat4.multiply(mvMatrix, mMatrix, mvMatrix);
     
 
@@ -453,10 +457,10 @@ function drawScene() {
     }
     
     // Check after physics debug so If we need to debug physics the walls will be seen
-    if (obj instanceof WallColliderObject) {
+    /*if (obj instanceof WallColliderObject) {
       mvPopMatrix();
       continue;
-    }
+    }*/
 
     gl.useProgram(shaderProgram);
 
