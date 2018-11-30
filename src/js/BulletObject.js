@@ -12,7 +12,7 @@ class BulletObject extends PhysicsObject{
         // TODO: Make better offset
         this.position[2] =  CharacterBody.position[2];
         this.rotation = [0, 0, 0];
-        this.scale = [0.5, 0.1, 0.5];
+        this.scale = [0.1, 0.1, 0.1];
     
         let angle = cameraRotation[1];
         this.velocity = [0,0,0];

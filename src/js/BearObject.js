@@ -3,7 +3,7 @@ const kTagBear = "BearObject";
 class BearObject extends PhysicsObject{
     constructor(model, _TypeOfCollider) {
         super(model, _TypeOfCollider);
-        this.life = 3;
+        this.life = 5;
         this.speed = 10.0;
         this.wakeUpDistance = 32.0;
         this.wokenUp = false;
