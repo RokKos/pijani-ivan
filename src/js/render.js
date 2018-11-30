@@ -34,6 +34,10 @@ var pMatrix = mat4.create();
 var healthHUD;
 var bulletsHUD;
 
+var gameOverScreen;
+var startScreen;
+var winScreen;
+
 function mvPushMatrix() {
   var copy = mat4.create();
   mat4.set(mvMatrix, copy);
@@ -499,6 +503,17 @@ function initHUD(){
   bulletsElement.appendChild(bulletsHUD);
 }
 
+function initUI(){
+    gameOverScreen = document.getElementById("game-over");
+    startScreen = document.getElementById("start-menu");
+    winScreen = document.getElementById("win");
+
+    let startBtn = document.getElementById("start_btn");
+    startBtn.onclick = function(){
+      startGame();
+    }
+}
+
 // Loads the config file
 function loadConfig(path){
   return readFile(path).then((content)=>{
@@ -573,6 +588,7 @@ function InitRender() {
       InitPhysics();
     });
     
+    initUI();
     initHUD();
   }
 }

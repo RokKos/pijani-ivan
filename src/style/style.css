@@ -52,7 +52,7 @@ td {
 	display: inline-block;
 }
 
-#overlay {
+#hud-overlay {
 	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 	font-size: 32pt;
 	position: absolute;
@@ -61,4 +61,45 @@ td {
 	bottom: 10px;
 	color: #ffffff;
 	background-color: rgba(0, 0, 0, 0.5);
+}
+
+#overlay {
+	position: absolute;
+    left: 0;
+	bottom: 0;
+	top: 0;
+	right: 0;
+	text-align: center;
+	pointer-events: none;
+}
+
+#overlay div{
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	font-size: 32pt;
+	color: #ffffff;
+	display: inline-block;
+	padding: 20px;
+	position: relative;
+	top: 30%;
+}
+
+#overlay div p{
+	margin-bottom: 70px;
+}
+
+#start-menu p{
+	color: black;
+}
+
+#overlay .button{
+	padding: 20px 40px;
+	background-color: #3874f7;
+	text-decoration: none;
+	color: white;
+	border-radius: 10px;
+	pointer-events: all;
+}
+
+#overlay .button:hover{
+	background-color: #2a57b8;
 }
