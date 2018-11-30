@@ -28,8 +28,8 @@ class BearObject extends PhysicsObject{
                 this.velocity[0] = this.speed * 0.1 * toPlayerNormalized[0];
                 this.velocity[2] = this.speed * 0.1 * toPlayerNormalized[1];
             } else {
-                this.velocity[0] = 0;
-                this.velocity[2] = 0;
+                this.velocity[0] = -this.speed * 0.1 * toPlayerNormalized[0];
+                this.velocity[2] = -this.speed * 0.1 * toPlayerNormalized[1];
             }
             
             let angle = Math.atan2(toPlayerNormalized[1], toPlayerNormalized[0]);

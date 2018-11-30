@@ -68,6 +68,8 @@ class PhysicsObject extends Object{
 
                     if (other instanceof BearObject && this == CharacterBody) {
                         PlayerLoseLife();
+                        // this is so that Bear doesn't suck you in
+                        continue;
                     }
 
                     if (other instanceof WallColliderObject && this == CharacterBody) {
