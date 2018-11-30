@@ -309,11 +309,6 @@ function initShaders() {
 
 function InitObjects() {
 
-    // let jama = new Object(models.part_jama);
-    // let jama2 = new Object(models.part_ravni);
-
-    // ConstructExteriorPhysicsObject(jama);
-    //let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let kocka2 = new PhysicsObject(models.kocka, "kocka2");
     let medved = new BearObject(models.medved, "MEDVED");
     medved.position = [3*16, floorY, -2*16];
@@ -321,28 +316,16 @@ function InitObjects() {
     medved.mass = 20;
     SetmMatrix(medved);
     medved.SetmMatrix(mMatrix);
-
-    // jama.position[1] = -2.0;
-
-    // jama2.position[1] = -2.0
-    // jama2.position[2] = -16.0;
-
-    //kocka1.position[0] = 1;
-    //kocka1.rotation[1] = 40;
-    //kocka1.velocity = [-1.0, 0,0];
     
 
     kocka2.position = [-2.5, 0, 0];
     kocka2.rotation = [40, -20, 0];
     kocka2.scale = [0.7, 0.5, 0.5];
-    //kocka2.velocity = [1.0, 0,0];
     kocka2.mass = 4;
-    //kocka1.mass = 100;
 
     kocka2.restitution = 0.5;
     SetmMatrix(kocka2);
     kocka2.SetmMatrix(mMatrix);
-    //kocka1.restitution = 1.5;
 
     CharacterBody = new PhysicsObject(models.kocka,"Character Body");
     CharacterBody.scale = [1.5, 2, 1.5];
@@ -351,10 +334,6 @@ function InitObjects() {
     SetmMatrix(CharacterBody);
     CharacterBody.SetmMatrix(mMatrix);
 
-    // objects.push(jama);
-    // objects.push(jama2);
-    //objects.push(kocka1);
-    // objects.push(kocka2);
     objects.push(CharacterBody);
     objects.push(medved);
     DebugLog("len objects:" + objects.length, kTagRender, "InitObjects");
@@ -450,10 +429,10 @@ function drawScene() {
     }
     
     // Check after physics debug so If we need to debug physics the walls will be seen
-    /*if (obj instanceof WallColliderObject) {
+    if (obj instanceof WallColliderObject) {
       mvPopMatrix();
       continue;
-    }*/
+    }
 
     gl.useProgram(shaderProgram);
 

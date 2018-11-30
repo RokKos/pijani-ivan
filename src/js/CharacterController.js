@@ -80,7 +80,7 @@ function moveCharacter(forward, sideways){
         - sideways * Math.sin(toRadian(angle))
    
     if (!resolvingCharacterCollision) {
-        DebugLog("Character velocity: " + xVelocity + " " + zVelocity);
+        //DebugLog("Character velocity: " + xVelocity + " " + zVelocity);
         CharacterBody.velocity = [xVelocity, 0, zVelocity];
     }
 }

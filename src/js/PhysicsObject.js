@@ -220,12 +220,6 @@ class PhysicsObject extends Object{
         let yInvEntry;
         let yInvExit;
 
-        //DebugLog("leftBottomA: " + leftBottomA + " leftBottomB: " + leftBottomB, kTagPhysicsObject, "GetCollisionNormal")
-
-
-        //DebugLog("widthA: " + widthA + " heightA: " + heightA, kTagPhysicsObject, "GetCollisionNormal");
-        //DebugLog("widthB: " + widthB + " heightB: " + heightB, kTagPhysicsObject, "GetCollisionNormal");
-
         // find the distance between the objects on the near and far sides for both x and y
         if (velXA > 0.0){
             xInvEntry = leftBottomB[0] - (leftBottomA[0] + widthA);
@@ -245,8 +239,6 @@ class PhysicsObject extends Object{
             yInvExit = leftBottomB[1] - (leftBottomA[1] + heightA);
         }
 
-        //DebugLog("xInvEntry: " + xInvEntry + " xInvExit: " + xInvExit, kTagPhysicsObject, "GetCollisionNormal");
-        //DebugLog("yInvEntry: " + yInvEntry + " yInvExit: " + yInvExit, kTagPhysicsObject, "GetCollisionNormal");
 
         // find time of collision and time of leaving for each axis (if statement is to prevent divide by zero)
         let xEntry;
@@ -271,15 +263,11 @@ class PhysicsObject extends Object{
             yEntry = yInvEntry / velZA;
             yExit = yInvExit / velZA;
         }
-        //DebugLog("velXA: " + velXA + " velZA: " + velZA, kTagPhysicsObject, "GetCollisionNormal");
-        //DebugLog("xEntry: " + xEntry + " yEntry: " + yEntry, kTagPhysicsObject, "GetCollisionNormal");
-        //DebugLog("xExit: " + xExit + " yExit: " + yExit, kTagPhysicsObject, "GetCollisionNormal");
 
         // find the earliest/latest times of collision
         let entryTime = Math.max(xEntry, yEntry);
         let exitTime = Math.min(xExit, yExit);
 
-        //DebugLog("Entry time: " + entryTime + " Exit time: " + exitTime, kTagPhysicsObject, "GetCollisionNormal");
         // if there was no collision
         if (false){//entryTime > exitTime){// || xEntry < 0.0 && yEntry < 0.0 || xEntry > 1.0 || yEntry > 1.0) {
             // return no normal
@@ -308,11 +296,6 @@ class PhysicsObject extends Object{
                     normalz = -1.0;
                 }
             }
-
-
-            //if (objB instanceof WallColliderObject) {
-            //    return [-normalx, -normalz];
-            //}
 
             return [normalx, normalz];
             
