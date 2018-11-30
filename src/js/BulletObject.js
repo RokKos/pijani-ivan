@@ -4,18 +4,20 @@ class BulletObject extends PhysicsObject{
     constructor(model, _TypeOfCollider) {
         super(model, _TypeOfCollider);
 
+        let bulletSpeed = 7.0;
+
         this.position = [0,0,0];
-        this.position[0] =  cameraPosition[0];
-        this.position[1] =  cameraPosition[1] - 0.01;
+        this.position[0] =  CharacterBody.position[0];
+        this.position[1] =  CharacterBody.position[1] - 0.2;
         // TODO: Make better offset
-        this.position[2] =  cameraPosition[2] + 0.05;
+        this.position[2] =  CharacterBody.position[2];
         this.rotation = [0, 0, 0];
-        this.scale = [0.01, 0.01, 0.1];
+        this.scale = [0.1, 0.1, 0.1];
     
         let angle = cameraRotation[1];
         this.velocity = [0,0,0];
-        this.velocity[0] = -Math.sin(toRadian(angle));
-        this.velocity[2] = -Math.cos(toRadian(angle));
+        this.velocity[0] = -bulletSpeed * Math.sin(toRadian(angle));
+        this.velocity[2] = -bulletSpeed * Math.cos(toRadian(angle));
         
         this.rotation[1] = cameraRotation[1];
         this.SetName("Bullet_" + physicsObject.length);

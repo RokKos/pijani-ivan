@@ -10,6 +10,8 @@ class PhysicsObject extends Object{
             this.restitution = 1 / (this.scale[0] * this.scale[1] * this.scale[2]);
             this.mass = this.scale[0] * this.scale[1] * this.scale[2];
             this.collidetWith = [];  // Physics object that collidet this frame
+
+            this.OnPhysicsUpdate = function (){};
     }
 
 
@@ -45,12 +47,12 @@ class PhysicsObject extends Object{
                    (b_minVertex[2] <= a_minVertex[2] || b_maxVertex[2] >= a_maxVertex[2]);  
         }*/
         
-        //return (a_minVertex[0] <= b_maxVertex[0] && a_maxVertex[0] >= b_minVertex[0]) &&
-        //       (a_minVertex[1] <= b_maxVertex[1] && a_maxVertex[1] >= b_minVertex[1]) &&
-        //       (a_minVertex[2] <= b_maxVertex[2] && a_maxVertex[2] >= b_minVertex[2]);
-        return (this.position[0] <= other.position[0] + other.GetWidth() && this.position[0] + + this.GetWidth() >= other.position[0] &&
-                this.position[1] <= other.position[1] + other.GetWidth() && this.position[1] + + this.GetWidth() >= other.position[1] &&
-                this.position[2] <= other.position[2] + other.GetWidth() && this.position[2] + + this.GetWidth() >= other.position[2]);
+        return (a_minVertex[0] <= b_maxVertex[0] && a_maxVertex[0] >= b_minVertex[0]) &&
+               (a_minVertex[1] <= b_maxVertex[1] && a_maxVertex[1] >= b_minVertex[1]) &&
+               (a_minVertex[2] <= b_maxVertex[2] && a_maxVertex[2] >= b_minVertex[2]);
+        //return (this.position[0] <= other.position[0] + other.GetWidth() && this.position[0] + + this.GetWidth() >= other.position[0] &&
+        //        this.position[1] <= other.position[1] + other.GetWidth() && this.position[1] + + this.GetWidth() >= other.position[1] &&
+        //        this.position[2] <= other.position[2] + other.GetWidth() && this.position[2] + + this.GetWidth() >= other.position[2]);
 
     }
 
@@ -73,9 +75,9 @@ class PhysicsObject extends Object{
                     if (this instanceof BulletObject && other instanceof BearObject) {
                         other.loseLife();
                     }
-                    DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
-                    DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
-                    DebugLog("er min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
+                    // DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
+                    // DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
+                    // DebugLog("er min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
                     
                     if (this.velocity[0] != 0 || this.velocity[1] != 0 || this.velocity[2] != 0){
                         this.ResolveCollision(other);
@@ -86,6 +88,7 @@ class PhysicsObject extends Object{
 
         }
 
+        this.OnPhysicsUpdate();
     }
 
     SetVelocity(velocity) {
@@ -99,7 +102,7 @@ class PhysicsObject extends Object{
     GetVectorInWordSpace(vector3){
         let wordCoordinates = vec3.create();
         vec3.set(vector3, wordCoordinates);
-        mat4.multiplyVec3(this.mvMatrix, wordCoordinates, wordCoordinates);
+        mat4.multiplyVec3(this.mMatrix, wordCoordinates, wordCoordinates);
         return wordCoordinates;
     }
 

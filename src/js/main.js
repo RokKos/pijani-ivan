@@ -8,12 +8,19 @@ function Start() {
     //       - Initialize game parameters
     //       - Initiale controls
     document.getElementById("Pause").checked = false;
+    document.getElementById("PhysicsDebug").checked = false;
     DebugLog("Start Game", kTagMain, "Start");
     InitRender();
     InitGame();
     InitSounds();
     //InitPhysics();
     InitInput();
+}
+
+function updateObjects(){
+    for(let i=0; i<objects.length; i++){
+        objects[i].Update();
+    }
 }
 
 function Update() {
@@ -33,9 +40,11 @@ function Update() {
     HandleInput();
     UpdateGameParameters();
     CalculatePhysics();
+    updateObjects();
     // Move objects -> Probably done from renderer
     drawScene();
-    
+
+    _animateFlash();
 }
 
 

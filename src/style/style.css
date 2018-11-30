@@ -13,7 +13,7 @@ h1 {
 }
 
 h2 {
-	text-align: left;
+	text-align: center;
 }
 
 ul {
@@ -30,4 +30,35 @@ td {
 	left:150px;
 	font-size:2em;
 	color: white;
+}
+
+/*.btn-primary {
+	background-color: #F4C2C2;
+	color : white;
+	border-color: #f7b6ff;
+}
+
+.btn-primary:hover {
+	color : white;
+	background-color: #e1b6ff;
+	border-color:#f7b6ff;
+}
+*/
+
+#container {
+	width: 1280px;
+	height: 720px;
+	position: relative;
+	display: inline-block;
+}
+
+#overlay {
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	font-size: 32pt;
+	position: absolute;
+	padding: 20px;
+    left: 10px;
+	bottom: 10px;
+	color: #ffffff;
+	background-color: rgba(0, 0, 0, 0.5);
 }

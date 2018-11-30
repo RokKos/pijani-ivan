@@ -8,8 +8,15 @@ var physicsShaderProgram;
 var cameraPosition = [0,0,0];
 var cameraRotation = [0,0,0];
 
+var floorY = -2.0;
 
 var lightPosition = [0,0,0];
+var flashAnimation = {
+  duration: 400.0,
+  maxIntensity: 6.0,
+  normalIntensity: 0.5
+};
+var lightIntensity = flashAnimation.normalIntensity;
 
 // Models
 var models = {};
@@ -23,6 +30,9 @@ var mvMatrixStack = [];
 var mvMatrix = mat4.create();
 var mMatrix = mat4.create();
 var pMatrix = mat4.create();
+
+var healthHUD;
+var bulletsHUD;
 
 function mvPushMatrix() {
   var copy = mat4.create();
@@ -66,49 +76,31 @@ function initGL(canvas) {
 // Loads a shader program by scouring the current document,
 // looking for a script with the specified ID.
 //
-function getShader(gl, id) {
-  var shaderScript = document.getElementById(id);
-
-  // Didn't find an element with the specified ID; abort.
-  if (!shaderScript) {
-    return null;
-  }
-
-  // Walk through the source element's children, building the
-  // shader source string.
-  var shaderSource = "";
-  var currentChild = shaderScript.firstChild;
-  while (currentChild) {
-    if (currentChild.nodeType == 3) {
-        shaderSource += currentChild.textContent;
+function readShader(gl, file, type) {
+  return readFile(file).then(function(content){
+    let shader;
+    if (type == "fragment") {
+      shader = gl.createShader(gl.FRAGMENT_SHADER);
+    } else if (type == "vertex") {
+      shader = gl.createShader(gl.VERTEX_SHADER);
+    } else {
+      return Promise.reject("Unknown shader type.");  // Unknown shader type
     }
-    currentChild = currentChild.nextSibling;
-  }
-  
-  // Now figure out what type of shader script we have,
-  // based on its MIME type.
-  var shader;
-  if (shaderScript.type == "x-shader/x-fragment") {
-    shader = gl.createShader(gl.FRAGMENT_SHADER);
-  } else if (shaderScript.type == "x-shader/x-vertex") {
-    shader = gl.createShader(gl.VERTEX_SHADER);
-  } else {
-    return null;  // Unknown shader type
-  }
 
-  // Send the source to the shader object
-  gl.shaderSource(shader, shaderSource);
+    // Send the source to the shader object
+    gl.shaderSource(shader, content);
 
-  // Compile the shader program
-  gl.compileShader(shader);
+    // Compile the shader program
+    gl.compileShader(shader);
 
-  // See if it compiled successfully
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alert(gl.getShaderInfoLog(shader));
-    return null;
-  }
+    // See if it compiled successfully
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      alert(gl.getShaderInfoLog(shader));
+      return Promise.reject("Shader compilation error.");
+    }
 
-  return shader;
+    return shader;
+  });
 }
 
 //
@@ -116,10 +108,7 @@ function getShader(gl, id) {
 //
 // Initialize the shaders, so WebGL knows how to light our scene.
 //
-function initShaders() {
-  var fragmentShader = getShader(gl, "shader-fs");
-  var vertexShader = getShader(gl, "shader-vs");
-  
+function initMainShaders(vertexShader, fragmentShader) {
   // Create the shader program
   shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader);
@@ -163,16 +152,14 @@ function initShaders() {
   shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
 
   shaderProgram.lightPositionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
+  shaderProgram.lightIntensityUniform = gl.getUniformLocation(shaderProgram, "uLightIntensity");
 }
 
-function initPhysicsDebugShaders() {
-  var p_fragmentShader = getShader(gl, "physics-debug-shader-fs");
-  var p_vertexShader = getShader(gl, "physics-debug-shader-vs");
-  
+function initPhysicsDebugShaders(vertexShader, fragmentShader) {
   // Create the shader program
   physicsShaderProgram = gl.createProgram();
-  gl.attachShader(physicsShaderProgram, p_vertexShader);
-  gl.attachShader(physicsShaderProgram, p_fragmentShader);
+  gl.attachShader(physicsShaderProgram, vertexShader);
+  gl.attachShader(physicsShaderProgram, fragmentShader);
   gl.linkProgram(physicsShaderProgram);
   
   // If creating the shader program failed, alert
@@ -223,7 +210,9 @@ function setMatrixUniforms(_shaderProgram) {
   mat4.toInverseMat3(mvMatrix, normalMatrix);
   mat3.transpose(normalMatrix);
   gl.uniformMatrix3fv(_shaderProgram.nMatrixUniform, false, normalMatrix);
+
   gl.uniform3f(_shaderProgram.lightPositionUniform, lightPosition[0], lightPosition[1], lightPosition[2]);
+  gl.uniform1f(_shaderProgram.lightIntensityUniform, lightIntensity);
 }
 
 function degToRad(degrees) {
@@ -241,7 +230,7 @@ function initLevel(level_tiles){
 
     // set position
     tileObject.position[0] = tile.grid_xy[0] * tileSize;
-    tileObject.position[1] = -2.0;
+    tileObject.position[1] = floorY;
     tileObject.position[2] = - tile.grid_xy[1] * tileSize;
 
     // set rotation
@@ -266,6 +255,37 @@ function initModels(models_arr) {
     return Promise.all(model_promises);
 }
 
+function initShaders() {
+  let mainShaders = [readShader(gl, "assets/shaders/main.vert", "vertex"),
+  readShader(gl, "assets/shaders/main.frag", "fragment")];
+  
+  // list of all promises
+  let promises = [];
+
+  let f1 = Promise.all(mainShaders).then((shaderArr)=>{
+    let vert = shaderArr[0];
+    let frag = shaderArr[1];
+    initMainShaders(vert, frag);
+  });
+  promises.push(f1);
+
+  if (PHYSICS_DEBUG){
+    let physicsDebugShaders = [readShader(gl, "assets/shaders/physics-debug.vert", "vertex"),
+    readShader(gl, "assets/shaders/physics-debug.frag", "fragment")];
+    
+    let f2 = Promise.all(physicsDebugShaders).then((shaderArr)=>{
+      let vert = shaderArr[0];
+      let frag = shaderArr[1];
+      initPhysicsDebugShaders(vert, frag);
+    });
+
+    promises.push(f2);
+  }
+
+  // init is done when all promises are done
+  return Promise.all(promises);
+}
+
 function InitObjects() {
 
     // let jama = new Object(models.part_jama);
@@ -275,8 +295,8 @@ function InitObjects() {
     //let kocka1 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let kocka2 = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     let medved = new BearObject(models.medved, TypeOfBoxCollider.kInterior);
-    medved.position = [-2.5, -1, 2];
-    medved.velocity = [0.01, 0, 0.01];
+    medved.position = [3*16, floorY, -2*16];
+    medved.velocity = [0.0, 0, 0.0];
     medved.mass = 20;
 
     // jama.position[1] = -2.0;
@@ -297,28 +317,42 @@ function InitObjects() {
     //kocka1.mass = 100;
 
     kocka2.restitution = 0.5;
+    SetmMatrix(kocka2);
+    kocka2.SetmMatrix(mMatrix);
     //kocka1.restitution = 1.5;
 
     CharacterBody = new PhysicsObject(models.kocka, TypeOfBoxCollider.kInterior);
     CharacterBody.scale = [1.5, 2, 1.5];
     CharacterBody.position = [cameraPosition[0], cameraPosition[1], cameraPosition[2]];
     CharacterBody.SetName("CharacterBody");
-
-    console.log(CharacterBody);
+    CharacterBody.OnPhysicsUpdate = characterBodyUpdate;
 
     // objects.push(jama);
     // objects.push(jama2);
     //objects.push(kocka1);
-    //objects.push(kocka2);
+    // objects.push(kocka2);
     objects.push(CharacterBody);
     objects.push(medved);
     DebugLog("len objects:" + objects.length, kTagRender, "InitModels");
+    ConstructExteriorPhysicsObject(kocka2);
     
 }
 
 function negate(vector){
   return [-vector[0], -vector[1], -vector[2]]
 }
+
+
+function SetmMatrix(obj) {
+    mat4.identity(mMatrix);
+    mat4.translate(mMatrix, obj.position);
+    
+    mat4.rotateZ(mMatrix, degToRad(obj.rotation[2]));
+    mat4.rotateY(mMatrix, degToRad(obj.rotation[1]));
+    mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
+    mat4.scale(mMatrix, obj.scale);
+  }
+
 
 //
 // drawScene
@@ -349,23 +383,14 @@ function drawScene() {
   
   for(let i = 0; i<objects.length; i++){
     mvPushMatrix();
-    mat4.identity(mMatrix);
+    
 
     let obj = objects[i];
     let model = obj.model;
-
-    mat4.translate(mMatrix, obj.position);
-    //DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
-    //if (obj instanceof PhysicsObject || obj instanceof BulletObject) {
-    //  DebugLog(obj.name + " " + obj.position, kTagRender, "drawScene");
-    //}
-    
-    mat4.rotateZ(mMatrix, degToRad(obj.rotation[2]));
-    mat4.rotateY(mMatrix, degToRad(obj.rotation[1]));
-    mat4.rotateX(mMatrix, degToRad(obj.rotation[0]));
-    mat4.scale(mMatrix, obj.scale);
+    SetmMatrix(obj);
+    obj.SetmMatrix(mMatrix);
     mat4.multiply(mvMatrix, mMatrix, mvMatrix);
-    obj.SetmvMatrix(mvMatrix);
+    
 
     // Don't draw character collider because then you cannot see anything
     if (obj == CharacterBody){
@@ -426,18 +451,42 @@ function drawScene() {
     mvPopMatrix();
   }
   
+  drawHUD();
 }
 
+function drawHUD(){
+  healthHUD.nodeValue = characterHealth;
+  bulletsHUD.nodeValue = numBullets;
+}
+
+function initHUD(){
+  let healthElement = document.getElementById("health");
+  let bulletsElement = document.getElementById("bullets");
+
+  healthHUD = document.createTextNode("");
+  bulletsHUD = document.createTextNode("");
+
+  healthElement.appendChild(healthHUD);
+  bulletsElement.appendChild(bulletsHUD);
+}
+
+// Loads the config file
 function loadConfig(path){
+  return readFile(path).then((content)=>{
+    return JSON.parse(content);
+  });
+}
+
+// Reads file and returns a Promise with the content
+function readFile(file){
   let rawFile = new XMLHttpRequest();
-  rawFile.open("GET", path, false);
+  rawFile.open("GET", file, false);
 
   return new Promise(function(resolve, reject){
     rawFile.onreadystatechange = function() {
       if(rawFile.readyState === 4) {
         if(rawFile.status === 200 || rawFile.status == 0) {
-          let data = JSON.parse(rawFile.responseText);
-          resolve(data);
+          resolve(rawFile.responseText);
         }
       }
       reject();
@@ -446,6 +495,27 @@ function loadConfig(path){
   });
 }
 
+function startFlashAnimation(){
+  flashAnimation.start = new Date();
+}
+
+function _animateFlash(){
+  if(flashAnimation.start === undefined)
+    return;
+
+  let deltatime = (new Date()) - flashAnimation.start;
+
+  let t = flashAnimation.duration;
+  let x = deltatime;
+  let c = flashAnimation.maxIntensity;
+  let a =  (-c/(t*t));
+  lightIntensity = flashAnimation.normalIntensity + a*x*x + c;
+
+  if (lightIntensity < flashAnimation.normalIntensity){
+    flashAnimation.start = undefined;
+    lightIntensity = flashAnimation.normalIntensity;
+  }
+}
 
 function InitRender() {
   DebugLog("Init Render and the buffers", kTagRender, "InitRender");
@@ -459,19 +529,12 @@ function InitRender() {
     gl.clearDepth(1.0);                                     // Clear everything
     gl.enable(gl.DEPTH_TEST);                               // Enable depth testing
     gl.depthFunc(gl.LEQUAL);                                // Near things obscure far things
-
-    // Initialize the shaders; this is where all the lighting for the
-    // vertices and so forth is established.
-    if (PHYSICS_DEBUG){
-      initPhysicsDebugShaders();
-    }
-    initShaders();
-    
-    
     
     let config = null;
-    loadConfig("assets/config.json")
-    .then(conf=>{
+    initShaders().then(()=>{
+      return loadConfig("assets/config.json");
+    })
+    .then((conf)=>{
       config = conf;
       return initModels(config.models);
     })
@@ -481,9 +544,7 @@ function InitRender() {
       InitPhysics();
     });
     
-    // Here's where we call the routine that builds all the objects
-    // we'll be drawing.
-    
-    
+    initHUD();
   }
 }
+
