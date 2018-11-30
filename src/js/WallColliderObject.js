@@ -5,6 +5,7 @@ class WallColliderObject extends PhysicsObject{
         super(model, "WallCollider - " + name);
 
         this.mass = Number.MAX_SAFE_INTEGER;
+        //this.restitution = 100;
     }
 
 }

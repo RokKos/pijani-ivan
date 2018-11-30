@@ -49,7 +49,17 @@ class PhysicsObject extends Object{
                 continue;
             }
 
+            if (this == CharacterBody) {
+                resolvingCharacterCollision = false;
+            }
+
             if(this != other) {
+
+                /*if (other instanceof WallColliderObject && this == CharacterBody) {
+                    DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
+                    DebugLog(other.name + "min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex()); 
+                }*/
+
                 if (this.IsInCollisionWith(other)) {
                     this.InCollision = true;
                     if (this instanceof BulletObject && other instanceof BearObject) {
@@ -59,12 +69,24 @@ class PhysicsObject extends Object{
                     if (other instanceof BearObject && this == CharacterBody) {
                         PlayerLoseLife();
                     }
+
+                    if (other instanceof WallColliderObject && this == CharacterBody) {
+                        DebugLog(other.name + "wall collision");
+                    }
+                    
                     // DebugLog("Collision " + this.name + " with " + other.name, kTagPhysicsObject, "PhysicsUpdate");
                     // DebugLog("me min:" + this.GetMinVertex() + " max: " + this.GetMaxVertex());
                     // DebugLog("er min:" + other.GetMinVertex() + " max: " + other.GetMaxVertex());
                     
                     if (this.velocity[0] != 0 || this.velocity[1] != 0 || this.velocity[2] != 0){
                         this.ResolveCollision(other);
+                    }
+
+                    if (this == CharacterBody) {
+                        resolvingCharacterCollision = true;
+                        CharacterBody.velocity[0] = Math.max(-1.5, Math.min(CharacterBody.velocity[0], 1.5));
+                        CharacterBody.velocity[1] =  Math.max(-1.5, Math.min(CharacterBody.velocity[1], 1.5));
+                        CharacterBody.velocity[2] =  Math.max(-1.5, Math.min(CharacterBody.velocity[2], 1.5));
                     }
                 }
 
@@ -123,6 +145,12 @@ class PhysicsObject extends Object{
         relativeVelocity[1] =  other.velocity[1] - this.velocity[1];
         relativeVelocity[2] =  other.velocity[2] - this.velocity[2];
 
+        /*if (other instanceof WallColliderObject) {
+            relativeVelocity[0] *= -1;
+            relativeVelocity[1] *= -1;
+            relativeVelocity[2] *= -1;
+        }*/
+
         let collisionNormal = [0,0,0];
 
         let calculatedNormal = this.GetCollisionNormal(this, other);
@@ -136,6 +164,7 @@ class PhysicsObject extends Object{
         
         // Do not resolve if velocities are separating
         if(velAlongNormal > 0){
+            DebugLog(this.name + " -- " + other.name);
             return;
         }
         DebugLog("velAlongNormal: " + velAlongNormal, kTagPhysicsObject, "ResolveCollision");
@@ -252,7 +281,7 @@ class PhysicsObject extends Object{
 
         //DebugLog("Entry time: " + entryTime + " Exit time: " + exitTime, kTagPhysicsObject, "GetCollisionNormal");
         // if there was no collision
-        if (entryTime > exitTime){// || xEntry < 0.0 && yEntry < 0.0 || xEntry > 1.0 || yEntry > 1.0) {
+        if (false){//entryTime > exitTime){// || xEntry < 0.0 && yEntry < 0.0 || xEntry > 1.0 || yEntry > 1.0) {
             // return no normal
             return [0,0];
         } else {
@@ -280,7 +309,13 @@ class PhysicsObject extends Object{
                 }
             }
 
+
+            //if (objB instanceof WallColliderObject) {
+            //    return [-normalx, -normalz];
+            //}
+
             return [normalx, normalz];
+            
         }
 
     }

@@ -354,17 +354,6 @@ function InitObjects() {
     objects.push(CharacterBody);
     objects.push(medved);
     DebugLog("len objects:" + objects.length, kTagRender, "InitObjects");
-    //DebugLog("len models:" + Object.keys(models).length, kTagRender, "InitObjects");
-    for (var key in models) {
-      //const model = models[i];
-      if (models.hasOwnProperty(key)) {           
-        let model = models[key];
-        DebugLog(key, model, kTagRender, "InitObjects");
-
-        
-      }
-      
-    }
     
 }
 
