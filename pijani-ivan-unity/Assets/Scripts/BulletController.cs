@@ -4,15 +4,25 @@ using UnityEngine;
 
 public class BulletController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    [SerializeField] Rigidbody rigidbody;
+    [SerializeField] float speed;
+
+    private BulletPoolController bulletPoolController;
+
+    public void SetBulletPoolController(BulletPoolController _bulletPoolController) {
+        bulletPoolController = _bulletPoolController;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void Destroy() {
+        bulletPoolController.ReturnBullet(this);
+    }
+
+    public void SetDirectionOfMoving(Vector3 direction) {
+        rigidbody.velocity = direction * speed;
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        rigidbody.velocity = Vector3.zero;
+        Destroy();
     }
 }
