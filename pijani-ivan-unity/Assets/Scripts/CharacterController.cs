@@ -53,11 +53,11 @@ public class CharacterController : MonoBehaviour
 
         // --- Moving Left / Right ---
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            MoveIntoDirection(velocity, accelaration, transform.right.normalized);
+            MoveIntoDirection(velocity, -accelaration, transform.right.normalized);
         }
 
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.LeftArrow)) {
-            MoveIntoDirection(velocity, -accelaration, transform.right.normalized);
+            MoveIntoDirection(velocity, accelaration, transform.right.normalized);
         }
     }
 
