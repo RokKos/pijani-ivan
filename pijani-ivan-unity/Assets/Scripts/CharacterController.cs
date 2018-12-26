@@ -10,6 +10,11 @@ public class CharacterController : MonoBehaviour
     [SerializeField] float maxMovingVelocity;
 
 
+    [Header("Rotation")]
+    [SerializeField] float sensitivity;
+    private const string mouseX = "Mouse X";
+
+
     [Header("Shooting")]
     [SerializeField] BulletPoolController bulletPoolController;
 
@@ -28,6 +33,7 @@ public class CharacterController : MonoBehaviour
         }
 
         MovePlayer();
+        RotatePlayer();
 
     }
 
@@ -37,29 +43,35 @@ public class CharacterController : MonoBehaviour
 
         // --- Moving Forward / Backward ---
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            float velocityZ = Mathf.Min(velocity.z + accelaration, maxMovingVelocity);
-            velocity.z = velocityZ;
-            rigidbody.velocity = velocity;
+            MoveIntoDirection(velocity, accelaration, transform.forward.normalized);
         }
 
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
-            float velocityZ = Mathf.Max(velocity.z - accelaration, -maxMovingVelocity);
-            velocity.z = velocityZ;
-            rigidbody.velocity = velocity;
+            MoveIntoDirection(velocity, -accelaration, transform.forward.normalized);
         }
 
 
         // --- Moving Left / Right ---
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            float velocityX = Mathf.Min(velocity.x + accelaration, maxMovingVelocity);
-            velocity.x = velocityX;
-            rigidbody.velocity = velocity;
+            MoveIntoDirection(velocity, accelaration, transform.right.normalized);
         }
 
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.LeftArrow)) {
-            float velocityX = Mathf.Max(velocity.x - accelaration, -maxMovingVelocity);
-            velocity.x = velocityX;
-            rigidbody.velocity = velocity;
+            MoveIntoDirection(velocity, -accelaration, transform.right.normalized);
         }
+    }
+
+    private void RotatePlayer() {
+        Vector3 eulerAngles = transform.eulerAngles;
+        eulerAngles.y += sensitivity * Input.GetAxis(mouseX);
+        transform.eulerAngles = eulerAngles;
+    }
+
+    private void MoveIntoDirection(Vector3 velocity, float accelaration, Vector3 forward) {
+        float velocityZ = Mathf.Min(velocity.z + accelaration * forward.z, maxMovingVelocity);
+        float velocityX = Mathf.Min(velocity.x + accelaration * forward.x, maxMovingVelocity);
+        velocity.z = velocityZ;
+        velocity.x = velocityX;
+        rigidbody.velocity = velocity;
     }
 }
