@@ -26,8 +26,7 @@ public class CharacterController : MonoBehaviour
     void Update()
     {
         if (Input.GetMouseButtonDown(0)) {
-            BulletController bullet = bulletPoolController.GetBullet();
-            bullet.SetDirectionOfMoving(Vector3.one);
+            Shoot();
         }
 
         MovePlayer();
@@ -71,5 +70,12 @@ public class CharacterController : MonoBehaviour
         velocity.z = velocityZ;
         velocity.x = velocityX;
         rigidbody.velocity = velocity;
+    }
+
+    private void Shoot() {
+        BulletController bullet = bulletPoolController.GetBullet();
+        bullet.transform.position = transform.position + transform.forward + Vector3.up;
+        
+        bullet.SetDirectionOfMoving(transform.rotation);
     }
 }

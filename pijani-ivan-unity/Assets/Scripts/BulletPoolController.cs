@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletPoolController : MonoBehaviour
@@ -16,7 +16,7 @@ public class BulletPoolController : MonoBehaviour
     {
         pool = new Queue<BulletController>(kBulletsNumber);
         for (int i = 0; i < kBulletsNumber; ++i) {
-            BulletController bullet = (BulletController)Instantiate(prefab, farAwayVector, Quaternion.identity, poolSceneParent);
+            BulletController bullet = (BulletController)Instantiate(prefab, farAwayVector, Quaternion.Euler(0,0,90), poolSceneParent);
             bullet.name = System.String.Format("Bullet {0:D2}", i);
             bullet.gameObject.SetActive(false);
             bullet.SetBulletPoolController(this);
