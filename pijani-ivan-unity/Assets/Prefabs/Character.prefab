@@ -217,6 +217,7 @@ MonoBehaviour:
   rigidbody: {fileID: 802511837780459936}
   speed: 10
   maxMovingVelocity: 20
+  mainCamera: {fileID: 534669904}
   sensitivity: 2.11
   bulletPoolController: {fileID: 0}
   playerLives: 5

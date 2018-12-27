@@ -9,8 +9,10 @@ public class CharacterController : MonoBehaviour
 
 
     [Header("Rotation")]
+    [SerializeField] Camera mainCamera;
     [SerializeField] float sensitivity;
     private const string mouseX = "Mouse X";
+    private const string mouseY = "Mouse Y";
 
 
     [Header("Shooting")]
@@ -96,7 +98,9 @@ public class CharacterController : MonoBehaviour
         BulletController bullet = bulletPoolController.GetBullet();
         bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
         
-        bullet.SetDirectionOfMoving(transform.rotation);
+
+
+        bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
     }
 
     private void OnCollisionEnter(Collision collision) {

@@ -22,14 +22,13 @@ public class BulletController : MonoBehaviour
         rigidbody.rotation = transform.rotation;
     }
 
-    public void SetDirectionOfMoving(Quaternion rotation) {
-        
-
-        float direction = Mathf.Deg2Rad * rotation.eulerAngles.y;
-        Vector3 bulletDirection = new Vector3(Mathf.Sin(direction), 0, Mathf.Cos(direction));
+    public void SetDirectionOfMoving(Quaternion playerRotation, Quaternion cameraRotation) {
+        float directionX = Mathf.Deg2Rad * playerRotation.eulerAngles.y;
+        float directionY = Mathf.Deg2Rad * cameraRotation.eulerAngles.x;
+        Vector3 bulletDirection = new Vector3(Mathf.Sin(directionX), -Mathf.Sin(directionY), Mathf.Cos(directionX));
         rigidbody.velocity = bulletDirection * speed;
 
-        Quaternion orientationOfBullet = Quaternion.Euler(0, 90 + rotation.eulerAngles.y, 90);
+        Quaternion orientationOfBullet = Quaternion.Euler(0, 90 + playerRotation.eulerAngles.y, 90 + cameraRotation.eulerAngles.x);
         transform.rotation = orientationOfBullet;
     }
 
