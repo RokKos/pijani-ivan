@@ -4,8 +4,6 @@ using UnityEngine.AI;
 public class MedvedController : MonoBehaviour
 {
     [Header("Bear settings")]
-    [SerializeField] Transform player;
-
     [Range(1, 25)]
     [SerializeField] int bearLifes;
 
@@ -19,6 +17,7 @@ public class MedvedController : MonoBehaviour
     [SerializeField] float kWakeUpRadius;
 
     private NavMeshPath path;
+    private Transform player;
     private float timer = 0.0f;
     private const string kBulletTag = "Bullet";
     
@@ -27,7 +26,7 @@ public class MedvedController : MonoBehaviour
     {
         path = new NavMeshPath();
         timer = 0.0f;
-        navMeshAgent.Warp(new Vector3(-30,0, 15));
+        navMeshAgent.Warp(transform.position);
     }
 
     // Update is called once per frame
@@ -64,5 +63,9 @@ public class MedvedController : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+    }
+
+    public void SetPlayerTransform(Transform _player) {
+        player = _player;
     }
 }

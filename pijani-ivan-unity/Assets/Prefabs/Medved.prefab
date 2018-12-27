@@ -159,7 +159,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a1155212532e134799094758ad99951, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
   bearLifes: 7
   navMeshAgent: {fileID: 7859730118922911856}
   kTimeToCalculate: 1
