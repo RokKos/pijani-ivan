@@ -10,7 +10,7 @@ public class MedvedController : MonoBehaviour
     [Header("NavMesh settings")]
     [SerializeField] NavMeshAgent navMeshAgent;
 
-    [Range(1,10)]
+    [Range(0.1f,10)]
     [SerializeField] float kTimeToCalculate;
 
     [Range(1, 100)]
@@ -34,19 +34,24 @@ public class MedvedController : MonoBehaviour
     {
 
         timer += Time.deltaTime;
-        if (timer > kTimeToCalculate) {
-            timer = 0;
-            NavMesh.CalculatePath(transform.position, player.position, NavMesh.AllAreas, path);
+        // First we calculate aproximation which is easier to compute
+        if ((player.position - transform.position).sqrMagnitude < kWakeUpRadius * kWakeUpRadius) {
 
-            // Calculate distance to player
-            float distanceToPlayer = 0;
-            for (int i = 0; i < path.corners.Length - 1; i++) {
-                distanceToPlayer += (path.corners[i] - path.corners[i + 1]).magnitude;
-            }
+            if (timer > kTimeToCalculate) {
+                timer = 0;
+                // If its smaller then we calculate more demanding path calculation
+                NavMesh.CalculatePath(transform.position, player.position, NavMesh.AllAreas, path);
 
-            if (distanceToPlayer < kWakeUpRadius) {
-                navMeshAgent.SetDestination(player.position);
-                transform.LookAt(player);
+                // Calculate distance to player
+                float distanceToPlayer = 0;
+                for (int i = 0; i < path.corners.Length - 1; i++) {
+                    distanceToPlayer += (path.corners[i] - path.corners[i + 1]).magnitude;
+                }
+
+                if (distanceToPlayer < kWakeUpRadius) {
+                    navMeshAgent.SetDestination(player.position);
+                    transform.LookAt(player);
+                }
             }
         }
 
