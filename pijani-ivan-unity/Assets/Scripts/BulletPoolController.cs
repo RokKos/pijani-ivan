@@ -44,5 +44,6 @@ public class BulletPoolController : MonoBehaviour
         }
         
         bullet.gameObject.SetActive(activate);
+        bullet.ResetBulletRigitBody();
     }
 }

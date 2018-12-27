@@ -1929,22 +1929,6 @@ PrefabInstance:
       propertyPath: bulletPoolController
       value: 
       objectReference: {fileID: 1700617994}
-    - target: {fileID: 2139869463730220029, guid: 71a824b53ae7b954281ce1ec8cc976b9,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2139869463730220029, guid: 71a824b53ae7b954281ce1ec8cc976b9,
-        type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 13400000, guid: dcf074115b304af49a61bc0651189d0c,
-        type: 2}
-    - target: {fileID: 802511837780459936, guid: 71a824b53ae7b954281ce1ec8cc976b9,
-        type: 3}
-      propertyPath: m_Constraints
-      value: 112
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
 --- !u!1001 &7322589579036040535

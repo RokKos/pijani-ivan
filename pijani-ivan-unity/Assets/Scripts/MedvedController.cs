@@ -3,8 +3,12 @@ using UnityEngine.AI;
 
 public class MedvedController : MonoBehaviour
 {
-
+    [Header("Bear settings")]
     [SerializeField] Transform player;
+
+    [Range(1, 25)]
+    [SerializeField] int bearLifes;
+
     [Header("NavMesh settings")]
     [SerializeField] NavMeshAgent navMeshAgent;
 
@@ -16,6 +20,7 @@ public class MedvedController : MonoBehaviour
 
     private NavMeshPath path;
     private float timer = 0.0f;
+    private const string kBulletTag = "Bullet";
     
     // Start is called before the first frame update
     void Start()
@@ -50,9 +55,14 @@ public class MedvedController : MonoBehaviour
         for (int i = 0; i < path.corners.Length - 1; i++) {
             Debug.DrawLine(path.corners[i], path.corners[i + 1], Color.red);
         }
+    }
 
-
-
-
+    private void OnCollisionEnter(Collision collision) {
+        if (collision.collider.gameObject.tag == kBulletTag) {
+            bearLifes--;
+            if (bearLifes <= 0) {
+                Destroy(gameObject);
+            }
+        }
     }
 }

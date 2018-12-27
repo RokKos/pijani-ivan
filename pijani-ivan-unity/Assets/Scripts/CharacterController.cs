@@ -74,7 +74,7 @@ public class CharacterController : MonoBehaviour
 
     private void Shoot() {
         BulletController bullet = bulletPoolController.GetBullet();
-        bullet.transform.position = transform.position + transform.forward + Vector3.up;
+        bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
         
         bullet.SetDirectionOfMoving(transform.rotation);
     }
