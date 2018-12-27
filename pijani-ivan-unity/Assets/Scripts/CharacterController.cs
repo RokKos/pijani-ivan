@@ -16,10 +16,28 @@ public class CharacterController : MonoBehaviour
     [Header("Shooting")]
     [SerializeField] BulletPoolController bulletPoolController;
 
+    [Header("Player Stats")]
+    [Range(1, 25)]
+    [SerializeField] int playerLives;
+
+    [Range(0.5f, 5)]
+    [SerializeField] float timeBetweenHits;
+
+    [Range(1, 500)]
+    [SerializeField] int numBullet;
+
+    [SerializeField] Animator UiAnimator;
+
+
+    private const string kBearTag = "Bear";
+    private const string kPlayerHurt = "PlayerHurt";
+    private float timeFromLastHit;
+
     // Start is called before the first frame update
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        timeFromLastHit = timeBetweenHits;
     }
 
     // Update is called once per frame
@@ -31,6 +49,8 @@ public class CharacterController : MonoBehaviour
 
         MovePlayer();
         RotatePlayer();
+
+        timeFromLastHit += Time.deltaTime;
 
     }
 
@@ -77,5 +97,27 @@ public class CharacterController : MonoBehaviour
         bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
         
         bullet.SetDirectionOfMoving(transform.rotation);
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        CollisionWithBear(collision);
+    }
+
+    private void OnCollisionStay(Collision collision) {
+        CollisionWithBear(collision);
+    }
+
+    private void CollisionWithBear(Collision collision) {
+        bool isHit = collision.collider.tag == kBearTag && timeFromLastHit > timeBetweenHits;
+
+        if (isHit) {
+            playerLives--;
+            UiAnimator.SetTrigger(kPlayerHurt);
+            timeFromLastHit = 0;
+            if (playerLives <= 0) {
+                //TODO: End game
+                //Time.timeScale = 0;
+            }
+        }
     }
 }

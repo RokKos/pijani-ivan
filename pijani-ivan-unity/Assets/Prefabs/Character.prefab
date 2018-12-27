@@ -149,6 +149,10 @@ MonoBehaviour:
   maxMovingVelocity: 20
   sensitivity: 2.11
   bulletPoolController: {fileID: 0}
+  playerLives: 5
+  timeBetweenHits: 0.72
+  numBullet: 150
+  UiAnimator: {fileID: 0}
 --- !u!33 &6860856676283534192
 MeshFilter:
   m_ObjectHideFlags: 0
