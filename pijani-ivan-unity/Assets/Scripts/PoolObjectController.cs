@@ -23,4 +23,11 @@ public class PoolObjectController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 0, 0);
         rigidbody.rotation = transform.rotation;
     }
+
+    protected Vector3 CalculateDirection(Quaternion playerRotation, Quaternion cameraRotation) {
+        float directionX = Mathf.Deg2Rad * playerRotation.eulerAngles.y;
+        float directionY = Mathf.Deg2Rad * cameraRotation.eulerAngles.x;
+        Vector3 direction = new Vector3(Mathf.Sin(directionX), -Mathf.Sin(directionY), Mathf.Cos(directionX));
+        return direction;
+    }
 }

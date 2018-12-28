@@ -55,6 +55,9 @@ public class CharacterController : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) {
             Shoot();
         }
+        if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(1)) {
+            ThrowMolotov();
+        }
 
         MovePlayer();
         RotatePlayer();
@@ -120,6 +123,12 @@ public class CharacterController : MonoBehaviour
         bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
         
         bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
+    }
+
+    private void ThrowMolotov() {
+        MolotovController molotov = bulletPoolController.GetMolotov();
+        molotov.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
+        molotov.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
     }
 
     private void OnCollisionEnter(Collision collision) {

@@ -14,5 +14,15 @@ public class MolotovController : PoolObjectController
         bulletPoolController.ReturnMolotov(this);
     }
 
+    public Rigidbody GetRigitBody() {
+        return rigidbody;
+    }
+
+
+    public void SetDirectionOfMoving(Quaternion playerRotation, Quaternion cameraRotation) {
+        Vector3 molotovDirection = CalculateDirection(playerRotation, cameraRotation);
+        rigidbody.AddForce(molotovDirection * speed, ForceMode.Impulse);
+        rigidbody.AddTorque(molotovDirection * speed, ForceMode.Impulse);
+    }
 
 }
