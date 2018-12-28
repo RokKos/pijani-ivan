@@ -1,23 +1,14 @@
 ﻿using UnityEngine;
 
-public class BulletController : MonoBehaviour
+public class BulletController : PoolObjectController
 {
-    [SerializeField] Rigidbody rigidbody;
-    [SerializeField] float speed;
-
-    private BulletPoolController bulletPoolController;
-
-    public void SetBulletPoolController(BulletPoolController _bulletPoolController) {
-        bulletPoolController = _bulletPoolController;
-    }
-
-    public void Destroy() {
+    public override void Destroy() {
+        base.Destroy();
         bulletPoolController.ReturnBullet(this);
     }
 
-    public void ResetBulletRigitBody() {
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.angularVelocity = Vector3.zero;
+    public override void ResetRigitBody() {
+        base.ResetRigitBody();
         transform.rotation = Quaternion.Euler(0, 0, 90);
         rigidbody.rotation = transform.rotation;
     }

@@ -24,6 +24,7 @@ public class CharacterController : MonoBehaviour
     [Header("Shooting")]
     [SerializeField] BulletPoolController bulletPoolController;
 
+
     [Header("Player Stats")]
     [Range(1, 25)]
     [SerializeField] int playerLives;
