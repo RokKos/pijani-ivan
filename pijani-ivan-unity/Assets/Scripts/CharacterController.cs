@@ -10,7 +10,13 @@ public class CharacterController : MonoBehaviour
 
     [Header("Rotation")]
     [SerializeField] Camera mainCamera;
-    [SerializeField] float sensitivity;
+    [SerializeField] Transform gunTransform;
+    [Tooltip("Sensitivity for player rotation on X axis")]
+    [SerializeField] float sensitivityX;
+
+    [Tooltip("Sensitivity for camera rotation on Y axis")]
+    [SerializeField] float sensitivityY;
+
     private const string mouseX = "Mouse X";
     private const string mouseY = "Mouse Y";
 
@@ -51,6 +57,8 @@ public class CharacterController : MonoBehaviour
 
         MovePlayer();
         RotatePlayer();
+        RotateCamera();
+        RotateGun();
 
         timeFromLastHit += Time.deltaTime;
 
@@ -82,8 +90,20 @@ public class CharacterController : MonoBehaviour
 
     private void RotatePlayer() {
         Vector3 eulerAngles = transform.eulerAngles;
-        eulerAngles.y += sensitivity * Input.GetAxis(mouseX);
+        eulerAngles.y += sensitivityX * Input.GetAxis(mouseX);
         transform.eulerAngles = eulerAngles;
+    }
+
+    private void RotateCamera() {
+        Vector3 eulerAngles = mainCamera.transform.eulerAngles;
+        eulerAngles.x += sensitivityY * Input.GetAxis(mouseY);
+        mainCamera.transform.eulerAngles = eulerAngles;
+    }
+
+    private void RotateGun() {
+        Vector3 eulerAngles = gunTransform.eulerAngles;
+        eulerAngles.z -= sensitivityY * Input.GetAxis(mouseY);
+        gunTransform.eulerAngles = eulerAngles;
     }
 
     private void MoveIntoDirection(Vector3 velocity, float accelaration, Vector3 forward) {
@@ -98,8 +118,6 @@ public class CharacterController : MonoBehaviour
         BulletController bullet = bulletPoolController.GetBullet();
         bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
         
-
-
         bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
     }
 
