@@ -10,6 +10,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] float jogFactor;
     [SerializeField] float jogSinusKvocient;
     [SerializeField] float jogSinusOffset;
+    [SerializeField] AudioSource footstepAudio;
 
     private float joggingAngle = 0;
 
@@ -127,7 +128,14 @@ public class CharacterController : MonoBehaviour
 
     private void FakeJogging() {
         joggingAngle += Time.deltaTime * jogFactor;
-        float yPos = Mathf.Sin(Mathf.Deg2Rad * joggingAngle) / jogSinusKvocient + jogSinusOffset;
+        float sinus = Mathf.Sin(Mathf.Deg2Rad * joggingAngle);
+
+        if (Mathf.Abs(sinus - 1) < 0.01 && !footstepAudio.isPlaying) {
+            Debug.Log(sinus);
+            footstepAudio.Play();
+        }
+
+        float yPos = sinus / jogSinusKvocient + jogSinusOffset;
         Vector3 camPos = mainCamera.transform.position;
         camPos.y = yPos;
         mainCamera.transform.position = camPos;
