@@ -281,6 +281,9 @@ MonoBehaviour:
   rigidbody: {fileID: 802511837780459936}
   speed: 10
   maxMovingVelocity: 20
+  jogFactor: 287.3
+  jogSinusKvocient: 24.7
+  jogSinusOffset: 1.931
   mainCamera: {fileID: 534669904}
   gunTransform: {fileID: 1133198650}
   sensitivityX: 2.11

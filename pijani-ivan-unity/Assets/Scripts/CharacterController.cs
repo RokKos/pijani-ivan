@@ -6,7 +6,12 @@ public class CharacterController : MonoBehaviour
     [SerializeField] Rigidbody rigidbody;
     [SerializeField] float speed;
     [SerializeField] float maxMovingVelocity;
+    [Header("Jogging")]
+    [SerializeField] float jogFactor;
+    [SerializeField] float jogSinusKvocient;
+    [SerializeField] float jogSinusOffset;
 
+    private float joggingAngle = 0;
 
     [Header("Rotation")]
     [SerializeField] Camera mainCamera;
@@ -116,6 +121,16 @@ public class CharacterController : MonoBehaviour
         velocity.z = velocityZ;
         velocity.x = velocityX;
         rigidbody.velocity = velocity;
+
+        FakeJogging();
+    }
+
+    private void FakeJogging() {
+        joggingAngle += Time.deltaTime * jogFactor;
+        float yPos = Mathf.Sin(Mathf.Deg2Rad * joggingAngle) / jogSinusKvocient + jogSinusOffset;
+        Vector3 camPos = mainCamera.transform.position;
+        camPos.y = yPos;
+        mainCamera.transform.position = camPos;
     }
 
     private void Shoot() {
