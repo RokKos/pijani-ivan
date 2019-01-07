@@ -7,6 +7,8 @@ public class MedvedController : MonoBehaviour
     [Range(1, 25)]
     [SerializeField] int bearLifes;
 
+    [SerializeField] AudioSource bearRoar;
+
     [Header("NavMesh settings")]
     [SerializeField] NavMeshAgent navMeshAgent;
 
@@ -36,6 +38,10 @@ public class MedvedController : MonoBehaviour
         timer += Time.deltaTime;
         // First we calculate aproximation which is easier to compute
         if ((player.position - transform.position).sqrMagnitude < kWakeUpRadius * kWakeUpRadius) {
+            Debug.Log("HERE");
+            if (!bearRoar.isPlaying) {
+                bearRoar.Play();
+            }
 
             if (timer > kTimeToCalculate) {
                 timer = 0;
