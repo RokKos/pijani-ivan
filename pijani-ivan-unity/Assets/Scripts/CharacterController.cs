@@ -31,6 +31,8 @@ public class CharacterController : MonoBehaviour
     [SerializeField] BulletPoolController bulletPoolController;
     [SerializeField] AudioSource gunshootAudio;
     [SerializeField] AudioSource gunEmptyAudio;
+    [SerializeField] AudioSource gunReloadAudio;
+    const string kTagAmmonition = "Ammonition";
 
 
     [Header("Player Stats")]
@@ -189,6 +191,14 @@ public class CharacterController : MonoBehaviour
                 //TODO: End game
                 //Time.timeScale = 0;
             }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        
+        if (other.tag == kTagAmmonition) {
+            numBullet += 30;
+            gunReloadAudio.Play();
         }
     }
 }

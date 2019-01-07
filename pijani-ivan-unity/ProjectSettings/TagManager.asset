@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Bear
   - Bullet
+  - Ammonition
   layers:
   - Default
   - TransparentFX
