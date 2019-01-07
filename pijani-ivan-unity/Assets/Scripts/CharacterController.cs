@@ -30,6 +30,7 @@ public class CharacterController : MonoBehaviour
     [Header("Shooting")]
     [SerializeField] BulletPoolController bulletPoolController;
     [SerializeField] AudioSource gunshootAudio;
+    [SerializeField] AudioSource gunEmptyAudio;
 
 
     [Header("Player Stats")]
@@ -41,6 +42,9 @@ public class CharacterController : MonoBehaviour
 
     [Range(1, 500)]
     [SerializeField] int numBullet;
+
+    [Range(1, 10)]
+    [SerializeField] int numMolotovs;
 
     [SerializeField] Animator UiAnimator;
 
@@ -143,17 +147,27 @@ public class CharacterController : MonoBehaviour
     }
 
     private void Shoot() {
-        BulletController bullet = bulletPoolController.GetBullet();
-        bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
-        
-        bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
-        gunshootAudio.Play();
+        if (numBullet > 0) {
+            numBullet--;
+            BulletController bullet = bulletPoolController.GetBullet();
+            bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
+
+            bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
+            gunshootAudio.Play();
+        } else {
+            if (!gunEmptyAudio.isPlaying) {
+                gunEmptyAudio.Play();
+            }
+        }
     }
 
     private void ThrowMolotov() {
-        MolotovController molotov = bulletPoolController.GetMolotov();
-        molotov.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
-        molotov.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
+        if (numMolotovs > 0) {
+            numMolotovs--;
+            MolotovController molotov = bulletPoolController.GetMolotov();
+            molotov.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
+            molotov.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
+        }
     }
 
     private void OnCollisionEnter(Collision collision) {
