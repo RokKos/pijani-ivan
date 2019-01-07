@@ -29,6 +29,7 @@ public class CharacterController : MonoBehaviour
 
     [Header("Shooting")]
     [SerializeField] BulletPoolController bulletPoolController;
+    [SerializeField] AudioSource gunshootAudio;
 
 
     [Header("Player Stats")]
@@ -146,6 +147,7 @@ public class CharacterController : MonoBehaviour
         bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
         
         bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
+        gunshootAudio.Play();
     }
 
     private void ThrowMolotov() {
