@@ -32,6 +32,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] AudioSource gunshootAudio;
     [SerializeField] AudioSource gunEmptyAudio;
     [SerializeField] AudioSource gunReloadAudio;
+    [SerializeField] Animator lightAnimator;
     const string kTagAmmonition = "Ammonition";
 
 
@@ -163,6 +164,7 @@ public class CharacterController : MonoBehaviour
 
             bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
             gunshootAudio.Play();
+            lightAnimator.SetTrigger("Flash");
         } else {
             if (!gunEmptyAudio.isPlaying) {
                 gunEmptyAudio.Play();
