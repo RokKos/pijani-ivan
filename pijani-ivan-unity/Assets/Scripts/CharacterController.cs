@@ -138,11 +138,11 @@ public class CharacterController : MonoBehaviour
     }
 
     private void MoveIntoDirection(Vector3 velocity, float accelaration, Vector3 forward) {
-        float velocityZ = Mathf.Min(velocity.z + accelaration * forward.z, maxMovingVelocity);
-        float velocityX = Mathf.Min(velocity.x + accelaration * forward.x, maxMovingVelocity);
-        velocity.z = velocityZ;
-        velocity.x = velocityX;
-        rigidbody.velocity = velocity;
+        //float velocityZ = Mathf.Min(velocity.z + accelaration * forward.z, maxMovingVelocity);
+        //float velocityX = Mathf.Min(velocity.x + accelaration * forward.x, maxMovingVelocity);
+        //velocity.z = velocityZ;
+        //velocity.x = velocityX;
+        rigidbody.velocity = speed * forward;
 
         FakeJogging();
     }
