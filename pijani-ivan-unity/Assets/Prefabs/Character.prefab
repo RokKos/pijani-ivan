@@ -45,7 +45,7 @@ Light:
   m_Color: {r: 1, g: 0.92095566, b: 0.5330188, a: 1}
   m_Intensity: 2.91
   m_Range: 8.3
-  m_SpotAngle: 108.1
+  m_SpotAngle: 152
   m_CookieSize: 10
   m_Shadows:
     m_Type: 2
@@ -434,6 +434,7 @@ MonoBehaviour:
   rigidbody: {fileID: 802511837780459936}
   speed: 10
   maxMovingVelocity: 20
+  resetTransform: {fileID: 0}
   jogFactor: 287.3
   jogSinusKvocient: 24.7
   jogSinusOffset: 1.931
@@ -522,7 +523,7 @@ Rigidbody:
   m_GameObject: {fileID: 7319067616713266224}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 1
+  m_Drag: 10
   m_AngularDrag: 3
   m_UseGravity: 1
   m_IsKinematic: 0

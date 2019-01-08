@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
@@ -6,6 +6,8 @@ public class CharacterController : MonoBehaviour
     [SerializeField] Rigidbody rigidbody;
     [SerializeField] float speed;
     [SerializeField] float maxMovingVelocity;
+    [SerializeField] Transform resetTransform;
+
     [Header("Jogging")]
     [SerializeField] float jogFactor;
     [SerializeField] float jogSinusKvocient;
@@ -36,6 +38,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] Animator lightAnimator;
     [SerializeField] Transform bulletSpawnPoint;
     const string kTagAmmonition = "Ammonition";
+    const string kTagFinish = "Finish";
 
 
     [Header("Player Stats")]
@@ -109,7 +112,8 @@ public class CharacterController : MonoBehaviour
             moveDirection += transform.right;
         }
 
-        if (moveDirection.sqrMagnitude > 0) {
+        if (moveDirection.sqrMagnitude > 0)
+        {
             moveDirection.Normalize();
             MoveIntoDirection(velocity, accelaration, moveDirection);
         }
@@ -213,5 +217,16 @@ public class CharacterController : MonoBehaviour
             numBullet += 30;
             gunReloadAudio.Play();
         }
+
+        if (other.tag == kTagFinish)
+        {
+            GameController.Instance.EndLevel();
+        }
+    }
+
+    public void ResetPlayer()
+    {
+        transform.position = resetTransform.position;
+        transform.rotation = resetTransform.rotation;
     }
 }

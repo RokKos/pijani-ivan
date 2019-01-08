@@ -29,6 +29,8 @@ public class MedvedController : MonoBehaviour
         path = new NavMeshPath();
         timer = 0.0f;
         navMeshAgent.Warp(transform.position);
+
+        player = GameController.Instance.player.transform;
     }
 
     // Update is called once per frame
