@@ -33,6 +33,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] AudioSource gunEmptyAudio;
     [SerializeField] AudioSource gunReloadAudio;
     [SerializeField] Animator lightAnimator;
+    [SerializeField] Transform bulletSpawnPoint;
     const string kTagAmmonition = "Ammonition";
 
 
@@ -160,7 +161,8 @@ public class CharacterController : MonoBehaviour
         if (numBullet > 0) {
             numBullet--;
             BulletController bullet = bulletPoolController.GetBullet();
-            bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
+            //bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
+            bullet.transform.position = bulletSpawnPoint.position;
 
             bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
             gunshootAudio.Play();
