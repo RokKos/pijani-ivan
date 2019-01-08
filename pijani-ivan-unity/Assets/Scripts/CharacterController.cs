@@ -85,23 +85,30 @@ public class CharacterController : MonoBehaviour
         Vector3 velocity = rigidbody.velocity;
         float accelaration = speed * Time.fixedDeltaTime;
 
+        Vector3 moveDirection = new Vector3();
+
         // --- Moving Forward / Backward ---
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            MoveIntoDirection(velocity, accelaration, transform.forward.normalized);
+            moveDirection += transform.forward;
         }
 
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
-            MoveIntoDirection(velocity, -accelaration, transform.forward.normalized);
+            moveDirection -= transform.forward;
         }
 
 
         // --- Moving Left / Right ---
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            MoveIntoDirection(velocity, -accelaration, transform.right.normalized);
+            moveDirection -= transform.right;
         }
 
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.LeftArrow)) {
-            MoveIntoDirection(velocity, accelaration, transform.right.normalized);
+            moveDirection += transform.right;
+        }
+
+        if (moveDirection.sqrMagnitude > 0) {
+            moveDirection.Normalize();
+            MoveIntoDirection(velocity, accelaration, moveDirection);
         }
     }
 
