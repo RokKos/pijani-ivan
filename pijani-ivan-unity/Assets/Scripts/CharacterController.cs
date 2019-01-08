@@ -32,6 +32,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] AudioSource gunshootAudio;
     [SerializeField] AudioSource gunEmptyAudio;
     [SerializeField] AudioSource gunReloadAudio;
+    [SerializeField] AudioSource bottleThrowAudio;
     [SerializeField] Animator lightAnimator;
     [SerializeField] Transform bulletSpawnPoint;
     const string kTagAmmonition = "Ammonition";
@@ -180,6 +181,7 @@ public class CharacterController : MonoBehaviour
             MolotovController molotov = bulletPoolController.GetMolotov();
             molotov.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
             molotov.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
+            bottleThrowAudio.Play();
         }
     }
 

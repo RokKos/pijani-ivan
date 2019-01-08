@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MolotovController : PoolObjectController
 {
+    [SerializeField] AudioSource bottleFallAudio;
+    private bool soundPlayed;
 
     private void Start() {
         Invoke("Destroy", 5);
@@ -25,4 +27,12 @@ public class MolotovController : PoolObjectController
         rigidbody.AddTorque(molotovDirection * speed, ForceMode.Impulse);
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!soundPlayed)
+        {
+            bottleFallAudio.Play();
+            soundPlayed = true;
+        }
+    }
 }
