@@ -52,7 +52,8 @@ public class CharacterController : MonoBehaviour
     [Header("UI")]
     [SerializeField] Animator UiAnimator;
     [SerializeField] Text txtBullets;
-    [SerializeField] Text txtMolotovs;
+    //[SerializeField] Text txtMolotovs;
+    
 
 
     private const string kBearTag = "Bear";
@@ -173,7 +174,7 @@ public class CharacterController : MonoBehaviour
     private void ThrowMolotov() {
         if (numMolotovs > 0) {
             numMolotovs--;
-            txtMolotovs.text = numMolotovs.ToString();
+            //txtMolotovs.text = numMolotovs.ToString();
             MolotovController molotov = bulletPoolController.GetMolotov();
             molotov.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
             molotov.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
