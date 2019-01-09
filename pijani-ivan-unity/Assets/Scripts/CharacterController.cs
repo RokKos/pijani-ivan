@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterController : MonoBehaviour
 {
@@ -48,18 +49,23 @@ public class CharacterController : MonoBehaviour
     [Range(1, 10)]
     [SerializeField] int numMolotovs;
 
+    [Header("UI")]
     [SerializeField] Animator UiAnimator;
+    [SerializeField] Text txtBullets;
+    [SerializeField] Text txtMolotovs;
 
 
     private const string kBearTag = "Bear";
     private const string kPlayerHurt = "PlayerHurt";
     private float timeFromLastHit;
 
+
     // Start is called before the first frame update
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         timeFromLastHit = timeBetweenHits;
+ 
     }
 
     // Update is called once per frame
@@ -151,6 +157,7 @@ public class CharacterController : MonoBehaviour
     private void Shoot() {
         if (numBullet > 0) {
             numBullet--;
+            txtBullets.text = numBullet.ToString();
             BulletController bullet = bulletPoolController.GetBullet();
             bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
 
@@ -166,6 +173,7 @@ public class CharacterController : MonoBehaviour
     private void ThrowMolotov() {
         if (numMolotovs > 0) {
             numMolotovs--;
+            txtMolotovs.text = numMolotovs.ToString();
             MolotovController molotov = bulletPoolController.GetMolotov();
             molotov.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
             molotov.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
@@ -185,6 +193,7 @@ public class CharacterController : MonoBehaviour
 
         if (isHit) {
             playerLives--;
+            HealthBar.health -= 10f;
             UiAnimator.SetTrigger(kPlayerHurt);
             timeFromLastHit = 0;
             if (playerLives <= 0) {
@@ -198,6 +207,7 @@ public class CharacterController : MonoBehaviour
         
         if (other.tag == kTagAmmonition) {
             numBullet += 30;
+            txtBullets.text = numBullet.ToString();
             gunReloadAudio.Play();
         }
     }

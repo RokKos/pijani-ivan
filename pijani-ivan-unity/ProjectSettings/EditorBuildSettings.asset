@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MainScene.unity
     guid: 68dc2082a21ac1043930b5cd78044a9b
   - enabled: 1
@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ZacetnaScena.unity
     guid: 64a41d2b84f2a3e40aabe8d29ee195b1
+  - enabled: 1
+    path: Assets/Scenes/UIScena.unity
+    guid: a33d8c2fb68a0a1498ceefcb69dbbf91
   m_configObjects: {}
