@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class CharacterController : MonoBehaviour
@@ -7,6 +7,8 @@ public class CharacterController : MonoBehaviour
     [SerializeField] Rigidbody rigidbody;
     [SerializeField] float speed;
     [SerializeField] float maxMovingVelocity;
+    [SerializeField] Transform resetTransform;
+
     [Header("Jogging")]
     [SerializeField] float jogFactor;
     [SerializeField] float jogSinusKvocient;
@@ -33,7 +35,11 @@ public class CharacterController : MonoBehaviour
     [SerializeField] AudioSource gunshootAudio;
     [SerializeField] AudioSource gunEmptyAudio;
     [SerializeField] AudioSource gunReloadAudio;
+    [SerializeField] AudioSource bottleThrowAudio;
+    [SerializeField] Animator lightAnimator;
+    [SerializeField] Transform bulletSpawnPoint;
     const string kTagAmmonition = "Ammonition";
+    const string kTagFinish = "Finish";
 
 
     [Header("Player Stats")]
@@ -92,23 +98,31 @@ public class CharacterController : MonoBehaviour
         Vector3 velocity = rigidbody.velocity;
         float accelaration = speed * Time.fixedDeltaTime;
 
+        Vector3 moveDirection = new Vector3();
+
         // --- Moving Forward / Backward ---
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            MoveIntoDirection(velocity, accelaration, transform.forward.normalized);
+            moveDirection += transform.forward;
         }
 
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
-            MoveIntoDirection(velocity, -accelaration, transform.forward.normalized);
+            moveDirection -= transform.forward;
         }
 
 
         // --- Moving Left / Right ---
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            MoveIntoDirection(velocity, -accelaration, transform.right.normalized);
+            moveDirection -= transform.right;
         }
 
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.LeftArrow)) {
-            MoveIntoDirection(velocity, accelaration, transform.right.normalized);
+            moveDirection += transform.right;
+        }
+
+        if (moveDirection.sqrMagnitude > 0)
+        {
+            moveDirection.Normalize();
+            MoveIntoDirection(velocity, accelaration, moveDirection);
         }
     }
 
@@ -131,11 +145,11 @@ public class CharacterController : MonoBehaviour
     }
 
     private void MoveIntoDirection(Vector3 velocity, float accelaration, Vector3 forward) {
-        float velocityZ = Mathf.Min(velocity.z + accelaration * forward.z, maxMovingVelocity);
-        float velocityX = Mathf.Min(velocity.x + accelaration * forward.x, maxMovingVelocity);
-        velocity.z = velocityZ;
-        velocity.x = velocityX;
-        rigidbody.velocity = velocity;
+        //float velocityZ = Mathf.Min(velocity.z + accelaration * forward.z, maxMovingVelocity);
+        //float velocityX = Mathf.Min(velocity.x + accelaration * forward.x, maxMovingVelocity);
+        //velocity.z = velocityZ;
+        //velocity.x = velocityX;
+        rigidbody.velocity = speed * forward;
 
         FakeJogging();
     }
@@ -160,10 +174,12 @@ public class CharacterController : MonoBehaviour
             numBullet--;
             txtBullets.text = numBullet.ToString();
             BulletController bullet = bulletPoolController.GetBullet();
-            bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
+            //bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
+            bullet.transform.position = bulletSpawnPoint.position;
 
             bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
             gunshootAudio.Play();
+            lightAnimator.SetTrigger("Flash");
         } else {
             if (!gunEmptyAudio.isPlaying) {
                 gunEmptyAudio.Play();
@@ -178,6 +194,7 @@ public class CharacterController : MonoBehaviour
             MolotovController molotov = bulletPoolController.GetMolotov();
             molotov.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
             molotov.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
+            bottleThrowAudio.Play();
         }
     }
 
@@ -211,5 +228,16 @@ public class CharacterController : MonoBehaviour
             txtBullets.text = numBullet.ToString();
             gunReloadAudio.Play();
         }
+
+        if (other.tag == kTagFinish)
+        {
+            GameController.Instance.EndLevel();
+        }
+    }
+
+    public void ResetPlayer()
+    {
+        transform.position = resetTransform.position;
+        transform.rotation = resetTransform.rotation;
     }
 }

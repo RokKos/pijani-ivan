@@ -2,6 +2,15 @@
 
 public class BulletController : PoolObjectController
 {
+    [SerializeField] ParticleSystem particleSystem;
+
+    MeshRenderer meshRenderer;
+    private const string kBearTag = "Bear";
+
+    private void Start() {
+        meshRenderer = GetComponent<MeshRenderer>();
+    }
+
     public override void Destroy() {
         base.Destroy();
         bulletPoolController.ReturnBullet(this);
@@ -22,8 +31,18 @@ public class BulletController : PoolObjectController
     }
 
     private void OnCollisionEnter(Collision collision) {
-        rigidbody.velocity = Vector3.zero;
-        Destroy();
+        // Disable physics
+        Destroy(rigidbody);
+
+        if(collision.collider.gameObject.tag == kBearTag) {
+            meshRenderer.enabled = false;
+            particleSystem.Play();
+            Destroy(gameObject, 1.0f);
+        }
+        else {
+            Destroy(gameObject);
+        }
+
     }
 
 }
