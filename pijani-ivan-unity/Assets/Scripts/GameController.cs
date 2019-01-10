@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
 
     [SerializeField] public CharacterController player;
     [SerializeField] public LevelController levelController;
+    [SerializeField] public Transform minimapCamera;
 
     public void EndLevel()
     {
