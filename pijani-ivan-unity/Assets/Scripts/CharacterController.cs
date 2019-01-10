@@ -58,7 +58,7 @@ public class CharacterController : MonoBehaviour
     [Header("UI")]
     [SerializeField] Animator UiAnimator;
     [SerializeField] Text txtBullets;
-    //[SerializeField] Text txtMolotovs;
+    [SerializeField] Text txtMolotovs;
     
 
 
@@ -72,7 +72,16 @@ public class CharacterController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         timeFromLastHit = timeBetweenHits;
- 
+        HealthBar.maxHealth = playerLives;
+
+        UpdateHUD();
+    }
+
+    void UpdateHUD()
+    {
+        HealthBar.health = playerLives;
+        txtBullets.text = numBullet.ToString();
+        txtMolotovs.text = numMolotovs.ToString();
     }
 
     // Update is called once per frame
@@ -172,7 +181,7 @@ public class CharacterController : MonoBehaviour
     private void Shoot() {
         if (numBullet > 0) {
             numBullet--;
-            txtBullets.text = numBullet.ToString();
+            UpdateHUD();
             BulletController bullet = bulletPoolController.GetBullet();
             //bullet.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
             bullet.transform.position = bulletSpawnPoint.position;
@@ -190,7 +199,7 @@ public class CharacterController : MonoBehaviour
     private void ThrowMolotov() {
         if (numMolotovs > 0) {
             numMolotovs--;
-            //txtMolotovs.text = numMolotovs.ToString();
+            UpdateHUD();
             MolotovController molotov = bulletPoolController.GetMolotov();
             molotov.transform.position = transform.position + transform.forward * 2 + Vector3.up + transform.right / 2;
             molotov.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
@@ -211,12 +220,11 @@ public class CharacterController : MonoBehaviour
 
         if (isHit) {
             playerLives--;
-            HealthBar.health -= 10f;
+            UpdateHUD();
             UiAnimator.SetTrigger(kPlayerHurt);
             timeFromLastHit = 0;
             if (playerLives <= 0) {
-                //TODO: End game
-                //Time.timeScale = 0;
+                GameController.Instance.GameOver();
             }
         }
     }

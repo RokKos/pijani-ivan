@@ -50,9 +50,13 @@ public class LevelController : MonoBehaviour
     public void NextLevel()
     {
         level += 1;
-        if(level < levelScenes.Length)
+        if (level < levelScenes.Length)
         {
             LoadLevel();
+        }
+        else
+        {
+            GameController.Instance.GameWon();
         }
     }
 

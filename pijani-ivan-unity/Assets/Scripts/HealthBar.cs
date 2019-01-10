@@ -7,7 +7,7 @@ public class HealthBar : MonoBehaviour
 {
 
     Image healthBar;
-    float maxHealth = 100f;
+    public static float maxHealth = 100f;
     public static float health;
     // Start is called before the first frame update
     void Start()

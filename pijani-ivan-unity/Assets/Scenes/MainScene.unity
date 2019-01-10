@@ -373,6 +373,80 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 962102442}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &559422170
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 559422171}
+  - component: {fileID: 559422173}
+  - component: {fileID: 559422172}
+  m_Layer: 5
+  m_Name: Crosshair
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &559422171
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559422170}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 983388494}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &559422172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559422170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: c5a96b46747f44058b6cf11974b2ce1a, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+--- !u!222 &559422173
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559422170}
+  m_CullTransparentMesh: 0
 --- !u!1 &734039099
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,6 +516,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &761616257 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3605645943954483077, guid: 78206c0a406634cbc8e63cbba322a378,
+    type: 3}
+  m_PrefabInstance: {fileID: 962102442}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &779975450
 GameObject:
   m_ObjectHideFlags: 0
@@ -766,6 +852,7 @@ RectTransform:
   - {fileID: 1452111470}
   - {fileID: 268102905}
   - {fileID: 494133931}
+  - {fileID: 559422171}
   m_Father: {fileID: 993102416}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1192,6 +1279,18 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
+--- !u!114 &1990471241 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3605645942736179561, guid: 78206c0a406634cbc8e63cbba322a378,
+    type: 3}
+  m_PrefabInstance: {fileID: 962102442}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2135460464
 GameObject:
   m_ObjectHideFlags: 0
@@ -1441,6 +1540,16 @@ PrefabInstance:
       propertyPath: UiAnimator
       value: 
       objectReference: {fileID: 971791272}
+    - target: {fileID: 7319067616713266190, guid: 71a824b53ae7b954281ce1ec8cc976b9,
+        type: 3}
+      propertyPath: txtBullets
+      value: 
+      objectReference: {fileID: 1990471241}
+    - target: {fileID: 7319067616713266190, guid: 71a824b53ae7b954281ce1ec8cc976b9,
+        type: 3}
+      propertyPath: txtMolotovs
+      value: 
+      objectReference: {fileID: 761616257}
     - target: {fileID: 534669904, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
       propertyPath: m_ClearFlags
       value: 2
