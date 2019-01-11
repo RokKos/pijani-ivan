@@ -399,7 +399,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8e4e1482e9ed34049bed874c1ecc73e1, type: 3}
+  - {fileID: 2100000, guid: de1ff4c5c015649ef8df0a38a9ac9292, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -530,6 +530,8 @@ MonoBehaviour:
   numBullet: 50
   numMolotovs: 5
   UiAnimator: {fileID: 0}
+  txtBullets: {fileID: 0}
+  txtMolotovs: {fileID: 0}
 --- !u!33 &6860856676283534192
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -545,7 +547,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7319067616713266224}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
