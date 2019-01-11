@@ -245,7 +245,7 @@ public class CharacterController : MonoBehaviour
         CollisionWithBear(other);
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         CollisionWithBear(other);
     }

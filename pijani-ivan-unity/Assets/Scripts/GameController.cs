@@ -25,11 +25,13 @@ public class GameController : MonoBehaviour
     public void GameOver()
     {
         SceneManager.LoadScene(sceneGameOver);
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void GameWon()
     {
         SceneManager.LoadScene(sceneGameWon);
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void DisplayKeyText()
