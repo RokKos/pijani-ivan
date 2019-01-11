@@ -10,6 +10,8 @@ public class CharacterController : MonoBehaviour
     [SerializeField] float maxMovingVelocity;
     [SerializeField] Transform resetTransform;
 
+    private int sprintModifier = 1;
+
     [Header("Jogging")]
     [SerializeField] float jogFactor;
     [SerializeField] float jogSinusKvocient;
@@ -139,6 +141,13 @@ public class CharacterController : MonoBehaviour
             moveDirection += transform.right;
         }
 
+        // --- Sprint --- 
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
+            sprintModifier = 2;
+        } else {
+            sprintModifier = 1;
+        }
+
         if (moveDirection.sqrMagnitude > 0)
         {
             moveDirection.Normalize();
@@ -169,13 +178,14 @@ public class CharacterController : MonoBehaviour
         //float velocityX = Mathf.Min(velocity.x + accelaration * forward.x, maxMovingVelocity);
         //velocity.z = velocityZ;
         //velocity.x = velocityX;
-        rigidbody.velocity = speed * forward;
+
+        rigidbody.velocity = speed * sprintModifier * forward;
 
         FakeJogging();
     }
 
     private void FakeJogging() {
-        joggingAngle += Time.deltaTime * jogFactor;
+        joggingAngle += Time.deltaTime * jogFactor * sprintModifier;
         float sinus = Mathf.Sin(Mathf.Deg2Rad * joggingAngle);
 
         if (Mathf.Abs(sinus - 1) < 0.01 && !footstepAudio.isPlaying) {
