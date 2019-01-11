@@ -6,15 +6,13 @@ public class KeyController : MonoBehaviour {
 
     private const string kPlayerTag = "Player";
 
-    private LevelController levelController;
+    [SerializeField] Animator door;
 
-    public void SetLevelController(LevelController _levelController) {
-        levelController = _levelController;
-    }
 
     private void OnTriggerEnter(Collider other) {
         if (other.tag == kPlayerTag) {
-            levelController.OpenGates(this);
+            door.SetBool("Open", true);
+            GameController.Instance.DisplayKeyText();
             Destroy(this.gameObject);
         }
     }

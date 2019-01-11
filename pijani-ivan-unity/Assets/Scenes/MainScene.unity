@@ -1164,6 +1164,7 @@ MonoBehaviour:
   player: {fileID: 7319067616823851376}
   levelController: {fileID: 44060212}
   minimapCamera: {fileID: 7319067616823851377}
+  uiController: {fileID: 282271759}
 --- !u!1 &1700617992
 GameObject:
   m_ObjectHideFlags: 0

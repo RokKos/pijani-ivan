@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     [SerializeField] public CharacterController player;
     [SerializeField] public LevelController levelController;
     [SerializeField] public Transform minimapCamera;
+    [SerializeField] private UiController uiController;
 
     private const string sceneGameOver = "ScenaNeuspeh";
     private const string sceneGameWon = "ScenaUspeh";
@@ -29,6 +30,11 @@ public class GameController : MonoBehaviour
     public void GameWon()
     {
         SceneManager.LoadScene(sceneGameWon);
+    }
+
+    public void DisplayKeyText()
+    {
+        uiController.DisplayOpenGates();
     }
 
     // Start is called before the first frame update
