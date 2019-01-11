@@ -3,3 +3,5 @@ Credits:
  - Click Sound: https://freesound.org/people/Timbre/sounds/111853/
  - Reload: https://freesound.org/people/deathnsorrow/sounds/149177/
  - Crate with amonition http://devassets.com/assets/western-props-pack/
+ - Kenney Fonts : https://kenney.nl/assets/kenney-fonts
+ - Kenney UI pack: https://kenney.nl/assets/ui-pack
