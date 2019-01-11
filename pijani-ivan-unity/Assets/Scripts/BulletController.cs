@@ -8,6 +8,12 @@ public class BulletController : PoolObjectController
     private const string kBearTag = "Bear";
 
     private void Start() {
+
+    }
+
+
+    public void Init()
+    {
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
@@ -18,6 +24,8 @@ public class BulletController : PoolObjectController
 
     public override void ResetRigitBody() {
         base.ResetRigitBody();
+        meshRenderer.enabled = true;
+        rigidbody.isKinematic = false;
         transform.rotation = Quaternion.Euler(0, 0, 90);
         rigidbody.rotation = transform.rotation;
     }
@@ -32,15 +40,16 @@ public class BulletController : PoolObjectController
 
     private void OnCollisionEnter(Collision collision) {
         // Disable physics
-        Destroy(rigidbody);
 
         if(collision.collider.gameObject.tag == kBearTag) {
+            rigidbody.isKinematic = true;
             meshRenderer.enabled = false;
             particleSystem.Play();
-            Destroy(gameObject, 1.0f);
+            // TODO: return to pool
+            Invoke("Destroy", 1.0f);
         }
         else {
-            Destroy(gameObject);
+            Destroy();
         }
 
     }

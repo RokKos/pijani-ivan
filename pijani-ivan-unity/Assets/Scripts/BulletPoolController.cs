@@ -22,6 +22,7 @@ public class BulletPoolController : MonoBehaviour
         for (int i = 0; i < kBulletsNumber; ++i) {
             BulletController bullet = (BulletController)Instantiate(bulletPrefab, farAwayVector, Quaternion.Euler(0,0,90), poolSceneParent);
             bullet.name = System.String.Format("Bullet {0:D2}", i);
+            bullet.Init();
             bullet.gameObject.SetActive(false);
             bullet.SetPoolController(this);
             poolBullets.Enqueue(bullet);
