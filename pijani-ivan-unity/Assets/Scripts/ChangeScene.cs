@@ -8,8 +8,12 @@ public class ChangeScene : MonoBehaviour
     [SerializeField] GameObject CreditsPanel;
 
     private void Start() {
-        StartPanel.SetActive(true);
-        CreditsPanel.SetActive(false);
+        if (StartPanel != null) {
+            StartPanel.SetActive(true);
+        }
+        if (StartPanel != null) {
+            CreditsPanel.SetActive(false);
+        }
     }
 
     public void changeToScene(string SceneToChangeTo)
