@@ -1,20 +1,19 @@
 fileFormatVersion: 2
-guid: d3b99d28032228944a4ec487cfd45e05
+guid: b91bc54587fac91438a16f58aa6dae59
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: Object.000_Mesh.000_Material_REOB_molotov.png
+    100000: default
     100002: //RootNode
-    400000: Object.000_Mesh.000_Material_REOB_molotov.png
+    400000: default
     400002: //RootNode
-    2100000: Object.000_Mesh.000_Material_REOB_molotov.pngMat
-    2300000: Object.000_Mesh.000_Material_REOB_molotov.png
-    3300000: Object.000_Mesh.000_Material_REOB_molotov.png
-    4300000: Object.000_Mesh.000_Material_REOB_molotov.png
-    2186277476908879412: ImportLogs
+    2100000: defaultMat
+    2300000: default
+    3300000: default
+    4300000: default
   externalObjects: {}
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
