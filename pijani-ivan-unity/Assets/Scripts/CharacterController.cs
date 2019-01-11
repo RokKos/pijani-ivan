@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class CharacterController : MonoBehaviour
@@ -32,14 +33,20 @@ public class CharacterController : MonoBehaviour
 
     [Header("Shooting")]
     [SerializeField] BulletPoolController bulletPoolController;
+    [SerializeField] Transform bulletSpawnPoint;
+    const string kTagAmmonition = "Ammonition";
+    const string kTagFinish = "Finish";
+
+    [Header("Audio")]
     [SerializeField] AudioSource gunshootAudio;
     [SerializeField] AudioSource gunEmptyAudio;
     [SerializeField] AudioSource gunReloadAudio;
     [SerializeField] AudioSource bottleThrowAudio;
+    [SerializeField] AudioSource hurtAudio;
     [SerializeField] Animator lightAnimator;
-    [SerializeField] Transform bulletSpawnPoint;
-    const string kTagAmmonition = "Ammonition";
-    const string kTagFinish = "Finish";
+    [SerializeField] List<AudioClip> hurtSFX;
+    private List<bool> playedHurtSfx;
+    
 
 
     [Header("Player Stats")]
@@ -75,6 +82,10 @@ public class CharacterController : MonoBehaviour
         HealthBar.maxHealth = playerLives;
 
         UpdateHUD();
+        playedHurtSfx = new List<bool>(hurtSFX.Count);
+        for (int i = 0; i < hurtSFX.Count; ++i) {
+            playedHurtSfx.Add(false);
+        }
     }
 
     void UpdateHUD()
@@ -222,11 +233,34 @@ public class CharacterController : MonoBehaviour
             playerLives--;
             UpdateHUD();
             UiAnimator.SetTrigger(kPlayerHurt);
+            PlayHurtSound();
             timeFromLastHit = 0;
             if (playerLives <= 0) {
                 GameController.Instance.GameOver();
             }
         }
+    }
+
+    private void PlayHurtSound() {
+        bool allHurtVFXPlayed = true;
+        foreach (bool played in playedHurtSfx) {
+            allHurtVFXPlayed &= played;
+        }
+
+        if (allHurtVFXPlayed) {
+            for (int i = 0; i < playedHurtSfx.Count; ++i) {
+                playedHurtSfx[i] = false;
+            }
+        }
+
+        int pickRandomSFX = Random.Range(0, hurtSFX.Count);
+        while (playedHurtSfx[pickRandomSFX] == true) {
+            pickRandomSFX = Random.Range(0, hurtSFX.Count);
+        }
+
+        playedHurtSfx[pickRandomSFX] = true;
+        hurtAudio.clip = hurtSFX[pickRandomSFX];
+        hurtAudio.Play();
     }
 
     private void OnTriggerEnter(Collider other) {
