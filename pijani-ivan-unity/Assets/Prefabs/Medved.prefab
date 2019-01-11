@@ -89,7 +89,7 @@ MonoBehaviour:
   bearRoar: {fileID: 2974174633920928534}
   navMeshAgent: {fileID: 7859730118922911856}
   kTimeToCalculate: 0.5
-  kWakeUpRadius: 20
+  kWakeUpRadius: 17
   bearAnimator: {fileID: 4536910136034185628}
 --- !u!82 &2974174633920928534
 AudioSource:
