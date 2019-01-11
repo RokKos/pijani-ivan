@@ -15,6 +15,11 @@ public class FixRotationMinimap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (minimapCamera == null) {
+            minimapCamera = GameController.Instance.minimapCamera;
+        }
+
         Vector3 rotation = transform.eulerAngles;
         rotation.y = minimapCamera.eulerAngles.y;
         rotation.z = minimapCamera.eulerAngles.z;
