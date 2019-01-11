@@ -612,11 +612,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 983388494}
     m_Modifications:
-    - target: {fileID: 8909608846004610870, guid: 78206c0a406634cbc8e63cbba322a378,
-        type: 3}
-      propertyPath: m_Name
-      value: InfoUI
-      objectReference: {fileID: 0}
     - target: {fileID: 6525284414385109305, guid: 78206c0a406634cbc8e63cbba322a378,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -721,6 +716,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8909608846004610870, guid: 78206c0a406634cbc8e63cbba322a378,
+        type: 3}
+      propertyPath: m_Name
+      value: InfoUI
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78206c0a406634cbc8e63cbba322a378, type: 3}
@@ -1347,11 +1347,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 983388494}
     m_Modifications:
-    - target: {fileID: 5942107204895228499, guid: 0a374013e8d094224aa4b17665cbc00b,
-        type: 3}
-      propertyPath: m_Name
-      value: Minimap
-      objectReference: {fileID: 0}
     - target: {fileID: 5942107204895228498, guid: 0a374013e8d094224aa4b17665cbc00b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1457,6 +1452,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5942107204895228499, guid: 0a374013e8d094224aa4b17665cbc00b,
+        type: 3}
+      propertyPath: m_Name
+      value: Minimap
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a374013e8d094224aa4b17665cbc00b, type: 3}
 --- !u!1001 &7319067616823851375
@@ -1551,28 +1551,7 @@ PrefabInstance:
       propertyPath: txtMolotovs
       value: 
       objectReference: {fileID: 761616257}
-    - target: {fileID: 534669904, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
-      propertyPath: m_ClearFlags
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 534669904, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
-      propertyPath: m_BackGroundColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 534669904, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
-      propertyPath: m_BackGroundColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 534669904, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
-      propertyPath: m_BackGroundColor.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 534669904, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 311
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 9028194064183046571, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71a824b53ae7b954281ce1ec8cc976b9, type: 3}
 --- !u!114 &7319067616823851376 stripped
 MonoBehaviour:
