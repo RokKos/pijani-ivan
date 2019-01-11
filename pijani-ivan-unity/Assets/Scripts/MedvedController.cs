@@ -18,11 +18,16 @@ public class MedvedController : MonoBehaviour
     [Range(1, 100)]
     [SerializeField] float kWakeUpRadius;
 
+    [SerializeField] Animator bearAnimator;
+
     private NavMeshPath path;
     private Transform player;
     private float timer = 0.0f;
     private const string kBulletTag = "Bullet";
-    
+    private const string kPlayerTag = "Player";
+
+    private bool wokenUp = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,11 +44,14 @@ public class MedvedController : MonoBehaviour
 
         timer += Time.deltaTime;
         // First we calculate aproximation which is easier to compute
-        if ((player.position - transform.position).sqrMagnitude < kWakeUpRadius * kWakeUpRadius) {
-            if (!bearRoar.isPlaying) {
-                bearRoar.Play();
-            }
 
+        if (! wokenUp && (player.position - transform.position).sqrMagnitude < kWakeUpRadius * kWakeUpRadius)
+        {
+            bearRoar.Play();
+            wokenUp = true;
+        }
+
+        if (wokenUp) {
             if (timer > kTimeToCalculate) {
                 timer = 0;
                 // If its smaller then we calculate more demanding path calculation
@@ -60,6 +68,16 @@ public class MedvedController : MonoBehaviour
                     transform.LookAt(player);
                 }
             }
+
+            if (navMeshAgent.velocity.sqrMagnitude > 0.1f)
+            {
+                bearAnimator.SetBool("Walking", true);
+                bearAnimator.SetFloat("Speed", navMeshAgent.velocity.magnitude);
+            }
+            else
+            {
+                bearAnimator.SetBool("Walking", false);
+            }
         }
 
         // For debug porpuse only (we need to refresh every frame)
@@ -68,12 +86,41 @@ public class MedvedController : MonoBehaviour
         }
     }
 
+
     private void OnCollisionEnter(Collision collision) {
         if (collision.collider.gameObject.tag == kBulletTag) {
             bearLifes--;
             if (bearLifes <= 0) {
                 Destroy(gameObject);
             }
+        }
+
+
+    }
+
+    public void PlayRoarSound()
+    {
+        if (!bearRoar.isPlaying)
+        {
+            bearRoar.Play();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log(other);
+        if (other.gameObject.tag == kPlayerTag)
+        {
+            bearAnimator.SetBool("Attack", true);
+            PlayRoarSound();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == kPlayerTag)
+        {
+            bearAnimator.SetBool("Attack", false);
         }
     }
 

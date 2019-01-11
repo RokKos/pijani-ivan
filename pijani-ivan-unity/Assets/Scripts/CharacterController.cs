@@ -208,15 +208,15 @@ public class CharacterController : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision collision) {
-        CollisionWithBear(collision);
+
     }
 
     private void OnCollisionStay(Collision collision) {
-        CollisionWithBear(collision);
+       
     }
 
-    private void CollisionWithBear(Collision collision) {
-        bool isHit = collision.collider.tag == kBearTag && timeFromLastHit > timeBetweenHits;
+    private void CollisionWithBear(Collider other) {
+        bool isHit = other.tag == kBearTag && timeFromLastHit > timeBetweenHits;
 
         if (isHit) {
             playerLives--;
@@ -241,6 +241,13 @@ public class CharacterController : MonoBehaviour
         {
             GameController.Instance.EndLevel();
         }
+
+        CollisionWithBear(other);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        CollisionWithBear(other);
     }
 
     public void ResetPlayer()
