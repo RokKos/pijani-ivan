@@ -1031,7 +1031,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Nekje se je nekaj premaknilo
+  m_Text: You OPENED Something!
 --- !u!222 &1452111473
 CanvasRenderer:
   m_ObjectHideFlags: 0
