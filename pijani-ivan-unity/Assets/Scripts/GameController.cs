@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
 
     private const string sceneGameOver = "ScenaNeuspeh";
     private const string sceneGameWon = "ScenaUspeh";
+    private const string mainMenu = "ZacetnaScena";
 
     public void EndLevel()
     {
@@ -22,16 +23,19 @@ public class GameController : MonoBehaviour
         player.ResetPlayer();
     }
 
+    private void LoadOtherScene(string sceneName) {
+        SceneManager.LoadScene(sceneName);
+        Cursor.lockState = CursorLockMode.None;
+    }
+
     public void GameOver()
     {
-        SceneManager.LoadScene(sceneGameOver);
-        Cursor.lockState = CursorLockMode.None;
+        LoadOtherScene(sceneGameOver);
     }
 
     public void GameWon()
     {
-        SceneManager.LoadScene(sceneGameWon);
-        Cursor.lockState = CursorLockMode.None;
+        LoadOtherScene(sceneGameWon);
     }
 
     public void DisplayKeyText()
@@ -48,6 +52,8 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            LoadOtherScene(mainMenu);
+        }
     }
 }
