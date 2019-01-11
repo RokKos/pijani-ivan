@@ -5,11 +5,8 @@ using UnityEngine;
 public class MolotovController : PoolObjectController
 {
     [SerializeField] AudioSource bottleFallAudio;
-    private bool soundPlayed;
-
-    private void Start() {
-        Invoke("Destroy", 5);
-    }
+    [SerializeField] float timeUntilDestroy;
+    private bool soundPlayed = false;
 
     public override void Destroy() {
         base.Destroy();
@@ -25,6 +22,8 @@ public class MolotovController : PoolObjectController
         Vector3 molotovDirection = CalculateDirection(playerRotation, cameraRotation);
         rigidbody.AddForce(molotovDirection * speed, ForceMode.Impulse);
         rigidbody.AddTorque(molotovDirection * speed, ForceMode.Impulse);
+        soundPlayed = false;
+        Invoke("Destroy", timeUntilDestroy);
     }
 
     private void OnCollisionEnter(Collision collision)

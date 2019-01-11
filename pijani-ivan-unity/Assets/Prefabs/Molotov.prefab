@@ -125,8 +125,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidbody: {fileID: 4100822214678845690}
-  speed: 30.37
+  speed: 47.5
   bottleFallAudio: {fileID: 417119796435544473}
+  timeUntilDestroy: 7.5
 --- !u!82 &417119796435544473
 AudioSource:
   m_ObjectHideFlags: 0
