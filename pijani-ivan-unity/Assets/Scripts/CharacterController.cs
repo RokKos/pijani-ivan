@@ -37,6 +37,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] BulletPoolController bulletPoolController;
     [SerializeField] Transform bulletSpawnPoint;
     const string kTagAmmonition = "Ammonition";
+    const string kTagNewMolotovs = "NewMolotovs";
     const string kTagFinish = "Finish";
 
     [Header("Audio")]
@@ -278,6 +279,12 @@ public class CharacterController : MonoBehaviour
         if (other.tag == kTagAmmonition) {
             numBullet += 30;
             txtBullets.text = numBullet.ToString();
+            gunReloadAudio.Play();
+        }
+
+        if (other.tag == kTagNewMolotovs) {
+            numMolotovs += 5;
+            txtMolotovs.text = numMolotovs.ToString();
             gunReloadAudio.Play();
         }
 

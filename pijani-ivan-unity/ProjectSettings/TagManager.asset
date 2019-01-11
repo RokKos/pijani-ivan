@@ -7,6 +7,7 @@ TagManager:
   - Bear
   - Bullet
   - Ammonition
+  - NewMolotovs
   layers:
   - Default
   - TransparentFX

@@ -12,7 +12,7 @@ public class BulletPoolController : MonoBehaviour
     private const int kBulletsNumber = 50;
 
     private Queue<MolotovController> poolMolotov;
-    private const int kMolotovNumber = 5;
+    private const int kMolotovNumber = 15;
     private Vector3 farAwayVector = new Vector3(10000, 10000, 10000);
 
     // Start is called before the first frame update
