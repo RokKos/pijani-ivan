@@ -521,7 +521,8 @@ MonoBehaviour:
   sensitivityY: 2
   bulletPoolController: {fileID: 0}
   bulletSpawnPoint: {fileID: 4980955381009597117}
-  gunshootAudio: {fileID: 552123543}
+  gunshootPrefabAudio: {fileID: 2088140867, guid: d2e76bdd4b24aaa41b0d520b4abec6ad,
+    type: 3}
   gunEmptyAudio: {fileID: 520464200333533980}
   gunReloadAudio: {fileID: 7695949835244869606}
   bottleThrowAudio: {fileID: 8571827554835305041}

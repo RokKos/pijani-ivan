@@ -38,7 +38,7 @@ public class CharacterController : MonoBehaviour
     const string kTagFinish = "Finish";
 
     [Header("Audio")]
-    [SerializeField] AudioSource gunshootAudio;
+    [SerializeField] GunShootSound gunshootPrefabAudio;
     [SerializeField] AudioSource gunEmptyAudio;
     [SerializeField] AudioSource gunReloadAudio;
     [SerializeField] AudioSource bottleThrowAudio;
@@ -198,7 +198,7 @@ public class CharacterController : MonoBehaviour
             bullet.transform.position = bulletSpawnPoint.position;
 
             bullet.SetDirectionOfMoving(transform.rotation, mainCamera.transform.rotation);
-            gunshootAudio.Play();
+            GunShootSound gunShootSound =  Instantiate(gunshootPrefabAudio, this.gameObject.transform);
             lightAnimator.SetTrigger("Flash");
         } else {
             if (!gunEmptyAudio.isPlaying) {

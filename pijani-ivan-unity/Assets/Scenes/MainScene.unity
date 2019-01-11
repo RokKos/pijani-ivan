@@ -539,6 +539,7 @@ GameObject:
   - component: {fileID: 779975451}
   - component: {fileID: 779975453}
   - component: {fileID: 779975452}
+  - component: {fileID: 779975454}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -605,6 +606,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 779975450}
   m_Mesh: {fileID: 0}
+--- !u!114 &779975454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779975450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c670b11bac3c34409700f468ba5b766, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
 --- !u!1001 &962102442
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1509,7 +1523,7 @@ PrefabInstance:
     - target: {fileID: 7319067616713266191, guid: 71a824b53ae7b954281ce1ec8cc976b9,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7319067616713266191, guid: 71a824b53ae7b954281ce1ec8cc976b9,
         type: 3}
