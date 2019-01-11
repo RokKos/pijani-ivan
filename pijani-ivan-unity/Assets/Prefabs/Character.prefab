@@ -507,8 +507,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidbody: {fileID: 802511837780459936}
-  speed: 10
-  maxMovingVelocity: 20
+  speed: 5
+  maxMovingVelocity: 10
   resetTransform: {fileID: 0}
   jogFactor: 287.3
   jogSinusKvocient: 24.7
@@ -1160,8 +1160,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 56f22754d02d749f3bacb11b429b5fee,
         type: 3}
-    m_RemovedComponents:
-    - {fileID: 1790211169086303002, guid: b849a5eb9d0e14a5e94a8f9e8ef180a2, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b849a5eb9d0e14a5e94a8f9e8ef180a2, type: 3}
 --- !u!4 &175601088197120883 stripped
 Transform:
